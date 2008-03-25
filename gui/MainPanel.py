@@ -13,6 +13,16 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        # TODO: Implement some kind of demo functionality with the signals
         self.SetBackgroundColour(wx.WHITE)
+        
+        self.log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
+        
+        Publisher().subscribe(self._onSignalLogMessage, viewmgr.SIGNAL_APP_LOG)
 
+
+    def _onSignalLogMessage(self, msg):
+        """
+        Received a message, log it to the window
+        """
+        
+        self.log_window.AppendText(msg.data + "\n")

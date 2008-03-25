@@ -4,12 +4,16 @@ import os.path
 import wx
 from wx.lib.pubsub import Publisher
 from gui import appcfg
+from series.series_queue import SeriesRetrieveThread
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
 
 is_closing = False
+retriever = None
 
+# signal that tells the application is initialized
+SIGNAL_APP_INITIALIZED      = ('app', 'initialized')  
 # query signal to allow application to veto the close event
 SIGNAL_QRY_APP_CLOSE        = ('query', 'app', 'close')  
 # final signal that app closes, the destroy follows after this event
@@ -17,6 +21,8 @@ SIGNAL_APP_CLOSE            = ('app', 'close')
 # signal to restore the application window
 SIGNAL_APP_RESTORE          = ('app', 'restore')
 SIGNAL_APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')
+# log signal that a message must be processed
+SIGNAL_APP_LOG              = ('app', 'logging')
 
 class QueryResult(object):
     """
@@ -49,6 +55,16 @@ class QueryResult(object):
 # All actions that the viewmanager can do are defined here. These actions can
 # be called in the application to send around certain events
 
+def app_init():
+    """
+    Initialize all singleton and data elements of viewmgr
+    """
+    global retriever
+    retriever = SeriesRetrieveThread()
+    Publisher().sendMessage(SIGNAL_APP_INITIALIZED)
+    retriever.start()
+       
+    
 def app_close():
     """ 
     Sends a signal that closes the application. If the QueryResult object
@@ -62,6 +78,11 @@ def app_close():
     if res.allowed():
         is_closing = True
         Publisher.sendMessage(SIGNAL_APP_CLOSE)
+        # cleanup thread
+        if retriever.isAlive():
+            retriever.stop = True
+            retriever.join(4000)        
+    
     return res.allowed()
     
 
@@ -81,4 +102,8 @@ def app_restore():
     Publisher().sendMessage(SIGNAL_APP_RESTORE)
     
     
-
+def app_log(msg):
+    """
+    Sends a log message to the listeners
+    """
+    Publisher().sendMessage(SIGNAL_APP_LOG, msg)

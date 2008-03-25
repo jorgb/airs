@@ -1,12 +1,12 @@
 
-from series.series_download import SeriesRetriever
+import series.series_queue as squeue
 import logging
 import time
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(message)s')
 
-sg = SeriesRetriever()
+sg = squeue.SeriesRetriever()
 
 job = ('Supernatural', 'http://www.tv.com/supernatural/show/30144/summary.html')
 

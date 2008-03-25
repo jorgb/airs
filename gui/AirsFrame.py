@@ -28,6 +28,9 @@ class AirsFrame(wx.Frame):
         self._trayIcon = None                       
         
         self._connectSignals()
+
+        # init viewmgr
+        viewmgr.app_init()
         
         # instantiate the GUI
         self._createMenu()
@@ -38,6 +41,7 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self._onGuiClose)
         self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
         self.Bind(wx.EVT_ICONIZE, self._onGuiIconize)
+        self.Bind(wx.EVT_IDLE, self._onGuiIdle)
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
@@ -45,7 +49,8 @@ class AirsFrame(wx.Frame):
 
         # put windows like they were the last time
         self._restoreWindowLayout()
-
+                
+        
     # ========================== GUI CREATION CODE =============================
 
     def _createTrayIcon(self):
@@ -217,6 +222,16 @@ class AirsFrame(wx.Frame):
         pass
 
     
+    def _onGuiIdle(self, event):
+        """
+        Event from OnIdle to update the message log from another thread 
+        """
+        q = viewmgr.retriever.msg_queue
+        if not q.empty():
+            viewmgr.app_log(q.get())
+            q.task_done()
+            
+        
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
