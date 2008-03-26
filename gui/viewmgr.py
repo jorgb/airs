@@ -107,3 +107,12 @@ def app_log(msg):
     Sends a log message to the listeners
     """
     Publisher().sendMessage(SIGNAL_APP_LOG, msg)
+
+
+def get_all_series():
+    """ 
+    Initializes the transfer to send all the serie jobs to the 
+    receive thread, and after that, hopefully results will 
+    come back
+    """
+    Publisher().sendMessage(SIGNAL_APP_LOG, "Sending all series to Series Receive thread...")

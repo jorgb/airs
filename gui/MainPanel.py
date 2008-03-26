@@ -15,14 +15,24 @@ class MainPanel(wx.Panel):
 
         self.SetBackgroundColour(wx.WHITE)
         
-        self.log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
-        
+        self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
+        self._update_all = xrc.XRCCTRL(self, "ID_BUTTON1")
+
+        self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
         Publisher().subscribe(self._onSignalLogMessage, viewmgr.SIGNAL_APP_LOG)
+
+
+    def _onUpdateAll(self, event):
+        """
+        Update all event, will send all series to the receive thread, where they 
+        will be updated as they come back in 
+        """
+        viewmgr.get_all_series()
 
 
     def _onSignalLogMessage(self, msg):
         """
         Received a message, log it to the window
         """
-        
-        self.log_window.AppendText(msg.data + "\n")
+
+        self._log_window.AppendText(msg.data + "\n")
