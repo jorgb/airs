@@ -18,7 +18,7 @@ class TvComSeriesDownloadCmd(object):
 		""" Retieves and decodes. Returns the following:
 		
 		    (None, error_str)   - In case of error string
-			(serie, status_str) - In case of succesful extract
+		    (serie, status_str) - In case of succesful extract
 			
 			serie -> [ (episode_nr, episode_string, ... {future} ),
 					   .... ]
