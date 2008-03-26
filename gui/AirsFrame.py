@@ -1,4 +1,5 @@
 import os.path
+import sys
 
 import wx
 from wx.lib.wordwrap import wordwrap
@@ -229,7 +230,10 @@ class AirsFrame(wx.Frame):
         q = viewmgr.retriever.msg_queue
         if not q.empty():
             viewmgr.app_log(q.get())
-            q.task_done()
+            # task_done is not part of 2.4
+            ver = sys.version_info
+            if (ver[0] == 2) and (ver[1] > 4):
+                 q.task_done()
             
         
     def _saveWindowLayout(self):
