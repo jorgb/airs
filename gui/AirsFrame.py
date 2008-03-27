@@ -42,7 +42,6 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self._onGuiClose)
         self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
         self.Bind(wx.EVT_ICONIZE, self._onGuiIconize)
-        self.Bind(wx.EVT_IDLE, self._onGuiIdle)
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
@@ -222,21 +221,6 @@ class AirsFrame(wx.Frame):
         # TODO: Add your enable / disable control code here
         pass
 
-    
-    def _onGuiIdle(self, event):
-        """
-        Event from OnIdle to update the message log from another thread 
-        """
-        q = viewmgr.retriever.msg_queue
-        msgs =30
-        while not q.empty() and msgs > 0:
-            viewmgr.app_log(q.get())
-            # task_done is not part of 2.4
-            #ver = sys.version_info
-            #if (ver[0] == 2) and (ver[1] > 4):
-            #     q.task_done()
-            msgs -= 1
-            
         
     def _saveWindowLayout(self):
         """

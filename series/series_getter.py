@@ -19,7 +19,7 @@ class TvComSeriesDownloadCmd(object):
 		
 		    (None, error_str)   - In case of error string
 		    (serie, status_str) - In case of succesful extract
-			
+		    
 			serie -> [ (episode_nr, episode_string, ... {future} ),
 					   .... ]
 		"""
@@ -56,7 +56,6 @@ class TvComSeriesDownloadCmd(object):
 			if len(episode) > 1:
 				number = episode[0].strip().rstrip('.')
 				title = episode[1].strip()
-				print "Episode %s - %s" % (number, title)
 				ep_list.append( (number, title) )
 		
 		if not ep_list:

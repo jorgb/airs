@@ -22,6 +22,7 @@ class SeriesRetrieveThread(Thread):
         self.out_queue = Queue()         # return retrieved series
         self.msg_queue = Queue()         # diagnostics messages
         self.stop = False
+        self._is_downloading = False
         
         self.__report('Series retrieve thread initialized...')
         pass
@@ -48,24 +49,29 @@ class SeriesRetrieveThread(Thread):
             if not self.in_queue.empty():
             
                 job = self.in_queue.get()
-                self.in_queue.task_done()
                 
                 self.__report("Processing series '%s' ..." % job[0])
 
+                self._is_downloading = True
+                
                 cmd = TvComSeriesDownloadCmd(job[0], job[1])
                 items = cmd.retrieve()
+                
+                self._is_downloading = False
                 
                 # in case of errors
                 if items[0] == None:
                     self.__report("ERROR: %s" % item[1])
                 else:
-                    # let's display for now
                     series_list = items[0]
-                    self.__report("SUCCESS: Downloaded series data for '%s'" % job[0])
+                    self.__report("Downloaded series data for '%s'" % job[0])
                     for serie in series_list:
-                        self.__report("  Episode %s - %s" % (serie[0], serie[1]))
+                        # send back: serie ID, serie episode nr, serie title
+                        self.out_queue.put( (job[0], serie[0], serie[1]) )
             time.sleep(0.2)
         
         self.__report('Series retrieve thread stopped')
 
-        
+
+    def is_downloading(self):
+        return self._is_downloading

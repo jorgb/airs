@@ -123,3 +123,29 @@ def get_all_series():
     
     for serie in series:
         retriever.in_queue.put(serie)
+
+
+def probe_series():
+    """
+    Probes if there are more series. If there are series left to process,
+    the series list is updated, and the appropiate signals are sent out to
+    display them. This is done in the main (GUI) thread because there are
+    signals involved.
+    """
+    
+    while not retriever.out_queue.empty():
+        series = retriever.out_queue.get()
+        
+        # print for now
+        app_log("Serie : '%s' (%s - %s)" % (series[0], series[1], series[2]))
+
+
+def is_busy():
+    """
+    Returns true when
+    1) Thread is busy downloading
+    2) In queue of retriever is not empty
+    3) Out queue of retriever is not empty
+    """
+    return (not retriever.in_queue.empty()) or (not retriever.out_queue.empty()) or \
+           retriever.is_downloading()
