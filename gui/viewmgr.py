@@ -138,3 +138,14 @@ def probe_series():
         
         # print for now
         app_log("Serie : '%s' (%s - %s)" % (series[0], series[1], series[2]))
+
+
+def is_busy():
+    """
+    Returns true when
+    1) Thread is busy downloading
+    2) In queue of retriever is not empty
+    3) Out queue of retriever is not empty
+    """
+    return (not retriever.in_queue.empty()) or (not retriever.out_queue.empty()) or \
+           retriever.is_downloading()

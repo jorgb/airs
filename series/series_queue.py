@@ -22,6 +22,7 @@ class SeriesRetrieveThread(Thread):
         self.out_queue = Queue()         # return retrieved series
         self.msg_queue = Queue()         # diagnostics messages
         self.stop = False
+        self._is_downloading = False
         
         self.__report('Series retrieve thread initialized...')
         pass
@@ -48,12 +49,15 @@ class SeriesRetrieveThread(Thread):
             if not self.in_queue.empty():
             
                 job = self.in_queue.get()
-                #self.in_queue.task_done()
                 
                 self.__report("Processing series '%s' ..." % job[0])
 
+                self._is_downloading = True
+                
                 cmd = TvComSeriesDownloadCmd(job[0], job[1])
                 items = cmd.retrieve()
+                
+                self._is_downloading = False
                 
                 # in case of errors
                 if items[0] == None:
@@ -68,4 +72,6 @@ class SeriesRetrieveThread(Thread):
         
         self.__report('Series retrieve thread stopped')
 
-        
+
+    def is_downloading(self):
+        return self._is_downloading
