@@ -228,12 +228,14 @@ class AirsFrame(wx.Frame):
         Event from OnIdle to update the message log from another thread 
         """
         q = viewmgr.retriever.msg_queue
-        if not q.empty():
+        msgs =30
+        while not q.empty() and msgs > 0:
             viewmgr.app_log(q.get())
             # task_done is not part of 2.4
-            ver = sys.version_info
-            if (ver[0] == 2) and (ver[1] > 4):
-                 q.task_done()
+            #ver = sys.version_info
+            #if (ver[0] == 2) and (ver[1] > 4):
+            #     q.task_done()
+            msgs -= 1
             
         
     def _saveWindowLayout(self):

@@ -116,3 +116,10 @@ def get_all_series():
     come back
     """
     Publisher().sendMessage(SIGNAL_APP_LOG, "Sending all series to Series Receive thread...")
+    
+    # some dummy series
+    series = [ ("Supernatural", "http://www.tv.com/supernatural/show/30144/summary.html"),
+               ("Prison Break", "http://www.tv.com/prison-break/show/31635/summary.html") ]
+    
+    for serie in series:
+        retriever.in_queue.put(serie)
