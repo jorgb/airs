@@ -5,12 +5,14 @@ import wx
 from wx.lib.pubsub import Publisher
 from gui import appcfg
 from series.series_queue import SeriesRetrieveThread
+from series.series_list import SeriesList
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
 
 is_closing = False
 retriever = None
+series_list = None
 
 # signal that tells the application is initialized
 SIGNAL_APP_INITIALIZED      = ('app', 'initialized')  
@@ -59,11 +61,14 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever
+    global retriever, series_list
+    
+    series_list = SeriesList()
+
     retriever = SeriesRetrieveThread()
     Publisher().sendMessage(SIGNAL_APP_INITIALIZED)
     retriever.start()
-       
+    
     
 def app_close():
     """ 
@@ -136,10 +141,10 @@ def probe_series():
     while not retriever.out_queue.empty():
         series = retriever.out_queue.get()
         
-        # print for now
-        app_log("Serie : '%s' (%s - %s)" % (series[0], series[1], series[2]))
-
-
+        # TODO: Sync view filter with newly added episodes
+        series_list.addEpisode(series[0], series[1], series[2])
+        
+        
 def is_busy():
     """
     Returns true when

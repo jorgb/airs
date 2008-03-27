@@ -6,16 +6,39 @@
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxALL</flag>
+                <flag>wxGROW</flag>
                 <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <label>Select which series you would like to monitor</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxChoice" name="ID_CHOICE1">
+                <object class="wxBoxSizer">
+                    <orient>wxHORIZONTAL</orient>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxPanel" name="ID_ANIM_AREA">
+                            <size>32,32</size>
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <option>1</option>
+                        <object class="wxBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_LEFT|wxRIGHT|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <label>Select which series you would like to monitor</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxRIGHT</flag>
+                                <border>5</border>
+                                <object class="wxChoice" name="ID_CHOICE">
+                                </object>
+                            </object>
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">

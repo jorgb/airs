@@ -54,7 +54,7 @@ class SeriesRetrieveThread(Thread):
 
                 self._is_downloading = True
                 
-                cmd = TvComSeriesDownloadCmd(job[0], job[1])
+                cmd = TvComSeriesDownloadCmd(self.msg_queue, job[0], job[1])
                 items = cmd.retrieve()
                 
                 self._is_downloading = False

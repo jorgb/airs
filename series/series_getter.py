@@ -4,9 +4,11 @@ from BeautifulSoup import BeautifulSoup
 class TvComSeriesDownloadCmd(object):
 	""" Extract serie from tv.com site and returns result """
 	
-	def __init__(self, site_id, site_url):
+	def __init__(self, logqueue, site_id, site_url):
 		self._site_url = site_url
 		self._site_id = site_id
+		self.__log = logqueue
+		
 		
 	def __compose_result(self, series_list, message):
 		"""
@@ -14,6 +16,7 @@ class TvComSeriesDownloadCmd(object):
 		"""
 		return (series_list, message)
 		
+	
 	def retrieve(self):
 		""" Retieves and decodes. Returns the following:
 		
@@ -24,6 +27,8 @@ class TvComSeriesDownloadCmd(object):
 					   .... ]
 		"""
 
+		self.__log.put("Opening URL : '%s'" % self._site_url)
+		
 		# attempt opening URL
 		try:
 			f = urllib2.urlopen(self._site_url)
@@ -31,6 +36,8 @@ class TvComSeriesDownloadCmd(object):
 		except urllib2.UrlError, msg:
 			return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
 			                                   (self._site_url, self._site_id, msg))
+
+		self.__log.put("Data for '%s' read. Parsing ..." % self._site_id)
 		
 		# find first divider for Episodes
 		soup = BeautifulSoup(html)
@@ -49,6 +56,8 @@ class TvComSeriesDownloadCmd(object):
 		if not res:
 			return self.__compose_result(None, "Can't find marker #3")
 		
+		self.__log.put("Found episode section. Parsing ...")
+
 		ep_list = []
 		for r in res:
 			# extract the episode query
@@ -57,6 +66,9 @@ class TvComSeriesDownloadCmd(object):
 				number = episode[0].strip().rstrip('.')
 				title = episode[1].strip()
 				ep_list.append( (number, title) )
+		
+				
+		self.__log.put("Parsing complete!")
 		
 		if not ep_list:
 			return self.__compose_result(None, "No valid series found!")
