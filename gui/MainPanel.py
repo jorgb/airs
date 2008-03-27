@@ -32,6 +32,7 @@ class MainPanel(wx.Panel):
         self._series_list.InsertColumn(1, "Title")
         
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
+        self.Bind(wx.EVT_UPDATE_UI, self._onUpdateStatus)
         Publisher().subscribe(self._onSignalLogMessage, viewmgr.SIGNAL_APP_LOG)
         
 
@@ -49,3 +50,24 @@ class MainPanel(wx.Panel):
         """
 
         self._log_window.AppendText(msg.data + "\n")
+        
+    def _onUpdateStatus(self, event):
+        """
+        Periodic update event to control the throbber and
+        other menu elements
+        """
+        # update some controls
+        self._update_all.Enable(not viewmgr.is_busy())
+        
+        # send messages from thread queue to log window
+        q = viewmgr.retriever.msg_queue
+        msgs = 30
+        while not q.empty() and msgs > 0:
+            viewmgr.app_log(q.get())
+            msgs -= 1
+
+        # kick view manager to probe for new series
+        # this will result in signals being emitted to update lists
+        viewmgr.probe_series()        
+        
+        event.SetUpdateInterval(600)
