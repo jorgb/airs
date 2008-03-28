@@ -3,9 +3,9 @@ import os.path
 
 import wx
 from wx.lib.pubsub import Publisher
-from gui import appcfg
-from series.series_queue import SeriesRetrieveThread
-from series.series_list import SeriesList
+from data.series_list import SeriesList
+from data.series_queue import SeriesRetrieveThread
+import signals
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
@@ -13,44 +13,6 @@ from series.series_list import SeriesList
 is_closing = False
 retriever = None
 series_list = None
-
-# signal that tells the application is initialized
-SIGNAL_APP_INITIALIZED      = ('app', 'initialized')  
-# query signal to allow application to veto the close event
-SIGNAL_QRY_APP_CLOSE        = ('query', 'app', 'close')  
-# final signal that app closes, the destroy follows after this event
-SIGNAL_APP_CLOSE            = ('app', 'close')  
-# signal to restore the application window
-SIGNAL_APP_RESTORE          = ('app', 'restore')
-SIGNAL_APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')
-# log signal that a message must be processed
-SIGNAL_APP_LOG              = ('app', 'logging')
-
-class QueryResult(object):
-    """
-    This class is designed to act as a reference object. If a signal is
-    sent with this QueryResult object as data member, a listener can 
-    veto the action by calling deny(). Calling allow() will allow the 
-    action, but it will only set the flag to true if no others have denied it 
-    """
-    def __init__(self, allow = True):
-        self._result = allow
-        self._denied = False
-
-    def allowed(self):
-        """ Return true when the action is allowed """
-        return self._result
-
-    def deny(self):
-        """ Set the result to False """
-        self._result = False
-        self._denied = True
-
-    def allow(self):
-        """ Set the result to True but only if none others have denied it """
-        if not self._denied:
-            self._result = True
-
 
 #===============================================================================
 
@@ -66,7 +28,7 @@ def app_init():
     series_list = SeriesList()
 
     retriever = SeriesRetrieveThread()
-    Publisher().sendMessage(SIGNAL_APP_INITIALIZED)
+    Publisher().sendMessage(signals.APP_INITIALIZED)
     retriever.start()
     
     
@@ -78,16 +40,11 @@ def app_close():
     global is_closing
     
     is_closing = False
-    res = QueryResult()
-    Publisher().sendMessage(SIGNAL_QRY_APP_CLOSE, res)
+    res = signals.QueryResult()
+    Publisher().sendMessage(signals.QRY_APP_CLOSE, res)
     if res.allowed():
         is_closing = True
-        Publisher.sendMessage(SIGNAL_APP_CLOSE)
-        # cleanup thread
-        if retriever.isAlive():
-            retriever.stop = True
-            retriever.join(4000)        
-    
+        Publisher.sendMessage(signals.APP_CLOSE)
     return res.allowed()
     
 
@@ -97,21 +54,21 @@ def app_settings_changed():
     application settings are changed. Every view using these settings 
     should investigate if their view needs to be updated
     """
-    Publisher().sendMessage(SIGNAL_APP_SETTINGS_CHANGED)
+    Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
     
     
 def app_restore():
     """
     Sends a signal that the application needs to restore it's window
     """
-    Publisher().sendMessage(SIGNAL_APP_RESTORE)
+    Publisher().sendMessage(signals.APP_RESTORE)
     
     
 def app_log(msg):
     """
     Sends a log message to the listeners
     """
-    Publisher().sendMessage(SIGNAL_APP_LOG, msg)
+    Publisher().sendMessage(signals.APP_LOG, msg)
 
 
 def get_all_series():
@@ -120,7 +77,7 @@ def get_all_series():
     receive thread, and after that, hopefully results will 
     come back
     """
-    Publisher().sendMessage(SIGNAL_APP_LOG, "Sending all series to Series Receive thread...")
+    Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
     
     # some dummy series
     series = [ ("Supernatural", "http://www.tv.com/supernatural/show/30144/summary.html"),

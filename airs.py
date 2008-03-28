@@ -14,7 +14,7 @@ else:
 
 # continue with application initialisation
 import gui.airsApp as app
-from gui import appcfg
+from data import appcfg
 
 appcfg.appdir = execpath
 

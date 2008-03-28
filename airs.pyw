@@ -15,7 +15,7 @@ else:
 # continue with application initialisation
 import gui.airsApp as app
 import traceback, wx
-from gui import appcfg
+from data import appcfg
 
 appcfg.appdir = execpath
 

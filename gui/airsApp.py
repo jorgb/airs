@@ -1,7 +1,8 @@
 import os
 
 import wx
-import appcfg, xmlres
+import xmlres
+from data import appcfg
 from AirsFrame import AirsFrame
 
 class AirsApp(wx.App):

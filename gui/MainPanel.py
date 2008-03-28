@@ -1,7 +1,8 @@
 import os.path, wx
 import wx.xrc as xrc
 from wx.lib.pubsub import Publisher
-import appcfg, xmlres, viewmgr
+from data import appcfg, viewmgr, signals
+import xmlres
 from SeriesListCtrl import SeriesListCtrl
 
 class MainPanel(wx.Panel):
@@ -36,7 +37,7 @@ class MainPanel(wx.Panel):
         
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
-        Publisher().subscribe(self._onSignalLogMessage, viewmgr.SIGNAL_APP_LOG)
+        Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         
 
     def _onUpdateAll(self, event):

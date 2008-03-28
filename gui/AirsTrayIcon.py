@@ -1,11 +1,11 @@
 import wx
-import appcfg
+from data import appcfg
 
 ID_TRAYICON_RESTORE = wx.NewId()
 ID_TRAYICON_CLOSE   = wx.NewId()
 
 from images import icon_main
-import viewmgr
+from data import viewmgr
 
 class AirsTrayIcon(wx.TaskBarIcon):
     

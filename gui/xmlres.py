@@ -1,6 +1,7 @@
 import wx
 import wx.xrc as xrc
-import os.path, appcfg
+import os.path
+from data import appcfg
 
 def loadGuiResource(filename):
     """

@@ -2,7 +2,8 @@ import os
 
 import wx
 import wx.xrc as xrc
-import xmlres, appcfg
+import xmlres
+from data import appcfg
 
 class OptionsDlg(wx.Dialog):
     def __init__(self, parent, id = wx.ID_ANY):

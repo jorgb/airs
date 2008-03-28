@@ -5,8 +5,7 @@ import wx
 from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import Publisher
 
-import appcfg
-import viewmgr
+from data import appcfg, viewmgr, signals
 
 # gui elements
 import MainPanel
@@ -30,9 +29,6 @@ class AirsFrame(wx.Frame):
         
         self._connectSignals()
 
-        # init viewmgr
-        viewmgr.app_init()
-        
         # instantiate the GUI
         self._createMenu()
         self._createWindows()
@@ -50,6 +46,10 @@ class AirsFrame(wx.Frame):
         # put windows like they were the last time
         self._restoreWindowLayout()
                 
+        # init viewmgr (always do this last so that
+        # signals to be emitted can access controls)
+        viewmgr.app_init()
+        
         
     # ========================== GUI CREATION CODE =============================
 
@@ -291,9 +291,9 @@ class AirsFrame(wx.Frame):
         main frame. The view manager sends out signals when functionality of
         your application is called
         """
-        Publisher().subscribe(self._onSignalClose, viewmgr.SIGNAL_APP_CLOSE)
-        Publisher().subscribe(self._onSignalAppRestore, viewmgr.SIGNAL_APP_RESTORE)
-        Publisher().subscribe(self._onSignalSettingsChanged, viewmgr.SIGNAL_APP_SETTINGS_CHANGED)
+        Publisher().subscribe(self._onSignalClose, signals.APP_CLOSE)
+        Publisher().subscribe(self._onSignalAppRestore, signals.APP_RESTORE)
+        Publisher().subscribe(self._onSignalSettingsChanged, signals.APP_SETTINGS_CHANGED)
 
 
     def _onGuiShowOptions(self, event):
