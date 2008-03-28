@@ -28,9 +28,6 @@ class MainPanel(wx.Panel):
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
         self._list_panel.SetSizer(sizer)        
-
-        self._series_list.InsertColumn(0, "Episode")
-        self._series_list.InsertColumn(1, "Title")
         
         self.tmr = wx.Timer(self)
         self.tmr.Start(300)

@@ -10,7 +10,7 @@ class SerieEpisode(object):
     def __init__(self, parent, ep_nr, ep_title):
         self._ep_nr = ep_nr
         self._ep_title = ep_title
-        print "Serie added : %s - %s" % (repr(ep_nr), ep_title)
+        self._series = parent
  
 
 class SeriesEpisodes(object):
