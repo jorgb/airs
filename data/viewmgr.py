@@ -114,3 +114,21 @@ def is_busy():
     """
     return (not retriever.in_queue.empty()) or (not retriever.out_queue.empty()) or \
            retriever.is_downloading()
+
+
+def get_current_title():
+    """
+    Returns current title that is downloaded (if any)
+    potentially thread unsafe but it is only a read
+    action so the risk is low
+    """
+    return retriever.getCurrentSeries()
+
+
+def app_destroy():
+    """
+    Close down thread
+    """
+    retriever.stop = True
+    retriever.join(2000)
+    

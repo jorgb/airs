@@ -33,6 +33,7 @@ class AirsFrame(wx.Frame):
         self._createMenu()
         self._createWindows()
         self._createTrayIcon()
+        self._createStatusBar()
 
         # generic application events
         self.Bind(wx.EVT_CLOSE, self._onGuiClose)
@@ -50,6 +51,10 @@ class AirsFrame(wx.Frame):
         # signals to be emitted can access controls)
         viewmgr.app_init()
         
+        # periodic GUI update timer
+        self.tmr = wx.Timer(self)
+        self.tmr.Start(500)
+        self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
         
     # ========================== GUI CREATION CODE =============================
 
@@ -73,51 +78,60 @@ class AirsFrame(wx.Frame):
         # file menu
         filemnu = wx.Menu()
         
-        self._menuExit = wx.MenuItem(filemnu, wx.NewId(), "E&xit", "", wx.ITEM_NORMAL)
+        self._menuExit = wx.MenuItem(filemnu, wx.NewId(), "E&xit", 
+                                     "Exit the application", wx.ITEM_NORMAL)
         filemnu.AppendItem(self._menuExit)
         self._menuBar.Append(filemnu, "&File")
 
         # Series menu
         mnu = wx.Menu()
-        self._menuAddNew = wx.MenuItem(mnu, wx.NewId(), "&Add ...\tCtrl+A", "", wx.ITEM_NORMAL)
+        self._menuAddNew = wx.MenuItem(mnu, wx.NewId(), "&Add ...\tCtrl+A", 
+                                       "Add a new Series", wx.ITEM_NORMAL)
         self._menuAddNew.SetBitmap(icon_add.getBitmap())
         mnu.AppendItem(self._menuAddNew)
 
-        self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", "", wx.ITEM_NORMAL)
+        self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", 
+                                     "Edit Series properties", wx.ITEM_NORMAL)
         self._menuEdit.SetBitmap(icon_edit.getBitmap())
         mnu.AppendItem(self._menuEdit)
 
-        self._menuDelete = wx.MenuItem(mnu, wx.NewId(), "&Delete\tCtrl+D", "", wx.ITEM_NORMAL)
+        self._menuDelete = wx.MenuItem(mnu, wx.NewId(), "&Delete\tCtrl+D", 
+                                       "Delete this Series", wx.ITEM_NORMAL)
         self._menuDelete.SetBitmap(icon_delete.getBitmap())
         mnu.AppendItem(self._menuDelete)    
         self._menuBar.Append(mnu, "&Series")
 
         # tools menu
         mnu = wx.Menu()
-        self._menuOptions = wx.MenuItem(mnu, wx.NewId(), "&Preferences ...", "", wx.ITEM_NORMAL)
+        self._menuOptions = wx.MenuItem(mnu, wx.NewId(), "&Preferences ...", 
+                                        "Open the application preferences", wx.ITEM_NORMAL)
         self._menuOptions.SetBitmap(icon_preferences.getBitmap())
         mnu.AppendItem(self._menuOptions)
         self._menuBar.Append(mnu, "&Tools")
 
         # window layout menu
         mnu = wx.Menu()                          
-        self._menuTrayMinimize = wx.MenuItem(mnu, wx.NewId(), "Minimize to tray", "", wx.ITEM_CHECK)
+        self._menuTrayMinimize = wx.MenuItem(mnu, wx.NewId(), "Minimize to tray", 
+                                             "Upon minimize, hide in system tray", wx.ITEM_CHECK)
         mnu.AppendItem(self._menuTrayMinimize)
         
         self._menuBar.Append(mnu, "&Window")
         
         # help menu
         mnu = wx.Menu()
-        self._menuHelp = wx.MenuItem(mnu, wx.NewId(), "&Help ... ", "", wx.ITEM_NORMAL)
+        self._menuHelp = wx.MenuItem(mnu, wx.NewId(), "&Help ... ", 
+                                     "Show the application help", wx.ITEM_NORMAL)
         self._menuHelp.SetBitmap(icon_help.getBitmap())
         mnu.AppendItem(self._menuHelp)
 
-        self._menuHelpVisitSite = wx.MenuItem(mnu, wx.NewId(), "&Visit Site ... ", "", wx.ITEM_NORMAL)
+        self._menuHelpVisitSite = wx.MenuItem(mnu, wx.NewId(), "&Visit Site ... ", 
+                                              "Visit the project site", wx.ITEM_NORMAL)
         self._menuHelpVisitSite.SetBitmap(icon_visit_site.getBitmap())
         mnu.AppendItem(self._menuHelpVisitSite)
         mnu.AppendSeparator()
 
-        self._menuHelpAbout = wx.MenuItem(mnu, wx.NewId(), "&About ...", "", wx.ITEM_NORMAL)
+        self._menuHelpAbout = wx.MenuItem(mnu, wx.NewId(), "&About ...", 
+                                          "Show the about dialog", wx.ITEM_NORMAL)
         mnu.AppendItem(self._menuHelpAbout)
         self._menuBar.Append(mnu, "&Help")
 
@@ -144,6 +158,13 @@ class AirsFrame(wx.Frame):
         # create main panel
         pnl = MainPanel.MainPanel(self)
         
+    def _createStatusBar(self):
+        """
+        Creates a status bar on the current frame
+        """
+        # specify your statusbar here, add more fields if needed
+        self._statusbar = self.CreateStatusBar(2, wx.ST_SIZEGRIP)
+        self._statusbar.SetStatusWidths([-1, -2])            
                 
     
     # ======================== ITEM MANAGEMENT METHODS ========================= 
@@ -179,11 +200,12 @@ class AirsFrame(wx.Frame):
         self._saveWindowLayout()
         
         # TODO: Delete FileHistory object!!
-
+        
         # save recent opened files
         self._fileHistory.Save(appcfg.Get())
 
         if viewmgr.is_closing:
+            viewmgr.app_destroy()
             self.Close()
 
 
@@ -283,6 +305,20 @@ class AirsFrame(wx.Frame):
         opt = not appcfg.options[appcfg.CFG_TRAY_MINIMIZE]
         appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt   
 
+
+    def _onTimer(self, event):
+        """
+        Periodic check function to update various GUI elements.
+        We could use OnGUIUpdate but it is sent too sporadically
+        """
+        series_title = viewmgr.get_current_title()        
+        if series_title:
+            self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
+        else:
+            self._statusbar.SetStatusText("Idle ...", 1)
+        pass
+    
+        
     # ============================ VARIOUS METHODS =============================
 
     def _connectSignals(self):
