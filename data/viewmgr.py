@@ -1,11 +1,13 @@
 import os
 import os.path
+import sys
 
 import wx
 from wx.lib.pubsub import Publisher
-from data.series_list import SeriesList
-from data.series_queue import SeriesRetrieveThread
-from data.series_filter import SeriesSelectionList
+from series_list import SeriesList
+from series_queue import SeriesRetrieveThread
+from series_filter import SeriesSelectionList
+from storage import series_list_xml
 import signals
 
 # Signals constants are used in the view manager (and the rest of the 
@@ -13,7 +15,7 @@ import signals
 
 is_closing = False
 retriever = None
-series_list = None
+_series_list = None
 series_sel = None
 
 #===============================================================================
@@ -25,9 +27,15 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever, series_list, series_sel
+    global retriever, _series_list, series_sel
     
-    series_list = SeriesList()
+    datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
+    try:
+        _series_list = series_list_xml.read_series(datafile)
+    except SerieListXmlException, msg:
+        wx.LogError(msg)
+        sys.exit(1)
+        
     series_sel = SeriesSelectionList()
 
     retriever = SeriesRetrieveThread()
@@ -82,12 +90,9 @@ def get_all_series():
     """
     Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
     
-    # some dummy series
-    series = [ ("Supernatural", "http://www.tv.com/supernatural/show/30144/summary.html"),
-               ("Prison Break", "http://www.tv.com/prison-break/show/31635/summary.html") ]
-    
-    for serie in series:
-        retriever.in_queue.put(serie)
+    # send series to the receive queue
+    for series in _series_list._series.itervalues():
+        retriever.in_queue.put( (series._serie_name, series._link) )
 
 
 def probe_series():
@@ -101,7 +106,7 @@ def probe_series():
     while not retriever.out_queue.empty():
         series = retriever.out_queue.get()
         
-        ep = series_list.addEpisode(series[0], series[1], series[2])
+        ep = _series_list.addEpisode(series[0], series[1], series[2])
         series_sel.addEpisode(ep)
         
         

@@ -15,6 +15,9 @@ APP_LOG              = ('app',    'log')
 EPISODE_ADDED        = ('episode', 'added')
 EPISODE_DELETED      = ('episode', 'deleted')
 
+# from data model
+DATA_SERIES_RESTORED = ('data', 'series', 'added')
+
 class QueryResult(object):
     """
     This class is designed to act as a reference object. If a signal is

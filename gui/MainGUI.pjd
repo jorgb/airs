@@ -493,7 +493,7 @@
                   <string name="proxy-Custom ctor arguments">""</string>
                 </document>
                 <document>
-                  <string name="title">"wxChoice: ID_CHOICE"</string>
+                  <string name="title">"wxChoice: ID_SERIES_LIST"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"choice"</string>
@@ -503,7 +503,7 @@
                   <long name="locked">0</long>
                   <string name="created">"27/3/2008"</string>
                   <string name="proxy-type">"wbChoiceProxy"</string>
-                  <string name="proxy-Id name">"ID_CHOICE"</string>
+                  <string name="proxy-Id name">"ID_SERIES_LIST"</string>
                   <long name="proxy-Id value">10003</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxChoice"</string>

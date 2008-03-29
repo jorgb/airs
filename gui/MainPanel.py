@@ -23,8 +23,11 @@ class MainPanel(wx.Panel):
         # put the mixin control in place and initialize the
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_LIST_MIXIN")
+        self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = SeriesListCtrl(self._list_panel)
 
+        self._series_selection.Append("[All Series]", clientData = None)
+        
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
         self._list_panel.SetSizer(sizer)        
@@ -35,6 +38,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
+        Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         
 
     def _onUpdateAll(self, event):
@@ -72,3 +76,11 @@ class MainPanel(wx.Panel):
         # this will result in signals being emitted to update lists
         viewmgr.probe_series()        
         
+        
+    def _onSignalRestoreSeries(self, msg):
+        """
+        Perform adding of a restored item to the 
+        list of series to select
+        """
+        series = msg.data
+        self._series_selection.Append(series._serie_name, series)

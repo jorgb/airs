@@ -13,11 +13,11 @@ def _sort(a, b):
         return 1
     if a._series._serie_name < b._series._serie_name:
         return -1
-    # then sort by episode number
+    # then sort by episode number (newest first)
     if a._ep_nr > b._ep_nr:
-        return 1
-    if a._ep_nr < b._ep_nr:
         return -1
+    if a._ep_nr < b._ep_nr:
+        return 1
     # sort by episode title
     if a._ep_title > b._ep_title:
         return 1

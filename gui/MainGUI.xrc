@@ -34,7 +34,7 @@
                             <object class="sizeritem">
                                 <flag>wxGROW|wxRIGHT</flag>
                                 <border>5</border>
-                                <object class="wxChoice" name="ID_CHOICE">
+                                <object class="wxChoice" name="ID_SERIES_LIST">
                                 </object>
                             </object>
                         </object>

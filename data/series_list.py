@@ -11,6 +11,7 @@ class SerieEpisode(object):
         self._ep_nr = ep_nr
         self._ep_title = ep_title
         self._series = parent
+        self._seen = False
  
 
 class SeriesEpisodes(object):
@@ -21,6 +22,7 @@ class SeriesEpisodes(object):
         # serie item data
         self._serie_name = serie_name
         self._episodes = dict()
+        self._link = ''
         
         
     def addEpisode(self, ep_nr, ep_title):
@@ -50,15 +52,22 @@ class SeriesList(object):
         Adds an episode to the series list, if the series
         did not yet exist, a new one is added.
         """
+        ser = self.addSeries(serie_id)
+        return ser.addEpisode(episode_nr, episode_title)
+            
+            
+    def addSeries(self, serie_id):
+        """
+        Adds the series only, returns a series object 
+        if the series is actually added it emits a signal else
+        it will only return a reference
+        """
         sid = serie_id.lower()
         if sid not in self._series:
             seps = SeriesEpisodes(serie_id)
             self._series[sid] = seps
         else:
             seps = self._series[sid]
-            
-        return seps.addEpisode(episode_nr, episode_title)
-            
-            
-    
+        
+        return seps
     
