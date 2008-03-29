@@ -35,8 +35,8 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self._episorted = list()
 
         self.InsertColumn(0, "Episode")
-        self.InsertColumn(1, "Series")        
-        self.InsertColumn(2, "Title")        
+        self.InsertColumn(1, "Series", width = 100)        
+        self.InsertColumn(2, "Title", width = 220)        
         
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
