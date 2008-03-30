@@ -59,3 +59,20 @@ class SeriesSelectionList(object):
             return True
         
         return False
+    
+    
+    def deleteSeries(self, series):
+        """
+        Delete the series from the list
+        """
+        org_list = self._episodes[:]
+        for ep in org_list:
+            if ep._series == series:
+                self._episodes.remove(ep)
+        
+        org_list = self._selection[:]
+        for ep in org_list:
+            if ep._series == series:
+                self._selection.remove(ep)
+                Publisher().sendMessage(signals.EPISODE_DELETED, ep)
+    

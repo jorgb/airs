@@ -43,6 +43,7 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
+        Publisher().subscribe(self._onDeleteSeries, signals.SERIES_DELETED)
         
 
     def _onUpdateAll(self, event):
@@ -111,4 +112,17 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         ep = sel.GetClientData(sel.GetSelection())
         viewmgr.select_series(ep)
+       
         
+    def _onDeleteSeries(self, msg):
+        """
+        Remove series, set index to 0 again
+        """
+        sel = self._series_selection
+        for i in xrange(0, sel.GetCount()):
+            ser = sel.GetClientData(i)
+            if ser == msg.data:
+                sel.Delete(i)
+                sel.SetSelection(0)
+                viewmgr.select_series(None)
+                

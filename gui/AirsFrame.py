@@ -210,7 +210,17 @@ class AirsFrame(wx.Frame):
         
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
-        pass
+
+        series_id = viewmgr.series_sel._crit_selection
+        try:
+            series = viewmgr._series_list._series[series_id]
+        except KeyError:
+            return        
+        
+        if wx.MessageBox("Are you sure you want to delete this series?\n" + \
+                         "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
+            # delete 
+            viewmgr.delete_series(series)
     
 
     # ============================= CLOSE METHODS ==============================

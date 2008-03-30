@@ -188,3 +188,18 @@ def get_selected_series():
     
     retriever.in_queue.put( (series._serie_name, series._link) )
     
+    
+def delete_series(series):
+    """
+    Delete the series from all lists and let the GUI update
+    itself.
+    """
+    
+    sid = series._serie_name.lower()
+    if sid in _series_list._series:
+        del _series_list._series[sid]
+    
+    series_sel.deleteSeries(series)
+
+    Publisher().sendMessage(signals.SERIES_DELETED, series)
+    

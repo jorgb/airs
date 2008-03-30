@@ -14,6 +14,7 @@ APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')   # sent when the settings
 APP_LOG              = ('app',    'log')
 EPISODE_ADDED        = ('episode', 'added')
 EPISODE_DELETED      = ('episode', 'deleted')
+SERIES_DELETED       = ('series', 'deleted')
 
 # from data model
 DATA_SERIES_RESTORED = ('data', 'series', 'added')
