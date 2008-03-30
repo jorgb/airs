@@ -20,7 +20,7 @@ class AirsApp(wx.App):
 
         MainFrame = AirsFrame(None, -1, appcfg.APP_TITLE)
         self.SetTopWindow(MainFrame)
-        MainFrame.Show(not appcfg.options[appcfg.CFG_LAYOUT_HIDDEN])
+        MainFrame.Show()
         return 1
 
 

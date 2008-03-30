@@ -10,7 +10,6 @@ from data import series_list
 
 # gui elements
 import MainPanel
-import AirsTrayIcon
 import SeriesDlg
 
 # images
@@ -25,20 +24,16 @@ class AirsFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
-        self._trayIcon = None                       
-        
         self._connectSignals()
 
         # instantiate the GUI
         self._createMenu()
         self._createWindows()
-        self._createTrayIcon()
         self._createStatusBar()
 
         # generic application events
         self.Bind(wx.EVT_CLOSE, self._onGuiClose)
         self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
-        self.Bind(wx.EVT_ICONIZE, self._onGuiIconize)
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
@@ -58,13 +53,6 @@ class AirsFrame(wx.Frame):
         
     # ========================== GUI CREATION CODE =============================
 
-    def _createTrayIcon(self):
-        """
-        Creates the tray icon for this application
-        """
-        self._trayIcon = AirsTrayIcon.AirsTrayIcon()
-    
-    
     def _createMenu(self):
         """
         Creates the menu system for the application, and initializes the
@@ -101,22 +89,6 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuDelete)    
         self._menuBar.Append(mnu, "&Series")
 
-        # tools menu
-        #mnu = wx.Menu()
-        #self._menuOptions = wx.MenuItem(mnu, wx.NewId(), "&Preferences ...", 
-        #                                "Open the application preferences", wx.ITEM_NORMAL)
-        #self._menuOptions.SetBitmap(icon_preferences.getBitmap())
-        #mnu.AppendItem(self._menuOptions)
-        #self._menuBar.Append(mnu, "&Tools")
-
-        # window layout menu
-        mnu = wx.Menu()                          
-        self._menuTrayMinimize = wx.MenuItem(mnu, wx.NewId(), "Minimize to tray", 
-                                             "Upon minimize, hide in system tray", wx.ITEM_CHECK)
-        mnu.AppendItem(self._menuTrayMinimize)
-        
-        self._menuBar.Append(mnu, "&Window")
-        
         # help menu
         mnu = wx.Menu()
         self._menuHelp = wx.MenuItem(mnu, wx.NewId(), "&Help ... ", 
@@ -143,7 +115,6 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self._onGuiAbout, self._menuHelpAbout)
         self.Bind(wx.EVT_MENU, self._onGuiExit, self._menuExit)
         self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelpVisitSite)
-        self.Bind(wx.EVT_MENU, self._onGuiMinimizeToTray, self._menuTrayMinimize)
 
         self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
@@ -256,10 +227,6 @@ class AirsFrame(wx.Frame):
                 event.Veto()
                 return
 
-        if self._trayIcon is not None:
-            self._trayIcon.Destroy()
-            self._trayIcon = None
-        
         event.Skip()            
 
 
@@ -270,9 +237,6 @@ class AirsFrame(wx.Frame):
         This event is called periodically to allow the user to update the
         menu / toolbar / buttons based upon the internal application state.
         """
-
-        self._menuBar.Check(self._menuTrayMinimize.GetId(), 
-                            appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
         
         has_selection = True if viewmgr.series_sel._crit_selection else False
         self._menuEdit.Enable(has_selection)
@@ -285,7 +249,6 @@ class AirsFrame(wx.Frame):
         """
         # save windows layout
         width, height = self.GetSize()
-        appcfg.options[appcfg.CFG_LAYOUT_HIDDEN] = not self.IsShown()
 
         # prevent invalid sizes to be stored, check for iconized app
         if not self.IsIconized():
@@ -311,36 +274,6 @@ class AirsFrame(wx.Frame):
         self.SetPosition((xpos, ypos))
         
 
-    def _onSignalAppRestore(self, msg):
-        """
-        Restore the window when this is iconized or made hidden
-        """
-        if self.IsIconized():
-            self.Iconize(False)
-        if not self.IsShown():
-            self.Show(True)
-            appcfg.options[appcfg.CFG_LAYOUT_HIDDEN] = False
-        self.Raise()    
-
-
-    def _onGuiIconize(self, event):
-        """
-        Iconize event. When a tray icon is present and the 'minimize to tray' 
-        option is selected, the window is made hidden, which appears it is 
-        minimized to the system tray
-        """
-        if event.Iconized() and appcfg.options[appcfg.CFG_TRAY_MINIMIZE] == True:
-            self.Show(False)                   
-
-
-    def _onGuiMinimizeToTray(self, event):
-        """
-        Event that sets or clears the minimize to tray option
-        """
-        opt = not appcfg.options[appcfg.CFG_TRAY_MINIMIZE]
-        appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt   
-
-
     def _onTimer(self, event):
         """
         Periodic check function to update various GUI elements.
@@ -365,7 +298,6 @@ class AirsFrame(wx.Frame):
         your application is called
         """
         Publisher().subscribe(self._onSignalClose, signals.APP_CLOSE)
-        Publisher().subscribe(self._onSignalAppRestore, signals.APP_RESTORE)
         Publisher().subscribe(self._onSignalSettingsChanged, signals.APP_SETTINGS_CHANGED)
 
 

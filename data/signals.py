@@ -7,8 +7,6 @@ QRY_APP_CLOSE        = ('query', 'app', 'close')     # signal sent to ask if the
 APP_CLOSE            = ('app', 'close')              # final call before window closes, when handling this
                                                      # signal all the actions must be completed, the 
                                                      # application WILL close after this call
-APP_RESTORE          = ('app', 'restore')            # sent to restore the application when it was hidden
-                                                     # in the system tray. The GUI must handle this
 APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')   # sent when the settings are changed, submitted after
                                                         # a call to viewmgr.app_settings_changed() is made
 APP_LOG              = ('app',    'log')
