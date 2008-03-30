@@ -37,6 +37,7 @@ class MainPanel(wx.Panel):
         
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
+        self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -92,3 +93,13 @@ class MainPanel(wx.Panel):
         Everything is initialized, set the GUI to default
         """
         self._series_selection.SetSelection(0)
+
+        
+    def _onSelectSeries(self, event):
+        """ 
+        Select a series, or all
+        """
+        sel = self._series_selection
+        ep = sel.GetClientData(sel.GetSelection())
+        viewmgr.select_series(ep)
+        

@@ -163,3 +163,14 @@ def attach_series(series):
     if sid not in _series_list._series:
         _series_list._series[sid] = series
         Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)
+        
+
+def select_series(series):
+    """
+    Select a series and update the viewfilter
+    """
+    if series:
+        series_sel._crit_selection = series._serie_name.lower()
+    else:
+        series_sel._crit_selection = ''
+    series_sel.syncEpisodes()

@@ -35,14 +35,14 @@ class SeriesSelectionList(object):
         to the list and emit the proper signals
         """
         for ep in self._episodes:
-            allowed = _checkAgainstCriteria(ep)
+            allowed = self._checkAgainstCriteria(ep)
             if not allowed and ep in self._selection:
                 self._selection.remove(ep)
-                Publisher().sendMessage(signals.EPISODE_DELETED)
+                Publisher().sendMessage(signals.EPISODE_DELETED, ep)
                 continue
             if allowed and not ep in self._selection:
                 self._selection.append(ep)
-                Publisher().sendMessage(signals.EPISODE_ADDED)
+                Publisher().sendMessage(signals.EPISODE_ADDED, ep)
                 
         
     def _checkAgainstCriteria(self, episode):

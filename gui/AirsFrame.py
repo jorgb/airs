@@ -192,7 +192,7 @@ class AirsFrame(wx.Frame):
 
         dlg = SeriesDlg.SeriesDlg(self)
         dlg._editing = True
-
+                
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -334,7 +334,9 @@ class AirsFrame(wx.Frame):
         if series_title:
             self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
         else:
-            self._statusbar.SetStatusText("Idle ...", 1)
+            self._statusbar.SetStatusText("%i of %i items in view" % \
+                                          (len(viewmgr.series_sel._selection), \
+                                           len(viewmgr.series_sel._episodes)), 1)
         pass
     
         

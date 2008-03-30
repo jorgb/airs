@@ -32,7 +32,8 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
         CheckListCtrlMixin.__init__(self)
         
-        self._episorted = list()
+        self._ep_lookup = dict()
+        self._ep_idx = 0
 
         self.InsertColumn(0, "Episode")
         self.InsertColumn(1, "Series", width = 100)        
@@ -58,27 +59,45 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         """
         ep = msg.data
         pos = 0
-        if len(self._episorted) == 0:
-            self._episorted.append(ep)
-        else:
-            idx = 0
-            added = False
-            for e in self._episorted:
-                if _sort(ep, e) <= 0:
-                    self._episorted.insert(idx, ep)
-                    added = True
+        
+        # dynamically determine position
+        if self.GetItemCount() > 0:            
+            for idx in xrange(0, self.GetItemCount()):
+                curr_ep = self._ep_lookup[self.GetItemData(idx)]
+                if _sort(ep, curr_ep) <= 0:
                     pos = idx
                     break
-                idx += 1
-            if not added:
-                pos = idx
-                self._episorted.append(ep)
+                pos += 1
         
+        self._insertEpisode(ep, pos)
+                
+
+    def _insertEpisode(self, ep, pos):
+        """
+        Inserts the episode in the list
+        """
+        self._ep_idx += 1
         index = self.InsertStringItem(pos, ep._ep_nr)
         self.SetStringItem(index, 1, ep._series._serie_name)
         self.SetStringItem(index, 2, ep._ep_title)
-        #self.SetItemData(index, ep)
-
-
+        
+        self._ep_lookup[self._ep_idx] = ep
+        self.SetItemData(index, self._ep_idx)
+        
+        
     def _onEpisodeDeleted(self, msg):
-        pass
+        """
+        Respond to a deleted command of an episode
+        """
+        
+        # Who ever made the wx.ListCtrl must be punished by a life sentence
+        # because there is no way to store a reference to the object in 
+        # the wx.ListCtrl we must poorly scan through the list ourselves
+        ep = msg.data
+        for episode_idx in self._ep_lookup.iterkeys():
+            if self._ep_lookup[episode_idx] == ep:
+                idx = self.FindItemData(-1, episode_idx)
+                self.DeleteItem(idx)
+                del self._ep_lookup[episode_idx]
+                break
+            
