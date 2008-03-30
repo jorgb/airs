@@ -1,6 +1,6 @@
 import wx, sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
-from data import signals
+from data import signals, viewmgr
 from wx.lib.pubsub import Publisher
 
 
@@ -34,6 +34,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         
         self._ep_lookup = dict()
         self._ep_idx = 0
+        self._updating = False
 
         self.InsertColumn(0, "Episode")
         self.InsertColumn(1, "Series", width = 100)        
@@ -49,7 +50,17 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
 
 
     def OnCheckItem(self, index, flag):
-        pass
+        """
+        Check the item as seen or unseen
+        """
+        # unfortunately, some really dump developers hook up an event
+        # when the CheckItem is called PROGRAMATICALLY, and I have to 
+        # work around not letting it screw up my flow of events (*sigh*)
+        if not self._updating:
+            series_idx = self.GetItemData(index)
+            episode = self._ep_lookup[series_idx]
+            episode._seen = True if flag else False
+            viewmgr.episode_updated(episode)
             
     
     def _onEpisodeAdded(self, msg):
@@ -80,6 +91,10 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         index = self.InsertStringItem(pos, ep._ep_nr)
         self.SetStringItem(index, 1, ep._series._serie_name)
         self.SetStringItem(index, 2, ep._ep_title)
+        
+        self._updating = True
+        self.CheckItem(index, ep._seen)
+        self._updating = False
         
         self._ep_lookup[self._ep_idx] = ep
         self.SetItemData(index, self._ep_idx)

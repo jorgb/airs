@@ -2,7 +2,7 @@ import os.path
 import wx
 
 # the title of the application as it appears in the about box, window title etc
-APP_TITLE           = "Airs:: What's On tv.com"
+APP_TITLE           = "Airs:: What's On TV.com"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
@@ -27,13 +27,15 @@ CFG_LAYOUT_LAST_X    = 'window/last_xpos'            # last height when closing 
 CFG_LAYOUT_LAST_Y    = 'window/last_ypos'            # last width when closing window
 CFG_TRAY_MINIMIZE    = 'window/trayminimize'         # minimize the window to the tray
 CFG_LAYOUT_HIDDEN    = 'window/hidden'               # remember if window is hidden or not
+CFG_SHOW_UNSEEN      = 'series/show_unseen'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 700  ),
             (CFG_LAYOUT_LAST_H,         'i', 600  ),
             (CFG_LAYOUT_HIDDEN,         'b', False),
             (CFG_TRAY_MINIMIZE,         'b', False),
             (CFG_LAYOUT_LAST_X,         'i', -1   ),
-            (CFG_LAYOUT_LAST_Y,         'i', -1   )
+            (CFG_LAYOUT_LAST_Y,         'i', -1   ),
+            (CFG_SHOW_UNSEEN,           'b', False)
           ]
 
 # max files in the file history

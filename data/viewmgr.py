@@ -9,6 +9,7 @@ from series_queue import SeriesRetrieveThread
 from series_filter import SeriesSelectionList
 from storage import series_list_xml
 import signals
+import appcfg
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
@@ -39,6 +40,8 @@ def app_init():
     retriever = SeriesRetrieveThread()
     series_sel = SeriesSelectionList()
 
+    series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    
     # go through all the series, and append them to the 
     # view filter selection class so we update the GUI
     for series in _series_list._series.values():
@@ -73,6 +76,9 @@ def app_settings_changed():
     application settings are changed. Every view using these settings 
     should investigate if their view needs to be updated
     """
+    series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    series_sel.syncEpisodes()
+    
     Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
     
     
@@ -203,3 +209,13 @@ def delete_series(series):
 
     Publisher().sendMessage(signals.SERIES_DELETED, series)
     
+    
+def episode_updated(episode):
+    """
+    Episode is updated, let's resync the filter
+    """
+    
+    # go through all episodes again and see if we missed
+    # out on something after this update
+    # TODO: Could be more optimized by only evaluating this episode
+    series_sel.syncEpisodes()

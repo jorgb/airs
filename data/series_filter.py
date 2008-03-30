@@ -15,6 +15,7 @@ class SeriesSelectionList(object):
         # selection criteria for the series ID. If an ID is selected
         # all episodes belonging to a different series are removed
         self._crit_selection = ''
+        self._show_only_unseen = False
         
         
     def addEpisode(self, episode):
@@ -50,10 +51,12 @@ class SeriesSelectionList(object):
         Checks given serie against criteria, and returns True
         if the serie matches the episode
         """
-        # return true when no series is filtered
+        if episode._seen and self._show_only_unseen:
+            return False
+        
         if not self._crit_selection:
             return True
-        
+                
         # if the series ID is set, check against the ID
         if self._crit_selection == episode._series._serie_name.lower():
             return True

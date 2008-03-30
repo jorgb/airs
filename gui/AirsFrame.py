@@ -10,7 +10,6 @@ from data import series_list
 
 # gui elements
 import MainPanel
-import OptionsDlg
 import AirsTrayIcon
 import SeriesDlg
 
@@ -18,9 +17,7 @@ import SeriesDlg
 from images import icon_main, icon_about
 from images import icon_home, icon_help, \
                    icon_visit_site
-from images import icon_preferences 
 from images import icon_add, icon_delete, icon_edit
-
 
 class AirsFrame(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -105,12 +102,12 @@ class AirsFrame(wx.Frame):
         self._menuBar.Append(mnu, "&Series")
 
         # tools menu
-        mnu = wx.Menu()
-        self._menuOptions = wx.MenuItem(mnu, wx.NewId(), "&Preferences ...", 
-                                        "Open the application preferences", wx.ITEM_NORMAL)
-        self._menuOptions.SetBitmap(icon_preferences.getBitmap())
-        mnu.AppendItem(self._menuOptions)
-        self._menuBar.Append(mnu, "&Tools")
+        #mnu = wx.Menu()
+        #self._menuOptions = wx.MenuItem(mnu, wx.NewId(), "&Preferences ...", 
+        #                                "Open the application preferences", wx.ITEM_NORMAL)
+        #self._menuOptions.SetBitmap(icon_preferences.getBitmap())
+        #mnu.AppendItem(self._menuOptions)
+        #self._menuBar.Append(mnu, "&Tools")
 
         # window layout menu
         mnu = wx.Menu()                          
@@ -144,7 +141,6 @@ class AirsFrame(wx.Frame):
 
         # initialize menu event handlers
         self.Bind(wx.EVT_MENU, self._onGuiAbout, self._menuHelpAbout)
-        self.Bind(wx.EVT_MENU, self._onGuiShowOptions, self._menuOptions)
         self.Bind(wx.EVT_MENU, self._onGuiExit, self._menuExit)
         self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelpVisitSite)
         self.Bind(wx.EVT_MENU, self._onGuiMinimizeToTray, self._menuTrayMinimize)
@@ -160,7 +156,6 @@ class AirsFrame(wx.Frame):
         """
         # create main panel
         pnl = MainPanel.MainPanel(self)
-        
         
     def _createStatusBar(self):
         """
@@ -374,25 +369,13 @@ class AirsFrame(wx.Frame):
         Publisher().subscribe(self._onSignalSettingsChanged, signals.APP_SETTINGS_CHANGED)
 
 
-    def _onGuiShowOptions(self, event):
-        """ 
-        Show the options dialog, all options saving is done inside the dialog
-        itself so there is no need for catching the modalresult 
-        """
-        dlg = OptionsDlg.OptionsDlg(self)
-        dlg.Center()
-        if dlg.ShowModal() == wx.ID_OK:
-            viewmgr.app_settings_changed()
-        dlg.Destroy()
-
-
     def _onSignalSettingsChanged(self, msg):
         """
         Act upon a change of settings. In here you can update the GUI controls
         that need updating
         """
         # TODO: Implement to reflect changed settings
-        print "TODO: Implement _onSignalSettingsChanged() to reflect changed settings"
+        pass
 
 
     def _onGuiAbout(self, event):

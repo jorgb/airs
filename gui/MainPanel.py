@@ -15,11 +15,12 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        self.SetBackgroundColour(wx.WHITE)
+        #self.SetBackgroundColour(wx.WHITE)
         
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
+        self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -40,6 +41,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
         self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
+        self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -103,7 +105,8 @@ class MainPanel(wx.Panel):
         Everything is initialized, set the GUI to default
         """
         self._series_selection.SetSelection(0)
-
+        self._show_unseen.SetValue(appcfg.options[appcfg.CFG_SHOW_UNSEEN])
+        
         
     def _onSelectSeries(self, event):
         """ 
@@ -126,3 +129,14 @@ class MainPanel(wx.Panel):
                 sel.SetSelection(0)
                 viewmgr.select_series(None)
                 
+
+    def _onShowOnlyUnseen(self, event):
+        """
+        Toggle filter for seen / unseen events. Also save this in 
+        the settings.
+        """
+        
+        show_unseen = self._show_unseen.GetValue()
+        appcfg.options[appcfg.CFG_SHOW_UNSEEN] = show_unseen
+        
+        viewmgr.app_settings_changed()
