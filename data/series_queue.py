@@ -63,7 +63,7 @@ class SeriesRetrieveThread(Thread):
                 
                 # in case of errors
                 if items[0] == None:
-                    self.__report("ERROR: %s" % item[1])
+                    self.__report("ERROR: %s" % items[1])
                 else:
                     series_list = items[0]
                     self.__report("Downloaded series data for '%s'" % job[0])

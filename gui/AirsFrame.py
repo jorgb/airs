@@ -161,6 +161,7 @@ class AirsFrame(wx.Frame):
         # create main panel
         pnl = MainPanel.MainPanel(self)
         
+        
     def _createStatusBar(self):
         """
         Creates a status bar on the current frame
@@ -190,14 +191,23 @@ class AirsFrame(wx.Frame):
     def _onGuiEdit(self, event):
         """ Event handler to edit a Series """
 
+        # get the series
+        series_id = viewmgr.series_sel._crit_selection
+        try:
+            series = viewmgr._series_list._series[series_id]
+        except KeyError:
+            return
+        
         dlg = SeriesDlg.SeriesDlg(self)
         dlg._editing = True
-                
-        dlg.ShowModal()
+        
+        dlg.objectToGui(series)
+        if dlg.ShowModal() == wx.ID_OK:
+            dlg.guiToObject(series)
+        
         dlg.Destroy()
 
         
-
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
         pass
@@ -259,8 +269,9 @@ class AirsFrame(wx.Frame):
         self._menuBar.Check(self._menuTrayMinimize.GetId(), 
                             appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
         
-        # TODO: Add your enable / disable control code here
-        pass
+        has_selection = True if viewmgr.series_sel._crit_selection else False
+        self._menuEdit.Enable(has_selection)
+        self._menuDelete.Enable(has_selection)
 
         
     def _saveWindowLayout(self):

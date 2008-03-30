@@ -33,10 +33,13 @@ class TvComSeriesDownloadCmd(object):
 		try:
 			f = urllib2.urlopen(self._site_url)
 			html = f.read()
-		except urllib2.UrlError, msg:
+		except urllib2.URLError, msg:
 			return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
 			                                   (self._site_url, self._site_id, msg))
-
+		except ValueError, msg:
+			return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
+			                                   (self._site_url, self._site_id, msg))
+			
 		self.__log.put("Data for '%s' read. Parsing ..." % self._site_id)
 		
 		# find first divider for Episodes

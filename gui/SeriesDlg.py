@@ -11,6 +11,7 @@ class SeriesDlg(wx.Dialog):
         res = xmlres.loadGuiResource("SeriesDlg.xrc")
         res.LoadOnDialog(pre, parent, "SeriesDlg")
         self.PostCreate(pre)
+        
         self._editing = False
         
         self.Bind(wx.EVT_BUTTON, self.__onOK,  xrc.XRCCTRL(self, "wxID_OK"))
@@ -54,3 +55,9 @@ class SeriesDlg(wx.Dialog):
         
         self._series_id.SetValue(series._serie_name)
         series_link = self._series_link.SetValue(series._link)
+        
+        # too much trouble at the moment, simply
+        # dissalow an ID change
+        if self._editing:
+            self._series_id.Enable(False)
+        

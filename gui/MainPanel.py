@@ -18,7 +18,8 @@ class MainPanel(wx.Panel):
         self.SetBackgroundColour(wx.WHITE)
         
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
-        self._update_all = xrc.XRCCTRL(self, "ID_BUTTON1")
+        self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
+        self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -37,6 +38,7 @@ class MainPanel(wx.Panel):
         
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
+        self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
@@ -50,6 +52,13 @@ class MainPanel(wx.Panel):
         """
         viewmgr.get_all_series()
 
+        
+    def _onUpdateOne(self, event):
+        """
+        Update the selected series only
+        """
+        viewmgr.get_selected_series()
+        
 
     def _onSignalLogMessage(self, msg):
         """

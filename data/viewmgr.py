@@ -174,3 +174,17 @@ def select_series(series):
     else:
         series_sel._crit_selection = ''
     series_sel.syncEpisodes()
+
+    
+def get_selected_series():
+    """
+    Determine selected series, get that one or else get all
+    """
+    try:
+        series = _series_list._series[series_sel._crit_selection]
+    except KeyError:
+        get_all_series()
+        return
+    
+    retriever.in_queue.put( (series._serie_name, series._link) )
+    
