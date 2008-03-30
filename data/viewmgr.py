@@ -152,3 +152,14 @@ def app_destroy():
     except series_list_xml.SerieListXmlException, msg:
         wx.LogError(msg)
         
+        
+def attach_series(series):
+    """
+    Attaches series to the big list, and when all is well, emit a restored
+    signal so it gets added to the proper lists 
+    """
+    
+    sid = series._serie_name.lower()
+    if sid not in _series_list._series:
+        _series_list._series[sid] = series
+        Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)

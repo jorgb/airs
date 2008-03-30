@@ -6,11 +6,13 @@ from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import Publisher
 
 from data import appcfg, viewmgr, signals
+from data import series_list
 
 # gui elements
 import MainPanel
 import OptionsDlg
 import AirsTrayIcon
+import SeriesDlg
 
 # images
 from images import icon_main, icon_about
@@ -171,17 +173,33 @@ class AirsFrame(wx.Frame):
     # ======================== ITEM MANAGEMENT METHODS ========================= 
     
     def _onGuiAddNew(self, event):
-        """ Event handler to add a new _cvl_ITEM_ """
-        pass
+        """ Event handler to add a new Series """
+
+        dlg = SeriesDlg.SeriesDlg(self)
+        if dlg.ShowModal() == wx.ID_OK:
+            # we instantiate a new series object
+            series = series_list.SeriesEpisodes('')
+            dlg.guiToObject(series)
+            
+            # attach to list notify entities
+            viewmgr.attach_series(series)
+            
+        dlg.Destroy()
 
 
     def _onGuiEdit(self, event):
-        """ Event handler to edit a _cvl_ITEM_ """
-        pass
+        """ Event handler to edit a Series """
 
+        dlg = SeriesDlg.SeriesDlg(self)
+        dlg._editing = True
+
+        dlg.ShowModal()
+        dlg.Destroy()
+
+        
 
     def _onGuiDelete(self, event):
-        """ Event handler for deleting a _cvl_ITEM_ """
+        """ Event handler for deleting a Series """
         pass
     
 
