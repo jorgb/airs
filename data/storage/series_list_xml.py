@@ -59,7 +59,47 @@ def read_series(filename):
     return serieslist
 
 
-def write_series(filename):
+def write_series(filename, serieslist):
     """
     Writes the series back to disk
     """
+
+    # first ensure that the path can be created
+    datadir, _ = os.path.split(filename)
+    if not os.path.exists(datadir):
+        try:
+            os.makedirs(datadir)
+        except:
+            raise SerieListXmlException("Can't write data to '%s'" % filename)
+    
+    root = et.Element("airs")
+    
+    # collect all series and episodes in this node
+    series_node = et.Element("series")
+    root.append(series_node)
+    
+    for series in serieslist._series.values():
+        
+        # construct a series item
+        item_node = et.Element("item")
+        item_node.attrib["id"] = series._serie_name
+        item_node.attrib["link"] = series._link
+        
+        if series._episodes:
+            eps_node = et.Element("episodes")
+            item_node.append(eps_node)
+            
+            # append all episodes 
+            for ep in series._episodes.values():
+                ep_node = et.Element("episode")
+                ep_node.attrib["seen"] = "1" if ep._seen else "0"
+                ep_node.attrib["id"] = ep._ep_nr
+                ep_node.text = ep._ep_title
+                
+                eps_node.append(ep_node)
+        
+        series_node.append(item_node)
+        
+    etr = et.ElementTree(root)
+    etr.write(filename)
+    

@@ -32,14 +32,21 @@ def app_init():
     datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
     try:
         _series_list = series_list_xml.read_series(datafile)
-    except SerieListXmlException, msg:
+    except series_list_xmlSerieListXmlException, msg:
         wx.LogError(msg)
         sys.exit(1)
         
-    series_sel = SeriesSelectionList()
     retriever = SeriesRetrieveThread()
-    retriever.start()
+    series_sel = SeriesSelectionList()
 
+    # go through all the series, and append them to the 
+    # view filter selection class so we update the GUI
+    for series in _series_list._series.values():
+        for ep in series._episodes.values():
+            series_sel.addEpisode(ep)
+    
+    retriever.start()
+    
     # send signal to listeners telling the data is ready
     Publisher().sendMessage(signals.APP_INITIALIZED)
     
@@ -133,8 +140,15 @@ def get_current_title():
 
 def app_destroy():
     """
-    Close down thread
+    Close down thread, save changes
     """
+    
     retriever.stop = True
     retriever.join(2000)
-    
+
+    datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
+    try:
+        series_list_xml.write_series(datafile, _series_list)
+    except series_list_xml.SerieListXmlException, msg:
+        wx.LogError(msg)
+        

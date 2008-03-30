@@ -19,6 +19,7 @@ from images import icon_home, icon_help, \
 from images import icon_preferences 
 from images import icon_add, icon_delete, icon_edit
 
+
 class AirsFrame(wx.Frame):
     def __init__(self, *args, **kwds):
 

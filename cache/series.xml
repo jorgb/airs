@@ -1,14 +1,36 @@
-<?xml version="1.0" ?>
 <airs>
-	<series>
-		<item id="Supernatural" link="http://www.tv.com/supernatural/show/30144/summary.html">
+    <series>
+        <item id="Prison Break" link="http://www.tv.com/prison-break/show/31635/summary.html">
             <episodes>
-                <episode id="56" seen="1">Jus In Bello</episode>
-                <episode id="55" seen="1">Mystery Spot</episode>
+                <episode id="55" seen="0">Under &amp; Out</episode>
+                <episode id="54" seen="0">Dirt Nap</episode>
+                <episode id="56" seen="0">Hell or High Water</episode>
+                <episode id="53" seen="0">Boxed In</episode>
             </episodes>
         </item>
-		<item id="Prison Break" link="http://www.tv.com/prison-break/show/31635/summary.html" />
-		<item id="Heroes" link="http://www.tv.com/heroes/show/17552/summary.html" />
-		<item id="New Amsterdam" link="http://www.tv.com/new-amsterdam/show/68703/summary.html" />
-	</series>
+        <item id="Heroes" link="http://www.tv.com/heroes/show/17552/summary.html">
+            <episodes>
+                <episode id="33" seen="0">Truth &amp; Consequences</episode>
+                <episode id="32" seen="0">Cautionary Tales</episode>
+                <episode id="31" seen="0">Four Months Ago...</episode>
+                <episode id="34" seen="0">Powerless</episode>
+            </episodes>
+        </item>
+        <item id="Supernatural" link="http://www.tv.com/supernatural/show/30144/summary.html">
+            <episodes>
+                <episode id="55" seen="0">Mystery Spot</episode>
+                <episode id="54" seen="0">Dream a Little Dream of Me</episode>
+                <episode id="56" seen="0">Jus In Bello</episode>
+                <episode id="53" seen="0">Malleus Maleficarum</episode>
+            </episodes>
+        </item>
+        <item id="New Amsterdam" link="http://www.tv.com/new-amsterdam/show/68703/summary.html">
+            <episodes>
+                <episode id="3" seen="0">Soldier's Heart</episode>
+                <episode id="2" seen="0">Golden Boy</episode>
+                <episode id="5" seen="0">Keep The Change</episode>
+                <episode id="4" seen="0">Honor</episode>
+            </episodes>
+        </item>
+    </series>
 </airs>
