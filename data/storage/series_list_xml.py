@@ -57,3 +57,9 @@ def read_series(filename):
         Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series_item)
 
     return serieslist
+
+
+def write_series(filename):
+    """
+    Writes the series back to disk
+    """

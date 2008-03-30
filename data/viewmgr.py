@@ -37,10 +37,11 @@ def app_init():
         sys.exit(1)
         
     series_sel = SeriesSelectionList()
-
     retriever = SeriesRetrieveThread()
-    Publisher().sendMessage(signals.APP_INITIALIZED)
     retriever.start()
+
+    # send signal to listeners telling the data is ready
+    Publisher().sendMessage(signals.APP_INITIALIZED)
     
     
 def app_close():

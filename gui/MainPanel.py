@@ -39,6 +39,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
+        Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
         
 
     def _onUpdateAll(self, event):
@@ -84,3 +85,10 @@ class MainPanel(wx.Panel):
         """
         series = msg.data
         self._series_selection.Append(series._serie_name, series)
+
+        
+    def _onAppInitialized(self, msg):
+        """
+        Everything is initialized, set the GUI to default
+        """
+        self._series_selection.SetSelection(0)
