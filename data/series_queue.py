@@ -8,7 +8,7 @@
 from threading import Thread
 from Queue import Queue
 import time
-from series_getter import TvComSeriesDownloadCmd
+import series_getter
 
 
 class SeriesRetrieveThread(Thread):
@@ -55,7 +55,11 @@ class SeriesRetrieveThread(Thread):
                 self._current_series = job[0]
                 self._is_downloading = True
                 
-                cmd = TvComSeriesDownloadCmd(self.msg_queue, job[0], job[1])
+                if job[1].startswith("http://www.tv.com"):
+                    cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, job[0], job[1])
+                else:
+                    cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, job[0], job[1])
+
                 items = cmd.retrieve()
                 
                 self._is_downloading = False
@@ -69,7 +73,7 @@ class SeriesRetrieveThread(Thread):
                     self.__report("Downloaded series data for '%s'" % job[0])
                     for serie in series_list:
                         # send back: serie ID, serie episode nr, serie title
-                        self.out_queue.put( (job[0], serie[0], serie[1]) )
+                        self.out_queue.put( (job[0], serie) )
             time.sleep(0.2)
         
         self.__report('Series retrieve thread stopped')

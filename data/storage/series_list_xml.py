@@ -49,6 +49,7 @@ def read_series(filename):
             if ep_id and ep_title:
                 episode_item = series_item.addEpisode(ep_id, ep_title)
                 episode_item._seen = True if ep_seen == "1" else False
+                episode_item._season = eps.get("season", "-")
             else:
                 raise SerieListXmlException("Error in episode of serie '%s'" % serie_id)
             
@@ -94,6 +95,7 @@ def write_series(filename, serieslist):
                 ep_node = et.Element("episode")
                 ep_node.attrib["seen"] = "1" if ep._seen else "0"
                 ep_node.attrib["id"] = ep._ep_nr
+                ep_node.attrib["season"] = ep._season
                 ep_node.text = ep._ep_title
                 
                 eps_node.append(ep_node)

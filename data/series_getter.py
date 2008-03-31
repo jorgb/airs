@@ -2,6 +2,7 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 from Queue import Queue
 import re
+import series_list
 
 class EpGuidesSeriesDownloadCmd(object):
     """ Extract serie from epguides.com site and returns result """
@@ -74,9 +75,24 @@ class EpGuidesSeriesDownloadCmd(object):
         for serie_item in serie_items:
             m = self._re.match(serie_item)
             if m:
-                 gd = m.groupdict()
-                 ep_list.append( (gd["ep_id"], gd["ep_title"]) )       
-        
+                gd = m.groupdict()
+                episode = series_list.SerieEpisode(None, gd["ep_id"], gd["ep_title"])
+                if "ep_season" in gd:
+                    seaslist = gd["ep_season"]
+                    if seaslist:
+                        seaslist = seaslist.split('-')
+                        if len(seaslist) > 1:
+                            try:
+                                se = int(seaslist[0].strip())
+                                ep = int(seaslist[1].strip())
+                                episode._season = "S%02iE%02i" % (se, ep)
+                            except ValueError:
+                                pass
+                
+                # add episode
+                ep_list.append(episode)            
+
+                
         self.__log.put("Parsing complete!")
 
         if not ep_list:
@@ -152,7 +168,8 @@ class TvComSeriesDownloadCmd(object):
             if len(episode) > 1:
                 number = episode[0].strip().rstrip('.')
                 title = episode[1].strip()
-                ep_list.append( (number, title) )
+                episode = series_list.SerieEpisode(None, number, title)                                
+                ep_list.append( episode )
         
                 
         self.__log.put("Parsing complete!")
@@ -179,5 +196,5 @@ if __name__ == "__main__":
             break
         else:
             for episode in series_lst:
-                print episode[0], episode[1]
+                print episode._ep_nr, episode._ep_title
                 

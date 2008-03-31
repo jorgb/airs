@@ -87,6 +87,13 @@ class AirsFrame(wx.Frame):
                                        "Delete this Series", wx.ITEM_NORMAL)
         self._menuDelete.SetBitmap(icon_delete.getBitmap())
         mnu.AppendItem(self._menuDelete)    
+
+        mnu.AppendSeparator()
+        
+        self._menuClearCache = wx.MenuItem(mnu, wx.NewId(), "&Clear Cache", 
+                                       "Clear cache of one or all series", wx.ITEM_NORMAL)
+        mnu.AppendItem(self._menuClearCache)    
+        
         self._menuBar.Append(mnu, "&Series")
 
         # help menu
@@ -119,6 +126,7 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
         self.Bind(wx.EVT_MENU, self._onGuiDelete, self._menuDelete)
+        self.Bind(wx.EVT_MENU, self._onClearCache, self._menuClearCache)
     
         
     def _createWindows(self):
@@ -189,6 +197,17 @@ class AirsFrame(wx.Frame):
             viewmgr.delete_series(series)
     
 
+    def _onClearCache(self, event):
+        """
+        Clear cache of one or all items
+        """
+        
+        if wx.MessageBox("Clearing the cache means that the downloaded series of all / selected\n" + \
+                         "items will be lost. The next update, the series will be refreshed again.\n" + \
+                         "Be aware that earlier downloaded items not found on the webpage, are lost forever.\n" +
+                         "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
+            viewmgr.clear_current_cache()
+            
     # ============================= CLOSE METHODS ==============================
     
     def _onGuiExit(self, event):
