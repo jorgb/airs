@@ -98,7 +98,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.SetStringItem(index, 1, ep._season)
         self.SetStringItem(index, 2, ep._series._serie_name)
         self.SetStringItem(index, 3, ep._ep_title)
-        self.SetStringItem(index, 4, '-')
+        self.SetStringItem(index, 4, ep._date)
         
         self._updating = True
         self.CheckItem(index, ep._seen)

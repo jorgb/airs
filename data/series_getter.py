@@ -4,6 +4,11 @@ from Queue import Queue
 import re
 import series_list
 
+# Date convert. I'll do it like this because I don't know for sure if the month date
+# is sensitive of system locales, and if the date parser can parse three digit months
+_months = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "jun": "06",
+            "jul": "07", "aug": "08", "sep": "09", "oct": "10", "nov": "11", "dec": "12" }
+
 class EpGuidesSeriesDownloadCmd(object):
     """ Extract serie from epguides.com site and returns result """
     
@@ -88,11 +93,23 @@ class EpGuidesSeriesDownloadCmd(object):
                                 episode._season = "S%02iE%02i" % (se, ep)
                             except ValueError:
                                 pass
-                
+                if "ep_date" in gd:
+                    if gd["ep_date"]:
+                        datelist = gd["ep_date"].split(' ')
+                        if len(datelist) > 2:
+                            monthstr = datelist[1].lower().strip()
+                            if monthstr in _months:
+                                try:
+                                    epday = int(datelist[0].strip(' '))
+                                    epyr = int(datelist[2].strip(' '))
+                                    datestr = "%02i-%s-%02i" % (epday, _months[monthstr], epyr)
+                                    episode._date = datestr
+                                except ValueError:
+                                    pass
                 # add episode
-                ep_list.append(episode)            
+                ep_list.append(episode)
 
-                
+
         self.__log.put("Parsing complete!")
 
         if not ep_list:

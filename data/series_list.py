@@ -13,6 +13,7 @@ class SerieEpisode(object):
         self._series = parent
         self._seen = False
         self._season = "-"
+        self._date = ""
  
 
 class SeriesEpisodes(object):
