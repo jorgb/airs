@@ -13,7 +13,10 @@ def _sort(a, b):
         return 1
     if a._series._serie_name < b._series._serie_name:
         return -1
-    # then sort by episode number (newest first)
+    if a._season > b._season:
+        return -1
+    if a._season < b._season:
+        return 1
     if a._ep_nr > b._ep_nr:
         return -1
     if a._ep_nr < b._ep_nr:
@@ -36,9 +39,12 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self._ep_idx = 0
         self._updating = False
 
-        self.InsertColumn(0, "Episode")
-        self.InsertColumn(1, "Series", width = 100)        
-        self.InsertColumn(2, "Title", width = 220)        
+        self.InsertColumn(0, "Nr.", width = 50)
+        self.InsertColumn(1, "Season", width = 70)
+        self.InsertColumn(2, "Series", width = 100)        
+        self.InsertColumn(3, "Title", width = 220) 
+        self.InsertColumn(4, "Date", width = 100) 
+        
         
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
@@ -89,8 +95,10 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         """
         self._ep_idx += 1
         index = self.InsertStringItem(pos, ep._ep_nr)
-        self.SetStringItem(index, 1, ep._series._serie_name)
-        self.SetStringItem(index, 2, ep._ep_title)
+        self.SetStringItem(index, 1, ep._season)
+        self.SetStringItem(index, 2, ep._series._serie_name)
+        self.SetStringItem(index, 3, ep._ep_title)
+        self.SetStringItem(index, 4, ep._date)
         
         self._updating = True
         self.CheckItem(index, ep._seen)

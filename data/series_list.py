@@ -12,6 +12,8 @@ class SerieEpisode(object):
         self._ep_title = ep_title
         self._series = parent
         self._seen = False
+        self._season = "-"
+        self._date = ""
  
 
 class SeriesEpisodes(object):
@@ -36,8 +38,20 @@ class SeriesEpisodes(object):
             ep = self._episodes[ep_nr]
         
         return ep
-            
-            
+        
+    
+    def attachEpisode(self, episode):
+        """
+        Attaches episode
+        """
+        if episode._ep_nr not in self._episodes:
+            episode._series = self
+            self._episodes[episode._ep_nr] = episode
+            return True
+        
+        return False
+
+    
 class SeriesList(object):
     """
     List of series collection manager 
@@ -55,7 +69,19 @@ class SeriesList(object):
         ser = self.addSeries(serie_id)
         return ser.addEpisode(episode_nr, episode_title)
             
-            
+
+    def attachEpisode(self, serie_id, episode):
+        """
+        Attach an episode only when the ID of the episode
+        does not yet exist, else discard it
+        """
+        sid = serie_id.lower()
+        if sid in self._series:
+            return self._series[sid].attachEpisode(episode)
+        
+        return False
+    
+    
     def addSeries(self, serie_id):
         """
         Adds the series only, returns a series object 

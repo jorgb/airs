@@ -120,8 +120,8 @@ def probe_series():
     while not retriever.out_queue.empty():
         series = retriever.out_queue.get()
         
-        ep = _series_list.addEpisode(series[0], series[1], series[2])
-        series_sel.addEpisode(ep)
+        if _series_list.attachEpisode(series[0], series[1]):
+            series_sel.addEpisode(series[1])
         
         
 def is_busy():
@@ -219,3 +219,24 @@ def episode_updated(episode):
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
     series_sel.syncEpisodes()
+    
+    
+def _do_clear_cache(series):
+    """
+    Internal function to clear cache of series
+    e.g. wipe all episodes
+    """
+    series._episodes = dict()
+    series_sel.deleteSeries(series)
+        
+
+def clear_current_cache():
+    """ 
+    Clear all or some series
+    """
+    if series_sel._crit_selection:
+        series = _series_list._series[series_sel._crit_selection]
+        _do_clear_cache(series)
+    else:
+        for series in _series_list._series.itervalues():
+            _do_clear_cache(series)

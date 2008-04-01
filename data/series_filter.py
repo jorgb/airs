@@ -78,4 +78,4 @@ class SeriesSelectionList(object):
             if ep._series == series:
                 self._selection.remove(ep)
                 Publisher().sendMessage(signals.EPISODE_DELETED, ep)
-    
+                
