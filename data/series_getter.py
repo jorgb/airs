@@ -16,9 +16,12 @@ class EpGuidesSeriesDownloadCmd(object):
         self._site_url = site_url
         self._site_id = site_id
         self.__log = logqueue
-        self._re = re.compile("[ \t]*(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>\d+[ \t]*\-[ \t]*\d+)" + \
-                              "[ \t]+(?P<prod_nr>.*)[ \t]+(?P<ep_date>\d{1,2}[ \t]+[a-zA-Z]+" + \
-                              "[ \t]+\d+)[ \t]+(?P<ep_title>.*)")
+        # regular expression with all information inside
+        self._re1 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+                                "(.*?)(?P<ep_date>\d{1,2}[ \t]+[a-zA-Z]+" + \
+                                "[ \t]+\d+)")
+        self._re2 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+                                "(.*)")
         
         
     def __compose_result(self, series_list, message):
@@ -57,31 +60,50 @@ class EpGuidesSeriesDownloadCmd(object):
         soup = BeautifulSoup(html)
         
         # <div id="eplist">
+        bypass = False
         res = soup.find("div", attrs = {"id" :"eplist"})     
-        if not res:
-            return self.__compose_result(None, "Can't find marker <div id='eplist'>")
-            
-        # find table entry where episodes are located in
-        res = res.find("pre")
-        if not res:
-            return self.__compose_result(None, "Can't find marker <pre>")
+        if not res:            
+            # attempt a bypass
+            res = soup.find("pre")
+            if not res:
+                return self.__compose_result(None, "Can't find marker <div id='eplist'> or old marker <pre>")
+            else:
+                bypass = True
+        else:
+            res = res.find("pre")        
+            if not res:
+                return self.__compose_result(None, "Can't find marker <pre>")
         
-        # iterate for series, first fetch all text in a list..
-        res = res.fetchText(text=True)
-        res = ''.join(res)
-        
-        # ..now split it up again upon every CR
-        # and perform a regexp
-        serie_items = res.split('\n')
+        # <a target="_blank" href="???">{series title}</a>
+        # chop up all series and also preserve the text in front of it
+        episode_list = []
+        ep_hrefs = res.findAll('a')
         
         self.__log.put("Found episode section. Parsing ...")
-
-        ep_list = []        
-        for serie_item in serie_items:
-            m = self._re.match(serie_item)
+        
+        for ep_href in ep_hrefs:
+            text_before = ep_href.previousSibling.strip()
+            text_title = ep_href.string.strip()
+            
+            # do special magic to remove stray newlines
+            # between episodes it might be that there 
+            # is extra (unneeded) text 
+            pos = text_before.rfind('\n') 
+            if pos > 0 and (pos+1) < len(text_before):  
+                text_before = text_before[pos+1:].strip() 
+            
+            if text_before and text_title:
+                episode_list.append( (text_before, text_title) )
+         
+        # now parse the things and see how far we get       
+        ep_list = list()
+        for ep_text, ep_title in episode_list:
+            m = self._re1.match(ep_text)
+            if not m:
+                m = self._re2.match(ep_text)        
             if m:
                 gd = m.groupdict()
-                episode = series_list.SerieEpisode(None, gd["ep_id"], gd["ep_title"])
+                episode = series_list.SerieEpisode(None, gd["ep_id"], ep_title)            
                 if "ep_season" in gd:
                     seaslist = gd["ep_season"]
                     if seaslist:
@@ -108,7 +130,6 @@ class EpGuidesSeriesDownloadCmd(object):
                                     pass
                 # add episode
                 ep_list.append(episode)
-
 
         self.__log.put("Parsing complete!")
 
@@ -200,18 +221,21 @@ class TvComSeriesDownloadCmd(object):
 # testing code! 
 if __name__ == "__main__":
 
-    sites = [ ("Supernatural", "http://epguides.com/Supernatural/") ]
-
     log = Queue()
-              
-    for site_id, site_url in sites:
-        print "Testing -- %s"  % site_id
-        c = EpGuidesSeriesDownloadCmd(log, site_id, site_url)
+    
+    alt_site = ''
+
+    import sys
+
+    if len(sys.argv) > 1:
+        alt_site = sys.argv[1]
+          
+        print "Testing -- %s" % alt_site
+        c = EpGuidesSeriesDownloadCmd(log, 'test', alt_site)
         series_lst, err_str = c.retrieve()
         if err_str:
             print "ERROR: %s" % err_str 
-            break
         else:
             for episode in series_lst:
-                print episode._ep_nr, episode._ep_title
+                print "(%s) %s - %s. %s" % (episode._date, episode._season, episode._ep_nr, episode._ep_title)
                 
