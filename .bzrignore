@@ -1,3 +1,6 @@
 .cvlcache
 gui/MainGUI-autosave.*
 *.bak
+build
+dist
+doc/export
