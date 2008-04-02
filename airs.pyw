@@ -2,7 +2,8 @@
 
 # work around for wxPython since our sys.path[0] is adjusted after
 # importing wx and using wxversion to determine the proper wxWidgets version
-import sys
+import sys, os
+
 if sys.path:
     execpath = sys.path[0]
     # make sure when py2exe compiled this, that our path is a valid one on disk
