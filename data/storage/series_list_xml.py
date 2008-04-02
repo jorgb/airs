@@ -48,7 +48,7 @@ def read_series(filename):
             ep_title = eps.text
             if ep_id and ep_title:
                 episode_item = series_item.addEpisode(ep_id, ep_title)
-                episode_item._seen = True if ep_seen == "1" else False
+                episode_item._seen = (ep_seen == "1")
                 episode_item._season = eps.get("season", "-")
                 episode_item._date = eps.get("date", "")
             else:
@@ -94,7 +94,10 @@ def write_series(filename, serieslist):
             # append all episodes 
             for ep in series._episodes.values():
                 ep_node = et.Element("episode")
-                ep_node.attrib["seen"] = "1" if ep._seen else "0"
+                if el._seen:
+                    ep_node.attrib["seen"] =  "1"
+                else:
+                    ep_node.attrib["seen"] =  "0"                
                 ep_node.attrib["id"] = ep._ep_nr
                 ep_node.attrib["season"] = ep._season
                 ep_node.attrib["date"] = ep._date
