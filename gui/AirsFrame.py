@@ -257,7 +257,10 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
         
-        has_selection = True if viewmgr.series_sel._crit_selection else False
+        if viewmgr.series_sel._crit_selection:
+            has_selection = True
+        else:
+            has_selection = False        
         self._menuEdit.Enable(has_selection)
         self._menuDelete.Enable(has_selection)
 
