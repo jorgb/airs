@@ -4,12 +4,13 @@ import sys
 
 import wx
 from wx.lib.pubsub import Publisher
-from series_list import SeriesList
 from series_queue import SeriesRetrieveThread
 from series_filter import SeriesSelectionList
 from storage import series_list_xml
+import series_list
 import signals
 import appcfg
+import db
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
@@ -17,7 +18,7 @@ import appcfg
 is_closing = False
 retriever = None
 _series_list = None
-series_sel = None
+_series_sel = None
 
 #===============================================================================
 
@@ -28,25 +29,28 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever, _series_list, series_sel
+    global retriever, _series_list, _series_sel
     
-    datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
-    try:
-        _series_list = series_list_xml.read_series(datafile)
-    except series_list_xmlSerieListXmlException, msg:
-        wx.LogError(msg)
-        sys.exit(1)
-        
+    dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
+    db.init(dbfile)
+    
+    #datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
+    #try:
+    #    _series_list = series_list_xml.read_series(datafile)
+    #except series_list_xmlSerieListXmlException, msg:
+    #    wx.LogError(msg)
+    #    sys.exit(1)
+      
     retriever = SeriesRetrieveThread()
-    series_sel = SeriesSelectionList()
+    _series_sel = SeriesSelectionList()
 
-    series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
     
     # go through all the series, and append them to the 
     # view filter selection class so we update the GUI
-    for series in _series_list._series.values():
-        for ep in series._episodes.values():
-            series_sel.addEpisode(ep)
+    #for series in _series_list._series.values():
+    #    for ep in series._episodes.values():
+    #        _series_sel.addEpisode(ep)
     
     retriever.start()
     
@@ -70,16 +74,43 @@ def app_close():
     return res.allowed()
     
 
+def add_series(series):
+    """ 
+    Add this new series object to the database, and emit signal that
+    other views can also append it to the list
+    """
+    db.store.add(series)
+    db.store.commit()
+    
+    Publisher().sendMessage(signals.SERIES_ADDED, series)
+
+    # now, if not selected, select this one
+    if _series_sel._selection_id == -1:
+        set_selection(series)
+        
+    
 def app_settings_changed():
     """
     Call this to send a signal that informs all the views that the 
     application settings are changed. Every view using these settings 
     should investigate if their view needs to be updated
     """
-    series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
-    series_sel.syncEpisodes()
+    _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel.syncEpisodes()
     
     Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
+    
+    
+def set_selection(series):
+    """
+    Select the series that is given here
+    """
+    Publisher().sendMessage(signals.SERIES_SELECT, series)
+    if series:
+        sel_id = series.id
+    else:
+        sel_id = -1
+    _series_sel.setSelection(sel_id)
     
     
 def app_restore():
@@ -105,8 +136,11 @@ def get_all_series():
     Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
     
     # send series to the receive queue
-    for series in _series_list._series.itervalues():
-        retriever.in_queue.put( (series._serie_name, series._link) )
+    result = db.store.find(series_list.Series)
+    all_series = [ series for series in result.order_by(series_list.Series.name) ]
+    for series in all_series:
+        # we have to decouple the series object (due to multi threading issues)
+        retriever.in_queue.put( series_queue.SeriesQueueItem(series.id, series.name, series.url) )
 
 
 def probe_series():
@@ -121,7 +155,7 @@ def probe_series():
         series = retriever.out_queue.get()
         
         if _series_list.attachEpisode(series[0], series[1]):
-            series_sel.addEpisode(series[1])
+            _series_sel.addEpisode(series[1])
         
         
 def is_busy():
@@ -152,11 +186,13 @@ def app_destroy():
     retriever.stop = True
     retriever.join(2000)
 
-    datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
-    try:
-        series_list_xml.write_series(datafile, _series_list)
-    except series_list_xml.SerieListXmlException, msg:
-        wx.LogError(msg)
+    #datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
+    #try:
+    #    series_list_xml.write_series(datafile, _series_list)
+    #except series_list_xml.SerieListXmlException, msg:
+    #    wx.LogError(msg)
+        
+    db.close()
         
         
 def attach_series(series):
@@ -170,24 +206,13 @@ def attach_series(series):
         _series_list._series[sid] = series
         Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)
         
-
-def select_series(series):
-    """
-    Select a series and update the viewfilter
-    """
-    if series:
-        series_sel._crit_selection = series._serie_name.lower()
-    else:
-        series_sel._crit_selection = ''
-    series_sel.syncEpisodes()
-
     
 def get_selected_series():
     """
     Determine selected series, get that one or else get all
     """
     try:
-        series = _series_list._series[series_sel._crit_selection]
+        series = _series_list._series[_series_sel._crit_selection]
     except KeyError:
         get_all_series()
         return
@@ -200,14 +225,45 @@ def delete_series(series):
     Delete the series from all lists and let the GUI update
     itself.
     """
-    
-    sid = series._serie_name.lower()
-    if sid in _series_list._series:
-        del _series_list._series[sid]
-    
-    series_sel.deleteSeries(series)
 
-    Publisher().sendMessage(signals.SERIES_DELETED, series)
+    if not retriever.present(series):    
+        if series.id == _series_sel._selection_id:        
+            # select a different series first
+            result = db.store.find(series_list.Series)
+            slist = [serie for serie in result.order_by(series_list.Series.name)]
+            
+            # TODO: In future maybe select previous or next in line
+            # instead of first of the list
+            if len(slist) > 1:        
+                for ser in slist:
+                    if ser.id != series.id:
+                        set_selection(ser)
+                        break
+            else:
+                set_selection(None)
+                
+        # first delete all episodes belonging to series
+        result = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
+        for episode in result:
+            db.store.remove(episode)
+            # TODO: it is debatable if a signal needs to be sent
+            Publisher.sendMessage(signals.EPISODE_DELETED, episode)
+                
+        db.store.remove(series)    
+        db.store.commit()
+        
+        Publisher().sendMessage(signals.SERIES_DELETED, series)
+    
+
+def update_series(series):
+    """
+    Update the series in the database and issue an update 
+    command
+    """
+    
+    db.store.flush()
+    db.store.commit()
+    Publisher().sendMessage(signals.SERIES_UPDATED, series)
     
     
 def episode_updated(episode):
@@ -218,7 +274,7 @@ def episode_updated(episode):
     # go through all episodes again and see if we missed
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
-    series_sel.syncEpisodes()
+    _series_sel.syncEpisodes()
     
     
 def _do_clear_cache(series):
@@ -227,16 +283,17 @@ def _do_clear_cache(series):
     e.g. wipe all episodes
     """
     series._episodes = dict()
-    series_sel.deleteSeries(series)
+    _series_sel.deleteSeries(series)
         
 
 def clear_current_cache():
     """ 
     Clear all or some series
     """
-    if series_sel._crit_selection:
-        series = _series_list._series[series_sel._crit_selection]
+    if _series_sel._crit_selection:
+        series = _series_list._series[_series_sel._crit_selection]
         _do_clear_cache(series)
     else:
         for series in _series_list._series.itervalues():
             _do_clear_cache(series)
+

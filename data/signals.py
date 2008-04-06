@@ -13,6 +13,9 @@ APP_LOG              = ('app',    'log')
 EPISODE_ADDED        = ('episode', 'added')
 EPISODE_DELETED      = ('episode', 'deleted')
 SERIES_DELETED       = ('series', 'deleted')
+SERIES_ADDED         = ('series', 'added')
+SERIES_SELECT        = ('series', 'selected')
+SERIES_UPDATED       = ('series', 'updated')
 
 # from data model
 DATA_SERIES_RESTORED = ('data', 'series', 'added')

@@ -12,9 +12,8 @@ _months = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "ju
 class EpGuidesSeriesDownloadCmd(object):
     """ Extract serie from epguides.com site and returns result """
     
-    def __init__(self, logqueue, site_id, site_url):
-        self._site_url = site_url
-        self._site_id = site_id
+    def __init__(self, logqueue, series):
+        self._series = series
         self.__log = logqueue
         # regular expression with all information inside
         self._re1 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
@@ -24,11 +23,11 @@ class EpGuidesSeriesDownloadCmd(object):
                                 "(.*)")
         
         
-    def __compose_result(self, series_list, message):
+    def __compose_result(self, episodes, message):
         """
         Compose the result on a uniform place
         """
-        return (series_list, message)
+        return (episodes, message)
         
     
     def retrieve(self):
@@ -41,18 +40,18 @@ class EpGuidesSeriesDownloadCmd(object):
                        .... ]
         """
 
-        self.__log.put("Opening URL : '%s'" % self._site_url)
+        self.__log.put("Opening URL : '%s'" % self._series.url)
         
         # attempt opening URL
         try:
-            f = urllib2.urlopen(self._site_url)
+            f = urllib2.urlopen(self._series.url)
             html = f.read()
         except urllib2.URLError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._site_url, self._site_id, msg))
+            return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
+                                               (self._series.url, self._series.name, msg))
         except ValueError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._site_url, self._site_id, msg))
+            return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
+                                               (self._series.url, self._series.name, msg))
             
         self.__log.put("Data for '%s' read. Parsing ..." % self._site_id)
         
@@ -103,7 +102,10 @@ class EpGuidesSeriesDownloadCmd(object):
                 m = self._re2.match(ep_text)        
             if m:
                 gd = m.groupdict()
-                episode = series_list.SerieEpisode(None, gd["ep_id"], ep_title)            
+                episode = series_list.Episode()
+                episode.number = gd["ep_id"]
+                episode.title = ep_title            
+                
                 if "ep_season" in gd:
                     seaslist = gd["ep_season"]
                     if seaslist:
@@ -112,7 +114,7 @@ class EpGuidesSeriesDownloadCmd(object):
                             try:
                                 se = int(seaslist[0].strip())
                                 ep = int(seaslist[1].strip())
-                                episode._season = "S%02iE%02i" % (se, ep)
+                                episode.season = "S%02iE%02i" % (se, ep)
                             except ValueError:
                                 pass
                 if "ep_date" in gd:
@@ -125,7 +127,7 @@ class EpGuidesSeriesDownloadCmd(object):
                                     epday = int(datelist[0].strip(' '))
                                     epyr = int(datelist[2].strip(' '))
                                     datestr = "%02i-%s-%02i" % (epday, _months[monthstr], epyr)
-                                    episode._date = datestr
+                                    episode.aired = datestr
                                 except ValueError:
                                     pass
                 # add episode
@@ -206,7 +208,7 @@ class TvComSeriesDownloadCmd(object):
             if len(episode) > 1:
                 number = episode[0].strip().rstrip('.')
                 title = episode[1].strip()
-                episode = series_list.SerieEpisode(None, number, title)                                
+                episode = series_list.Episode(None, number, title)                                
                 ep_list.append( episode )
         
                 
