@@ -30,28 +30,17 @@ def app_init():
     Initialize all singleton and data elements of viewmgr
     """
     global retriever, _series_list, _series_sel
+
+    # set up classes
+    retriever = SeriesRetrieveThread()
+    _series_sel = SeriesSelectionList()
     
+    # initialize / create database
     dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
     db.init(dbfile)
     
-    #datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
-    #try:
-    #    _series_list = series_list_xml.read_series(datafile)
-    #except series_list_xmlSerieListXmlException, msg:
-    #    wx.LogError(msg)
-    #    sys.exit(1)
-      
-    retriever = SeriesRetrieveThread()
-    _series_sel = SeriesSelectionList()
-
+    # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
-    
-    # go through all the series, and append them to the 
-    # view filter selection class so we update the GUI
-    #for series in _series_list._series.values():
-    #    for ep in series._episodes.values():
-    #        _series_sel.addEpisode(ep)
-    
     retriever.start()
     
     # send signal to listeners telling the data is ready
@@ -135,12 +124,13 @@ def get_all_series():
     """
     Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
     
-    # send series to the receive queue
+    # send all series from db to the receive queue
     result = db.store.find(series_list.Series)
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        retriever.in_queue.put( series_queue.SeriesQueueItem(series.id, series.name, series.url) )
+        item = series_queue.SeriesQueueItem(series.id, series.name, series.url)
+        retriever.in_queue.put( item )
 
 
 def probe_series():
@@ -151,11 +141,54 @@ def probe_series():
     signals involved.
     """
     
+    # cache list with ID of series as lookup
+    # we use this to verify the series is present 
+    series_cache = []
+    
     while not retriever.out_queue.empty():
-        series = retriever.out_queue.get()
+        episode = retriever.out_queue.get()
         
-        if _series_list.attachEpisode(series[0], series[1]):
-            _series_sel.addEpisode(series[1])
+        # for every episode, check if it exists in the DB. If it does 
+        # attempt an update. If it doesn't, we add it. We use the 
+        # follow up number (which is mandatory) for identification
+        if not episode.number:
+            continue
+            
+        result = db.store.find(series_list.Episode, (series_list.Episode.number == episode.number) and  \
+                                                    (series_list.Episode.series_id == episode.series_id)).one()
+        if not result:
+            # not found, add to database, perform extra check for integrity
+            can_add = episode.series_id not in series_cache
+            if not can_add:
+                series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
+                if series:
+                    series_cache.append(series.id)
+                    can_add = True
+            
+            if can_add:
+                episode.last_in = 1
+                db.store.add(episode)
+                _series_sel.add_episode(episode)
+        else:
+            # we found the episode, we will update only certain parts
+            # if they are updated properly, we willl inform and update the DB
+            updated = False
+            if not result.title and episode.title != '':
+                result.title = unicode(episode.title)
+                updated = True
+            if episode.season:
+                result.season = unicode(episode.season)
+                updated = True
+            if episode.aired:
+                result.aired = unicode(episode.aired)
+                updated = True
+                
+            if updated:
+                result.last_in = 1
+                _series_sel.update_episode(episode)
+
+    # all changes are committed here
+    db.store.commit()
         
         
 def is_busy():
