@@ -78,8 +78,8 @@ class SeriesRetrieveThread(Thread):
                 else:
                     episode_list = items[0]
                     self.__report("Downloaded %d episodes for series '%s'" % \
-                                  (len(epsiode_list), series.name))
-                    for episode in series_list:
+                                  (len(episode_list), series.name))
+                    for episode in episode_list:
                         self.out_queue.put( episode )
             time.sleep(0.2)
         
