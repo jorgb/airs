@@ -306,7 +306,7 @@ def episode_updated(episode):
     # go through all episodes again and see if we missed
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
-    _series_sel.syncEpisodes()
+    _series_sel.update_episode(episode)
     
     
 def _do_clear_cache(series):

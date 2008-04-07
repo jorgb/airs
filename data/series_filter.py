@@ -69,15 +69,21 @@ class SeriesSelectionList(object):
             return
 
         # issue the proper signal for update, delete or adding            
-        if episode in self._episodes:
-            allowed = self._checkAgainstCriteria(episode)
-            if allowed and episode in self._selection:
-                Publisher().sendMessage(signals.EPISODE_UPDATED, episode)
-            elif not allowed and episode in self._selection:
-                Publisher().sendMessage(signals.EPISODE_DELETED, episode)
-            elif allowed and episode not in self._selection:
-                Publisher().sendMessage(signals.EPISODE_ADDED, episode)
-
+        # TODO: Can we make sure that the pointers are equal? 
+        for ep in self._episodes:
+            if ep.id == episode.id:
+                self._episodes.remove(ep)
+                self._episodes.append(episode)
+                
+                allowed = self._checkAgainstCriteria(episode)
+                if allowed and episode in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_UPDATED, episode)
+                elif not allowed and episode in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_DELETED, episode)
+                elif allowed and episode not in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_ADDED, episode)
+                break
+            
 
     def syncEpisodes(self):
         """

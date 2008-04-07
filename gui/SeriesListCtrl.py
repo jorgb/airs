@@ -58,16 +58,16 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # when the CheckItem is called PROGRAMATICALLY, and I have to 
         # work around not letting it screw up my flow of events (*sigh*)
         if not self._updating:
-            series_idx = self.GetItemData(index)
-            episode = db.store.get(series_list.Series, series_idx)
+            episode_id = self.GetItemData(index)
+            episode = db.store.get(series_list.Episode, episode_id)
             if flag:
                 episode.seen = 1
                 episode.last_in = 0
             else:
                 episode.seen = 0
-                
-            viewmgr.episode_updated(episode)
+            
             db.store.commit()
+            viewmgr.episode_updated(episode)
             
     
     def _onEpisodeAdded(self, msg):
