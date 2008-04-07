@@ -11,6 +11,13 @@ import time
 import series_getter
 
 
+class SeriesQueueItem(object):
+    def __init__(self, series_id, series_name, series_url):
+        self.id = series_id
+        self.name = series_name
+        self.url = series_url
+
+
 class SeriesRetrieveThread(Thread):
     """
     Thread that retrieves series from tv.com site
@@ -49,31 +56,31 @@ class SeriesRetrieveThread(Thread):
             # process stuff here
             if not self.in_queue.empty():
             
-                job = self.in_queue.get()
+                series = self.in_queue.get()
                 
-                self.__report("Processing series '%s' ..." % job[0])
-                self._current_series = job[0]
+                self.__report("Processing series '%s' ..." % series.name)
+                self._current_series = series
                 self._is_downloading = True
                 
-                if job[1].startswith("http://www.tv.com"):
-                    cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, job[0], job[1])
+                # TODO: More intelligent gathering mechanism
+                if series.url.startswith("http://www.tv.com"):
+                    cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, series )
                 else:
-                    cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, job[0], job[1])
+                    cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, series)
 
                 items = cmd.retrieve()
                 
                 self._is_downloading = False
-                self._current_series = ""
+                self._current_series = None
                 
                 # in case of errors
                 if items[0] == None:
                     self.__report("ERROR: %s" % items[1])
                 else:
-                    series_list = items[0]
-                    self.__report("Downloaded series data for '%s'" % job[0])
-                    for serie in series_list:
-                        # send back: serie ID, serie episode nr, serie title
-                        self.out_queue.put( (job[0], serie) )
+                    episode_list = items[0]
+                    self.__report("Downloaded episodes for series '%s'" % series.name)
+                    for episode in series_list:
+                        self.out_queue.put( episode )
             time.sleep(0.2)
         
         self.__report('Series retrieve thread stopped')
@@ -89,3 +96,5 @@ class SeriesRetrieveThread(Thread):
         string if none
         """
         return self._current_series
+
+    

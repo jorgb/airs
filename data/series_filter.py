@@ -12,11 +12,23 @@ class SeriesSelectionList(object):
     def __init__(self):
         self._episodes = list()
         self._selection = list()
+
         # selection criteria for the series ID. If an ID is selected
         # all episodes belonging to a different series are removed
-        self._crit_selection = ''
+        self._selection_id = -1
         self._show_only_unseen = False
         
+    
+    def setSelection(self, sel_id):
+        """
+        Sets the ID of the selection. This will trigger an episodes
+        restore and an update of the view filter
+        """
+        self._selection_id = sel_id
+        
+        # TODO: Resync all episodes
+        
+    #---
         
     def addEpisode(self, episode):
         """
@@ -54,11 +66,11 @@ class SeriesSelectionList(object):
         if episode._seen and self._show_only_unseen:
             return False
         
-        if not self._crit_selection:
+        if not self._selection:
             return True
                 
         # if the series ID is set, check against the ID
-        if self._crit_selection == episode._series._serie_name.lower():
+        if self._selection == episode._series._serie_name.lower():
             return True
         
         return False

@@ -1,56 +1,42 @@
+from storm.locals import *
+
 #
 # Module that contains functionality
 # to store a number of series and functionality
 #
 
-class SerieEpisode(object):
-    """
-    Serie episode item
-    """
-    def __init__(self, parent, ep_nr, ep_title):
-        self._ep_nr = ep_nr
-        self._ep_title = ep_title
-        self._series = parent
-        self._seen = False
-        self._season = "-"
-        self._date = ""
- 
-
-class SeriesEpisodes(object):
+class Series(object):
     """
     List of episodes manager
     """
-    def __init__(self, serie_name):
-        # serie item data
-        self._serie_name = serie_name
-        self._episodes = dict()
-        self._link = ''
-        
-        
-    def addEpisode(self, ep_nr, ep_title):
-        """
-        Add episode to to list of episodes 
-        """
-        if ep_nr not in self._episodes:
-            ep = SerieEpisode(self, ep_nr, ep_title)
-            self._episodes[ep_nr] = ep
-        else:
-            ep = self._episodes[ep_nr]
-        
-        return ep
-        
+    __storm_table__ = "series"
+    id = Int(primary = True)
+    name = Unicode()
+    url = Unicode()
     
-    def attachEpisode(self, episode):
-        """
-        Attaches episode
-        """
-        if episode._ep_nr not in self._episodes:
-            episode._series = self
-            self._episodes[episode._ep_nr] = episode
-            return True
-        
-        return False
 
+class Episode(object):
+    """
+    Serie episode item
+    """
+    __storm_table__ = "episode"
+    id = Int(primary = True)
+    title = Unicode()             # title of episode
+    number = Unicode()            # follow up number
+    season = Unicode()            # season string e.g. (S01E01)
+    aired = Unicode()             # date when aired
+    seen = Int()                  # seen or not by the user
+    last_in = Int()               # present in last update
+    series_id = Int()             # id of series table entry
+
+    def __init__(self):
+        self.title = u""
+        self.number = u""
+        self.season = u""
+        self.aired = u""
+        self.seen = 0
+        self.last_in = 0
+        
     
 class SeriesList(object):
     """
@@ -90,7 +76,7 @@ class SeriesList(object):
         """
         sid = serie_id.lower()
         if sid not in self._series:
-            seps = SeriesEpisodes(serie_id)
+            seps = Series(serie_id)
             self._series[sid] = seps
         else:
             seps = self._series[sid]

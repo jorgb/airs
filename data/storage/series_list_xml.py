@@ -94,7 +94,7 @@ def write_series(filename, serieslist):
             # append all episodes 
             for ep in series._episodes.values():
                 ep_node = et.Element("episode")
-                if el._seen:
+                if ep._seen:
                     ep_node.attrib["seen"] =  "1"
                 else:
                     ep_node.attrib["seen"] =  "0"                

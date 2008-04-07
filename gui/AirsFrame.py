@@ -6,7 +6,7 @@ from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import Publisher
 
 from data import appcfg, viewmgr, signals
-from data import series_list
+from data import series_list, db
 
 # gui elements
 import MainPanel
@@ -153,11 +153,10 @@ class AirsFrame(wx.Frame):
         dlg = SeriesDlg.SeriesDlg(self)
         if dlg.ShowModal() == wx.ID_OK:
             # we instantiate a new series object
-            series = series_list.SeriesEpisodes('')
+            series = series_list.Series()
             dlg.guiToObject(series)
             
-            # attach to list notify entities
-            viewmgr.attach_series(series)
+            viewmgr.add_series(series)
             
         dlg.Destroy()
 
@@ -165,36 +164,31 @@ class AirsFrame(wx.Frame):
     def _onGuiEdit(self, event):
         """ Event handler to edit a Series """
 
-        # get the series
-        series_id = viewmgr.series_sel._crit_selection
-        try:
-            series = viewmgr._series_list._series[series_id]
-        except KeyError:
-            return
-        
-        dlg = SeriesDlg.SeriesDlg(self)
-        dlg._editing = True
-        
-        dlg.objectToGui(series)
-        if dlg.ShowModal() == wx.ID_OK:
-            dlg.guiToObject(series)
-        
-        dlg.Destroy()
+        sel_id = viewmgr._series_sel._selection_id
+        if sel_id != -1:        
+            dlg = SeriesDlg.SeriesDlg(self)
+            dlg._editing = True
+            
+            series = db.store.get(series_list.Series, sel_id)
+            dlg.objectToGui(series)
+            if dlg.ShowModal() == wx.ID_OK:
+                dlg.guiToObject(series)
+                viewmgr.update_series(series)
+            
+            dlg.Destroy()
 
         
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
 
-        series_id = viewmgr.series_sel._crit_selection
-        try:
-            series = viewmgr._series_list._series[series_id]
-        except KeyError:
-            return        
-        
-        if wx.MessageBox("Are you sure you want to delete this series?\n" + \
-                         "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
-            # delete 
-            viewmgr.delete_series(series)
+        sel_id = viewmgr._series_sel._selection_id
+        if sel_id != -1:
+            series = db.store.get(series_list.Series, sel_id)
+    
+            if wx.MessageBox("Are you sure you want to delete this series?\n" + \
+                             "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
+                # delete 
+                viewmgr.delete_series(series)
     
 
     def _onClearCache(self, event):
@@ -257,13 +251,14 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
         
-        if viewmgr.series_sel._crit_selection:
-            has_selection = True
-        else:
-            has_selection = False        
-        self._menuEdit.Enable(has_selection)
-        self._menuDelete.Enable(has_selection)
-
+        #if viewmgr.series_sel._crit_selection:
+        #    has_selection = True
+        #else:
+        #    has_selection = False        
+        #self._menuEdit.Enable(has_selection)
+        #self._menuDelete.Enable(has_selection)
+        pass
+    
         
     def _saveWindowLayout(self):
         """
@@ -302,12 +297,12 @@ class AirsFrame(wx.Frame):
         We could use OnGUIUpdate but it is sent too sporadically
         """
         series_title = viewmgr.get_current_title()        
-        if series_title:
-            self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
-        else:
-            self._statusbar.SetStatusText("%i of %i items in view" % \
-                                          (len(viewmgr.series_sel._selection), \
-                                           len(viewmgr.series_sel._episodes)), 1)
+        #if series_title:
+        #    self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
+        #else:
+        #    self._statusbar.SetStatusText("%i of %i items in view" % \
+        #                                  (len(viewmgr.series_sel._selection), \
+        #                                   len(viewmgr.series_sel._episodes)), 1)
         pass
     
         

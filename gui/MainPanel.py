@@ -4,6 +4,7 @@ from wx.lib.pubsub import Publisher
 from data import appcfg, viewmgr, signals
 import xmlres
 from SeriesListCtrl import SeriesListCtrl
+from data import db, series_list
 
 class MainPanel(wx.Panel):
 
@@ -28,7 +29,7 @@ class MainPanel(wx.Panel):
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = SeriesListCtrl(self._list_panel)
 
-        self._series_selection.Append("[All Series]", clientData = None)
+        #self._series_selection.Append("[All Series]", clientData = None)
         
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
@@ -46,8 +47,11 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
         Publisher().subscribe(self._onDeleteSeries, signals.SERIES_DELETED)
+        Publisher().subscribe(self._onAddSeries, signals.SERIES_ADDED)
+        Publisher().subscribe(self._onSerieSelected, signals.SERIES_SELECT)
+        Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         
-
+        
     def _onUpdateAll(self, event):
         """
         Update all event, will send all series to the receive thread, where they 
@@ -104,7 +108,12 @@ class MainPanel(wx.Panel):
         """
         Everything is initialized, set the GUI to default
         """
-        self._series_selection.SetSelection(0)
+        
+        # get a list of series, and show them
+        result = db.store.find(series_list.Series)
+        for series in result.order_by(series_list.Series.name):
+            idx = self._series_selection.Append(series.name, series.id)
+        
         self._show_unseen.SetValue(appcfg.options[appcfg.CFG_SHOW_UNSEEN])
         
         
@@ -113,23 +122,78 @@ class MainPanel(wx.Panel):
         Select a series, or all
         """
         sel = self._series_selection
-        ep = sel.GetClientData(sel.GetSelection())
-        viewmgr.select_series(ep)
+        series_id = sel.GetClientData(sel.GetSelection())
+        viewmgr.set_selection(db.store.get(series_list.Series, series_id))
        
         
     def _onDeleteSeries(self, msg):
         """
-        Remove series, set index to 0 again
+        Respond to series removal
+        """
+        curr_id = -1
+        sel = self._series_selection
+        series = msg.data
+
+        if sel.GetSelection() != wx.NOT_FOUND:
+            curr_id = sel.GetClientData(sel.GetSelection()) 
+        
+        # first remove
+        for i in xrange(0, sel.GetCount()):
+            if sel.GetClientData(i) == series.id:
+                sel.Delete(i)
+                break
+
+        # then reset (some platforms do not retain old sel)
+        for i in xrange(0, sel.GetCount()):
+            if sel.GetClientData(i) == curr_id:
+                sel.SetSelection(i)
+                break
+        
+
+    def _onSerieUpdated(self, msg):
+        """
+        Series is updated, we must re-sync our view
         """
         sel = self._series_selection
+        series = msg.data
+        
         for i in xrange(0, sel.GetCount()):
-            ser = sel.GetClientData(i)
-            if ser == msg.data:
-                sel.Delete(i)
-                sel.SetSelection(0)
-                viewmgr.select_series(None)
+            if sel.GetClientData(i) == series.id:
+                sel.SetString(i, series.name)
+                sel.SetSelection(i)
+                break
+        
+            
+    def _onAddSeries(self, msg):
+        """
+        Series added, update lists
+        """
+        sel = self._series_selection
+        series = msg.data
+        idx = 0
+        for i in xrange(0, sel.GetCount()):
+            if sel.GetStringSelection() < series.name :
+                idx += 1
+        sel.Insert(series.name, idx, series.id)
                 
-
+                
+    def _onSerieSelected(self, msg):
+        """
+        A new serie is selected, update list index if needed
+        """
+        sel = self._series_selection
+        series = msg.data
+       
+        if series:
+            for i in xrange(0, sel.GetCount()):
+                series_id = sel.GetClientData(i)
+                if series_id == series.id:
+                    sel.SetSelection(i)
+                    return
+        else:
+            sel.SetSelection(-1)
+            
+            
     def _onShowOnlyUnseen(self, event):
         """
         Toggle filter for seen / unseen events. Also save this in 
