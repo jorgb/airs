@@ -141,11 +141,54 @@ def probe_series():
     signals involved.
     """
     
+    # cache list with ID of series as lookup
+    # we use this to verify the series is present 
+    series_cache = []
+    
     while not retriever.out_queue.empty():
-        series = retriever.out_queue.get()
+        episode = retriever.out_queue.get()
         
-        if _series_list.attachEpisode(series[0], series[1]):
-            _series_sel.addEpisode(series[1])
+        # for every episode, check if it exists in the DB. If it does 
+        # attempt an update. If it doesn't, we add it. We use the 
+        # follow up number (which is mandatory) for identification
+        if not episode.number:
+            continue
+            
+        result = db.store.find(series_list.Episode, (series_list.Episode.number == episode.number) and  \
+                                                    (series_list.Episode.series_id == episode.series_id)).one()
+        if not result:
+            # not found, add to database, perform extra check for integrity
+            can_add = episode.series_id not in series_cache
+            if not can_add:
+                series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
+                if series:
+                    series_cache.append(series.id)
+                    can_add = True
+            
+            if can_add:
+                episode.last_in = 1
+                db.store.add(episode)
+                _series_sel.add_episode(episode)
+        else:
+            # we found the episode, we will update only certain parts
+            # if they are updated properly, we willl inform and update the DB
+            updated = False
+            if not result.title and episode.title != '':
+                result.title = unicode(episode.title)
+                updated = True
+            if episode.season:
+                result.season = unicode(episode.season)
+                updated = True
+            if episode.aired:
+                result.aired = unicode(episode.aired)
+                updated = True
+                
+            if updated:
+                result.last_in = 1
+                _series_sel.update_episode(episode)
+
+    # all changes are committed here
+    db.store.commit()
         
         
 def is_busy():

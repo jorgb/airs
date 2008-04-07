@@ -7,11 +7,12 @@
 from wx.lib.pubsub import Publisher
 import signals
 import series_list
+import db
 
 class SeriesSelectionList(object):
     def __init__(self):
-        self._episodes = list()
         self._selection = list()
+        self._episodes = list()
 
         # selection criteria for the series ID. If an ID is selected
         # all episodes belonging to a different series are removed
@@ -24,70 +25,85 @@ class SeriesSelectionList(object):
         Sets the ID of the selection. This will trigger an episodes
         restore and an update of the view filter
         """
-        self._selection_id = sel_id
+        if self._selection_id != sel_id:
+            self._selection_id = sel_id
+            
+            # remove all from list
+            self.syncEpisodes()
+            self._episodes = list()
         
-        # TODO: Resync all episodes
+            if self._selection_id != -1:
+                # restore the episode list belonging to this series_id
+                result = db.store.find(series_sel.Episodes, 
+                                       series_sel.Episodes.series_id == self._selection_id)
+                episodes = [episode for episode in result]
+                self._episodes = episodes[:]
+    
+                # resync for adding new items        
+                self.syncEpisodes()
         
-    #---
-        
-    def addEpisode(self, episode):
+                
+    def add_episode(self, episode):
         """
-        Adds episode to the list, and sync the selection list
-        if the episode matches the criteria
+        Attempts to add episode given the proper criteria
+        if it does match an add command is issued.
         """
+        # no add if the selection is incorrect
+        if episode.series_id != self._selection_id:
+            return
+            
         if episode not in self._episodes:
             self._episodes.append(episode)
             if self._checkAgainstCriteria(episode):
                 self._selection.append(episode)
                 Publisher().sendMessage(signals.EPISODE_ADDED, episode)
        
-                
+
+    def update_episode(self, episode):
+        """
+        Attempts an episode update, when present in list
+        we reevaluate and issue the change
+        """
+        # no change if the selection is incorrect
+        if episode.series_id != self._selection_id:
+            return
+
+        # issue the proper signal for update, delete or adding            
+        if episode in self._episodes:
+            allowed = self._checkAgainstCriteria(episode)
+            if allowed and episode in self._selection:
+                Publisher().sendMessage(signals.EPISODE_UPDATED, episode)
+            else if not allowed and episode in self._selection:
+                Publisher().sendMessage(signals.EPISODE_DELETED, episode)
+            else if allowed and episode not in self._selection:
+                Publisher().sendMessage(signals.EPISODE_ADDED, episode)
+
+
     def syncEpisodes(self):
         """
         Check which items must be removed or added
-        to the list and emit the proper signals
+        to the selection list and emit the proper signals
         """
-        for ep in self._episodes:
-            allowed = self._checkAgainstCriteria(ep)
-            if not allowed and ep in self._selection:
+        for episode in self._episodes:
+            allowed = self._checkAgainstCriteria(episode)
+            if not allowed and episode in self._episodes:
                 self._selection.remove(ep)
                 Publisher().sendMessage(signals.EPISODE_DELETED, ep)
-                continue
-            if allowed and not ep in self._selection:
+            if allowed and episode not in self._episodes:
                 self._selection.append(ep)
                 Publisher().sendMessage(signals.EPISODE_ADDED, ep)
                 
-        
+
     def _checkAgainstCriteria(self, episode):
         """
         Checks given serie against criteria, and returns True
-        if the serie matches the episode
+        if we can keep or add it, false to delete it
         """
+        if episode.series_id != self._selection_id:
+            return False
+            
         if episode._seen and self._show_only_unseen:
             return False
-        
-        if not self._selection:
-            return True
-                
-        # if the series ID is set, check against the ID
-        if self._selection == episode._series._serie_name.lower():
-            return True
-        
-        return False
-    
-    
-    def deleteSeries(self, series):
-        """
-        Delete the series from the list
-        """
-        org_list = self._episodes[:]
-        for ep in org_list:
-            if ep._series == series:
-                self._episodes.remove(ep)
-        
-        org_list = self._selection[:]
-        for ep in org_list:
-            if ep._series == series:
-                self._selection.remove(ep)
-                Publisher().sendMessage(signals.EPISODE_DELETED, ep)
+                                
+        return True
                 
