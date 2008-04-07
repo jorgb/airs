@@ -30,28 +30,17 @@ def app_init():
     Initialize all singleton and data elements of viewmgr
     """
     global retriever, _series_list, _series_sel
+
+    # set up classes
+    retriever = SeriesRetrieveThread()
+    _series_sel = SeriesSelectionList()
     
+    # initialize / create database
     dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
     db.init(dbfile)
     
-    #datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
-    #try:
-    #    _series_list = series_list_xml.read_series(datafile)
-    #except series_list_xmlSerieListXmlException, msg:
-    #    wx.LogError(msg)
-    #    sys.exit(1)
-      
-    retriever = SeriesRetrieveThread()
-    _series_sel = SeriesSelectionList()
-
+    # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
-    
-    # go through all the series, and append them to the 
-    # view filter selection class so we update the GUI
-    #for series in _series_list._series.values():
-    #    for ep in series._episodes.values():
-    #        _series_sel.addEpisode(ep)
-    
     retriever.start()
     
     # send signal to listeners telling the data is ready
@@ -135,12 +124,13 @@ def get_all_series():
     """
     Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
     
-    # send series to the receive queue
+    # send all series from db to the receive queue
     result = db.store.find(series_list.Series)
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        retriever.in_queue.put( series_queue.SeriesQueueItem(series.id, series.name, series.url) )
+        item = series_queue.SeriesQueueItem(series.id, series.name, series.url)
+        retriever.in_queue.put( item )
 
 
 def probe_series():

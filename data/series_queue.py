@@ -25,7 +25,7 @@ class SeriesRetrieveThread(Thread):
 
     def __init__ (self):
         Thread.__init__(self)
-        self.in_queue = Queue()          # process series command
+        self.in_queue = Queue()          # process SeriesQueueItem
         self.out_queue = Queue()         # return retrieved series
         self.msg_queue = Queue()         # diagnostics messages
         self.stop = False
@@ -51,34 +51,34 @@ class SeriesRetrieveThread(Thread):
         """
         self.__report("Series retrieve thread started")
         
+        # process stuff here
         while not self.stop:
-            
-            # process stuff here
             if not self.in_queue.empty():
             
                 series = self.in_queue.get()
                 
                 self.__report("Processing series '%s' ..." % series.name)
-                self._current_series = series
+                self._current_series = series.name
                 self._is_downloading = True
                 
                 # TODO: More intelligent gathering mechanism
                 if series.url.startswith("http://www.tv.com"):
-                    cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, series )
+                    cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, series)
                 else:
                     cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, series)
 
                 items = cmd.retrieve()
                 
                 self._is_downloading = False
-                self._current_series = None
+                self._current_series = ''
                 
                 # in case of errors
                 if items[0] == None:
                     self.__report("ERROR: %s" % items[1])
                 else:
                     episode_list = items[0]
-                    self.__report("Downloaded episodes for series '%s'" % series.name)
+                    self.__report("Downloaded %d episodes for series '%s'" % \
+                                  (len(epsiode_list), series.name))
                     for episode in series_list:
                         self.out_queue.put( episode )
             time.sleep(0.2)

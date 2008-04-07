@@ -130,7 +130,9 @@ class EpGuidesSeriesDownloadCmd(object):
                                     episode.aired = datestr
                                 except ValueError:
                                     pass
+                
                 # add episode
+                episode.series_id = self._series.id                                                
                 ep_list.append(episode)
 
         self.__log.put("Parsing complete!")
@@ -144,17 +146,16 @@ class EpGuidesSeriesDownloadCmd(object):
 class TvComSeriesDownloadCmd(object):
     """ Extract serie from tv.com site and returns result """
     
-    def __init__(self, logqueue, site_id, site_url):
-        self._site_url = site_url
-        self._site_id = site_id
+    def __init__(self, logqueue, series):
+        self._series = series
         self.__log = logqueue
         
         
-    def __compose_result(self, series_list, message):
+    def __compose_result(self, episodes, message):
         """
         Compose the result on a uniform place
         """
-        return (series_list, message)
+        return (episodes, message)
         
     
     def retrieve(self):
@@ -167,20 +168,20 @@ class TvComSeriesDownloadCmd(object):
                        .... ]
         """
 
-        self.__log.put("Opening URL : '%s'" % self._site_url)
+        self.__log.put("Opening URL : '%s'" % self._series.url)
         
         # attempt opening URL
         try:
-            f = urllib2.urlopen(self._site_url)
+            f = urllib2.urlopen(self._series.url)
             html = f.read()
         except urllib2.URLError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._site_url, self._site_id, msg))
+                                               (self._series.url, self._series.name, msg))
         except ValueError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._site_url, self._site_id, msg))
+                                               (self._series.url, self._series.id, msg))
             
-        self.__log.put("Data for '%s' read. Parsing ..." % self._site_id)
+        self.__log.put("Data for '%s' read. Parsing ..." % self._series.id)
         
         # find first divider for Episodes
         soup = BeautifulSoup(html)
@@ -206,9 +207,10 @@ class TvComSeriesDownloadCmd(object):
             # extract the episode query
             episode = r.fetchText(text=True)
             if len(episode) > 1:
-                number = episode[0].strip().rstrip('.')
-                title = episode[1].strip()
-                episode = series_list.Episode(None, number, title)                                
+                episode = series_list.Episode()
+                episode.number = episode[0].strip().rstrip('.')
+                episode.title = episode[1].strip()
+                episode.series_id = self._series.id                                                
                 ep_list.append( episode )
         
                 
