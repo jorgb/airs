@@ -6,7 +6,7 @@ import wx
 from wx.lib.pubsub import Publisher
 import series_queue
 from series_filter import SeriesSelectionList
-from storage import series_list_xml
+#from storage import series_list_xml
 import series_list
 import signals
 import appcfg
@@ -171,7 +171,7 @@ def probe_series():
                 db.store.add(episode)
                 db_changed = True
                 db.store.flush()
-                _series_sel.add_episode(episode)
+                _series_sel.filterEpisode(episode)
         else:
             # we found the episode, we will update only certain parts
             # if they are updated properly, we willl inform and update the DB
@@ -189,8 +189,7 @@ def probe_series():
             if updated:
                 db_changed = True
                 result.last_in = 1
-                _series_sel.update_episode(episode)
-                db.store.flush()
+                _series_sel.filterEpisode(episode, update = True)
 
     # all changes are committed here
     if db_changed:
@@ -227,20 +226,6 @@ def app_destroy():
         
     db.close()
         
-        
-def attach_series(series):
-    """
-    Attaches series to the big list, and when all is well, emit a restored
-    signal so it gets added to the proper lists 
-    """
-    
-    raise Exception("Fout")
-    
-    #sid = series._serie_name.lower()
-    #if sid not in _series_list._series:
-    #    _series_list._series[sid] = series
-    #    Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)
-        
     
 def get_selected_series():
     """
@@ -258,33 +243,27 @@ def delete_series(series):
     itself.
     """
 
-    if not retriever.present(series):    
-        if series.id == _series_sel._selection_id:        
-            # select a different series first
-            result = db.store.find(series_list.Series)
-            slist = [serie for serie in result.order_by(series_list.Series.name)]
+    if series.id == _series_sel._selection_id:        
+        # select a different series first
+        result = db.store.find(series_list.Series)
+        slist = [serie for serie in result.order_by(series_list.Series.name)]
             
-            # TODO: In future maybe select previous or next in line
-            # instead of first of the list
-            if len(slist) > 1:        
-                for ser in slist:
-                    if ser.id != series.id:
-                        set_selection(ser)
-                        break
-            else:
-                set_selection(None)
+        # TODO: In future maybe select previous or next in line
+        # instead of first of the list
+        if len(slist) > 1:        
+            for ser in slist:
+                if ser.id != series.id:
+                    set_selection(ser)
+                    break
+        else:
+            set_selection(None)
                 
-        # first delete all episodes belonging to series
-        result = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
-        for episode in result:
-            db.store.remove(episode)
-            # TODO: it is debatable if a signal needs to be sent
-            Publisher.sendMessage(signals.EPISODE_DELETED, episode)
-                
-        db.store.remove(series)    
-        db.store.commit()
-        
-        Publisher().sendMessage(signals.SERIES_DELETED, series)
+    _do_clear_cache(series)
+            
+    db.store.remove(series)    
+    db.store.commit()
+    
+    Publisher().sendMessage(signals.SERIES_DELETED, series)
     
 
 def update_series(series):
@@ -306,7 +285,7 @@ def episode_updated(episode):
     # go through all episodes again and see if we missed
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
-    _series_sel.update_episode(episode)
+    _series_sel.filterEpisode(episode, updated = True)
     
     
 def _do_clear_cache(series):
@@ -314,18 +293,22 @@ def _do_clear_cache(series):
     Internal function to clear cache of series
     e.g. wipe all episodes
     """
-    series._episodes = dict()
-    _series_sel.deleteSeries(series)
-        
-
+    # delete all episodes belonging to series
+    result = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
+    for episode in result:
+        db.store.remove(episode)
+        _series_sel.delete_episode(episode)
+    db.store.commit()
+                
+                
 def clear_current_cache():
     """ 
     Clear all or some series
     """
-    if _series_sel._crit_selection:
-        series = _series_list._series[_series_sel._crit_selection]
-        _do_clear_cache(series)
-    else:
-        for series in _series_list._series.itervalues():
+    # get current selected series
+    sid = _series_sel._selection_id
+    if sid != -1:
+        series = db.store.get(series_list.Series, sid) 
+        if series:
+            # now delete all related episodes 
             _do_clear_cache(series)
-
