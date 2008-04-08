@@ -171,7 +171,7 @@ def probe_series():
                 db.store.add(episode)
                 db_changed = True
                 db.store.flush()
-                _series_sel.add_episode(episode)
+                _series_sel.filterEpisode(episode)
         else:
             # we found the episode, we will update only certain parts
             # if they are updated properly, we willl inform and update the DB
@@ -189,8 +189,7 @@ def probe_series():
             if updated:
                 db_changed = True
                 result.last_in = 1
-                _series_sel.update_episode(episode)
-                db.store.flush()
+                _series_sel.filterEpisode(episode, update = True)
 
     # all changes are committed here
     if db_changed:
@@ -286,7 +285,7 @@ def episode_updated(episode):
     # go through all episodes again and see if we missed
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
-    _series_sel.update_episode(episode)
+    _series_sel.filterEpisode(episode, updated = True)
     
     
 def _do_clear_cache(series):
