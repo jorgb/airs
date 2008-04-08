@@ -1,6 +1,6 @@
 import wx, sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
-from data import signals, viewmgr
+from data import signals, viewmgr, db, series_list
 from wx.lib.pubsub import Publisher
 
 
@@ -9,22 +9,18 @@ def _sort(a, b):
     Sort episode
     """
     # sort by series title first
-    if a._series._serie_name > b._series._serie_name:
+    if a.season > b.season:
+        return -1
+    if a.season < b.season:
         return 1
-    if a._series._serie_name < b._series._serie_name:
+    if a.number > b.number:
         return -1
-    if a._season > b._season:
-        return -1
-    if a._season < b._season:
-        return 1
-    if a._ep_nr > b._ep_nr:
-        return -1
-    if a._ep_nr < b._ep_nr:
+    if a.number < b.number:
         return 1
     # sort by episode title
-    if a._ep_title > b._ep_title:
+    if a.title > b.title:
         return 1
-    if a._ep_title < b._ep_title:
+    if a.title < b.title:
         return -1
     # else it's equal enough
     return 0
@@ -35,7 +31,6 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
         CheckListCtrlMixin.__init__(self)
         
-        self._ep_lookup = dict()
         self._ep_idx = 0
         self._updating = False
 
@@ -63,9 +58,15 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # when the CheckItem is called PROGRAMATICALLY, and I have to 
         # work around not letting it screw up my flow of events (*sigh*)
         if not self._updating:
-            series_idx = self.GetItemData(index)
-            episode = self._ep_lookup[series_idx]
-            episode._seen = True if flag else False
+            episode_id = self.GetItemData(index)
+            episode = db.store.get(series_list.Episode, episode_id)
+            if flag:
+                episode.seen = 1
+                episode.last_in = 0
+            else:
+                episode.seen = 0
+            
+            db.store.commit()
             viewmgr.episode_updated(episode)
             
     
@@ -80,11 +81,12 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # dynamically determine position
         if self.GetItemCount() > 0:            
             for idx in xrange(0, self.GetItemCount()):
-                curr_ep = self._ep_lookup[self.GetItemData(idx)]
-                if _sort(ep, curr_ep) <= 0:
-                    pos = idx
-                    break
-                pos += 1
+                curr_ep = db.store.get(series_list.Episode, self.GetItemData(idx))
+                if curr_ep:
+                    if _sort(ep, curr_ep) <= 0:
+                        pos = idx
+                        break
+                    pos += 1
         
         self._insertEpisode(ep, pos)
                 
@@ -94,18 +96,20 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         Inserts the episode in the list
         """
         self._ep_idx += 1
-        index = self.InsertStringItem(pos, ep._ep_nr)
-        self.SetStringItem(index, 1, ep._season)
-        self.SetStringItem(index, 2, ep._series._serie_name)
-        self.SetStringItem(index, 3, ep._ep_title)
-        self.SetStringItem(index, 4, ep._date)
+        index = self.InsertStringItem(pos, ep.number)
+        self.SetStringItem(index, 1, ep.season)
+        
+        series = db.store.get(series_list.Series, ep.series_id)
+        if series:
+            self.SetStringItem(index, 2, series.name)
+        self.SetStringItem(index, 3, ep.title)
+        self.SetStringItem(index, 4, ep.aired)
         
         self._updating = True
-        self.CheckItem(index, ep._seen)
+        self.CheckItem(index, ep.seen != 0)
         self._updating = False
         
-        self._ep_lookup[self._ep_idx] = ep
-        self.SetItemData(index, self._ep_idx)
+        self.SetItemData(index, ep.id)
         
         
     def _onEpisodeDeleted(self, msg):
@@ -117,10 +121,8 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # because there is no way to store a reference to the object in 
         # the wx.ListCtrl we must poorly scan through the list ourselves
         ep = msg.data
-        for episode_idx in self._ep_lookup.iterkeys():
-            if self._ep_lookup[episode_idx] == ep:
-                idx = self.FindItemData(-1, episode_idx)
+        if self.GetItemCount() > 0:            
+            idx = self.FindItemData(-1, ep.id)                
+            if idx != wx.NOT_FOUND:
                 self.DeleteItem(idx)
-                del self._ep_lookup[episode_idx]
-                break
-            
+   

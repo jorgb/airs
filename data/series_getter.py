@@ -53,7 +53,7 @@ class EpGuidesSeriesDownloadCmd(object):
             return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
                                                (self._series.url, self._series.name, msg))
             
-        self.__log.put("Data for '%s' read. Parsing ..." % self._site_id)
+        self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         
         # find first divider for Episodes
         soup = BeautifulSoup(html)
@@ -103,8 +103,8 @@ class EpGuidesSeriesDownloadCmd(object):
             if m:
                 gd = m.groupdict()
                 episode = series_list.Episode()
-                episode.number = gd["ep_id"]
-                episode.title = ep_title            
+                episode.number = unicode(gd["ep_id"])
+                episode.title = unicode(ep_title)            
                 
                 if "ep_season" in gd:
                     seaslist = gd["ep_season"]
@@ -114,7 +114,7 @@ class EpGuidesSeriesDownloadCmd(object):
                             try:
                                 se = int(seaslist[0].strip())
                                 ep = int(seaslist[1].strip())
-                                episode.season = "S%02iE%02i" % (se, ep)
+                                episode.season = unicode("S%02iE%02i" % (se, ep))
                             except ValueError:
                                 pass
                 if "ep_date" in gd:
@@ -127,7 +127,7 @@ class EpGuidesSeriesDownloadCmd(object):
                                     epday = int(datelist[0].strip(' '))
                                     epyr = int(datelist[2].strip(' '))
                                     datestr = "%02i-%s-%02i" % (epday, _months[monthstr], epyr)
-                                    episode.aired = datestr
+                                    episode.aired = unicode(datestr)
                                 except ValueError:
                                     pass
                 
@@ -181,7 +181,7 @@ class TvComSeriesDownloadCmd(object):
             return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
                                                (self._series.url, self._series.id, msg))
             
-        self.__log.put("Data for '%s' read. Parsing ..." % self._series.id)
+        self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         
         # find first divider for Episodes
         soup = BeautifulSoup(html)
@@ -205,11 +205,11 @@ class TvComSeriesDownloadCmd(object):
         ep_list = []
         for r in res:
             # extract the episode query
-            episode = r.fetchText(text=True)
-            if len(episode) > 1:
+            ep = r.fetchText(text=True)
+            if len(ep) > 1:
                 episode = series_list.Episode()
-                episode.number = episode[0].strip().rstrip('.')
-                episode.title = episode[1].strip()
+                episode.number = unicode(ep[0].strip().rstrip('.'))
+                episode.title = unicode(ep[1].strip())
                 episode.series_id = self._series.id                                                
                 ep_list.append( episode )
         

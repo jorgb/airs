@@ -34,8 +34,8 @@ class SeriesSelectionList(object):
         
             if self._selection_id != -1:
                 # restore the episode list belonging to this series_id
-                result = db.store.find(series_sel.Episodes, 
-                                       series_sel.Episodes.series_id == self._selection_id)
+                result = db.store.find(series_list.Episode, 
+                                       series_list.Episode.series_id == self._selection_id)
                 episodes = [episode for episode in result]
                 self._episodes = episodes[:]
     
@@ -69,15 +69,21 @@ class SeriesSelectionList(object):
             return
 
         # issue the proper signal for update, delete or adding            
-        if episode in self._episodes:
-            allowed = self._checkAgainstCriteria(episode)
-            if allowed and episode in self._selection:
-                Publisher().sendMessage(signals.EPISODE_UPDATED, episode)
-            else if not allowed and episode in self._selection:
-                Publisher().sendMessage(signals.EPISODE_DELETED, episode)
-            else if allowed and episode not in self._selection:
-                Publisher().sendMessage(signals.EPISODE_ADDED, episode)
-
+        # TODO: Can we make sure that the pointers are equal? 
+        for ep in self._episodes:
+            if ep.id == episode.id:
+                self._episodes.remove(ep)
+                self._episodes.append(episode)
+                
+                allowed = self._checkAgainstCriteria(episode)
+                if allowed and episode in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_UPDATED, episode)
+                elif not allowed and episode in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_DELETED, episode)
+                elif allowed and episode not in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_ADDED, episode)
+                break
+            
 
     def syncEpisodes(self):
         """
@@ -86,12 +92,12 @@ class SeriesSelectionList(object):
         """
         for episode in self._episodes:
             allowed = self._checkAgainstCriteria(episode)
-            if not allowed and episode in self._episodes:
-                self._selection.remove(ep)
-                Publisher().sendMessage(signals.EPISODE_DELETED, ep)
-            if allowed and episode not in self._episodes:
-                self._selection.append(ep)
-                Publisher().sendMessage(signals.EPISODE_ADDED, ep)
+            if not allowed and episode in self._selection:
+                self._selection.remove(episode)
+                Publisher().sendMessage(signals.EPISODE_DELETED, episode)
+            if allowed and episode not in self._selection:
+                self._selection.append(episode)
+                Publisher().sendMessage(signals.EPISODE_ADDED, episode)
                 
 
     def _checkAgainstCriteria(self, episode):
@@ -102,7 +108,7 @@ class SeriesSelectionList(object):
         if episode.series_id != self._selection_id:
             return False
             
-        if episode._seen and self._show_only_unseen:
+        if episode.seen != 0 and self._show_only_unseen:
             return False
                                 
         return True

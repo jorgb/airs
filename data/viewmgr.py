@@ -4,7 +4,7 @@ import sys
 
 import wx
 from wx.lib.pubsub import Publisher
-from series_queue import SeriesRetrieveThread
+import series_queue
 from series_filter import SeriesSelectionList
 from storage import series_list_xml
 import series_list
@@ -17,8 +17,7 @@ import db
 
 is_closing = False
 retriever = None
-_series_list = None
-_series_sel = None
+_series_sel = SeriesSelectionList()
 
 #===============================================================================
 
@@ -29,11 +28,10 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever, _series_list, _series_sel
+    global retriever, _series_sel
 
     # set up classes
-    retriever = SeriesRetrieveThread()
-    _series_sel = SeriesSelectionList()
+    retriever = series_queue.SeriesRetrieveThread()
     
     # initialize / create database
     dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
@@ -144,9 +142,11 @@ def probe_series():
     # cache list with ID of series as lookup
     # we use this to verify the series is present 
     series_cache = []
+    db_changed = False
     
     while not retriever.out_queue.empty():
         episode = retriever.out_queue.get()
+        
         
         # for every episode, check if it exists in the DB. If it does 
         # attempt an update. If it doesn't, we add it. We use the 
@@ -154,7 +154,8 @@ def probe_series():
         if not episode.number:
             continue
             
-        result = db.store.find(series_list.Episode, (series_list.Episode.number == episode.number) and  \
+        nr = str(episode.number)
+        result = db.store.find(series_list.Episode, (series_list.Episode.number == unicode(nr)),
                                                     (series_list.Episode.series_id == episode.series_id)).one()
         if not result:
             # not found, add to database, perform extra check for integrity
@@ -168,6 +169,8 @@ def probe_series():
             if can_add:
                 episode.last_in = 1
                 db.store.add(episode)
+                db_changed = True
+                db.store.flush()
                 _series_sel.add_episode(episode)
         else:
             # we found the episode, we will update only certain parts
@@ -184,11 +187,14 @@ def probe_series():
                 updated = True
                 
             if updated:
+                db_changed = True
                 result.last_in = 1
                 _series_sel.update_episode(episode)
+                db.store.flush()
 
     # all changes are committed here
-    db.store.commit()
+    if db_changed:
+        db.store.commit()
         
         
 def is_busy():
@@ -218,12 +224,6 @@ def app_destroy():
     
     retriever.stop = True
     retriever.join(2000)
-
-    #datafile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.xml')
-    #try:
-    #    series_list_xml.write_series(datafile, _series_list)
-    #except series_list_xml.SerieListXmlException, msg:
-    #    wx.LogError(msg)
         
     db.close()
         
@@ -234,23 +234,22 @@ def attach_series(series):
     signal so it gets added to the proper lists 
     """
     
-    sid = series._serie_name.lower()
-    if sid not in _series_list._series:
-        _series_list._series[sid] = series
-        Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)
+    raise Exception("Fout")
+    
+    #sid = series._serie_name.lower()
+    #if sid not in _series_list._series:
+    #    _series_list._series[sid] = series
+    #    Publisher().sendMessage(signals.DATA_SERIES_RESTORED, series)
         
     
 def get_selected_series():
     """
     Determine selected series, get that one or else get all
     """
-    try:
-        series = _series_list._series[_series_sel._crit_selection]
-    except KeyError:
-        get_all_series()
-        return
-    
-    retriever.in_queue.put( (series._serie_name, series._link) )
+    series = db.store.get(series_list.Series, _series_sel._selection_id)
+    if series:
+        item = series_queue.SeriesQueueItem(series.id, series.name, series.url)
+        retriever.in_queue.put(item)
     
     
 def delete_series(series):
@@ -307,7 +306,7 @@ def episode_updated(episode):
     # go through all episodes again and see if we missed
     # out on something after this update
     # TODO: Could be more optimized by only evaluating this episode
-    _series_sel.syncEpisodes()
+    _series_sel.update_episode(episode)
     
     
 def _do_clear_cache(series):
