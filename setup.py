@@ -35,8 +35,12 @@ for the window icon (not just the .exe)
 changelog and logo are included in dist
 """
 
-setup( windows = [ { "script": "airs.pyw",
-                     "icon_resources": [(1, "airs.ico")],
-                     "other_resources": [(24,1,manifest)] } ] 
+setup( console = [ { "script": "airs.py" } ] 
       ,data_files=["setup\\dll\\msvcp71.dll"],
     )
+
+#setup( windows = [ { "script": "airs.pyw",
+#                     "icon_resources": [(1, "airs.ico")],
+#                     "other_resources": [(24,1,manifest)] } ] 
+#      ,data_files=["setup\\dll\\msvcp71.dll"],
+#    )
