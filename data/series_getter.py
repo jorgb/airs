@@ -12,9 +12,10 @@ _months = { "jan": "01", "feb": "02", "mar": "03", "apr": "04", "may": "05", "ju
 class EpGuidesSeriesDownloadCmd(object):
     """ Extract serie from epguides.com site and returns result """
     
-    def __init__(self, logqueue, series):
+    def __init__(self, logqueue, series, url):
         self._series = series
         self.__log = logqueue
+        self._url = url
         # regular expression with all information inside
         self._re1 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
                                 "(.*?)(?P<ep_date>\d{1,2}[ \t]+[a-zA-Z]+" + \
@@ -40,18 +41,18 @@ class EpGuidesSeriesDownloadCmd(object):
                        .... ]
         """
 
-        self.__log.put("Opening URL : '%s'" % self._series.url)
+        self.__log.put("Opening URL : '%s'" % self._url)
         
         # attempt opening URL
         try:
-            f = urllib2.urlopen(self._series.url)
+            f = urllib2.urlopen(self._url)
             html = f.read()
         except urllib2.URLError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
-                                               (self._series.url, self._series.name, msg))
+                                               (self._url, self._series.name, msg))
         except ValueError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
-                                               (self._series.url, self._series.name, msg))
+                                               (self._url, self._series.name, msg))
             
         self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         
@@ -146,9 +147,10 @@ class EpGuidesSeriesDownloadCmd(object):
 class TvComSeriesDownloadCmd(object):
     """ Extract serie from tv.com site and returns result """
     
-    def __init__(self, logqueue, series):
+    def __init__(self, logqueue, series, url):
         self._series = series
         self.__log = logqueue
+        self._url = url
         
         
     def __compose_result(self, episodes, message):
@@ -168,18 +170,18 @@ class TvComSeriesDownloadCmd(object):
                        .... ]
         """
 
-        self.__log.put("Opening URL : '%s'" % self._series.url)
+        self.__log.put("Opening URL : '%s'" % self._url)
         
         # attempt opening URL
         try:
-            f = urllib2.urlopen(self._series.url)
+            f = urllib2.urlopen(self._url)
             html = f.read()
         except urllib2.URLError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._series.url, self._series.name, msg))
+                                               (self._url, self._series.name, msg))
         except ValueError, msg:
             return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._series.url, self._series.id, msg))
+                                               (self._url, self._series.id, msg))
             
         self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         

@@ -22,6 +22,7 @@ class MainPanel(wx.Panel):
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
+        self._reset_updated = xrc.XRCCTRL(self, "ID_RESET_UPDATED")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -43,6 +44,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
+        self.Bind(wx.EVT_BUTTON, self._onResetUpdated, self._reset_updated) 
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -90,6 +92,9 @@ class MainPanel(wx.Panel):
             viewmgr.app_log(q.get())
             msgs -= 1
 
+        # enable / disable some button
+        self._reset_updated.Enable(self._series_list.GetFirstSelected() != wx.NOT_FOUND)
+            
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
         viewmgr.probe_series()        
@@ -109,6 +114,10 @@ class MainPanel(wx.Panel):
         Everything is initialized, set the GUI to default
         """
         
+        # show only updated
+        sel = self._series_selection
+        sel.Append("[Updated Series]", -1)
+        
         # get a list of series, and show them
         result = db.store.find(series_list.Series)
         for series in result.order_by(series_list.Series.name):
@@ -121,10 +130,20 @@ class MainPanel(wx.Panel):
         """ 
         Select a series, or all
         """
+        busy = wx.BusyInfo("This can take a while, please wait ...", self)
+        self._series_list.Freeze()
+        
         sel = self._series_selection
         series_id = sel.GetClientData(sel.GetSelection())
-        viewmgr.set_selection(db.store.get(series_list.Series, series_id))
+        if series_id != -1:
+            series = db.store.get(series_list.Series, series_id)
+        else:
+            series = None
+        viewmgr.set_selection(series)
        
+        busy.Destroy()
+        self._series_list.Thaw()
+
         
     def _onDeleteSeries(self, msg):
         """
@@ -185,15 +204,43 @@ class MainPanel(wx.Panel):
         series = msg.data
        
         if series:
+            id = series.id
+        else:
+            id = -1
+        
+        if series:
             for i in xrange(0, sel.GetCount()):
                 series_id = sel.GetClientData(i)
                 if series_id == series.id:
                     sel.SetSelection(i)
                     return
-        else:
-            sel.SetSelection(-1)
-            
-            
+          
+
+    def _onResetUpdated(self, event):
+        """
+        Reset the updated flag of the selected series
+        """
+        
+        episodes = list()
+        
+        idx = self._series_list.GetFirstSelected()
+        while idx != wx.NOT_FOUND:
+            id = self._series_list.GetItemData(idx)
+            episode = db.store.get(series_list.Episode, id)
+            if episode:
+                episodes.append(episode)
+            idx = self._series_list.GetNextSelected(idx)
+        
+        # we do it in two steps, not to disturb the selections
+        if episodes:
+            for episode in episodes:
+                episode.last_in = 0
+                db.store.flush()
+                viewmgr.episode_updated(episode)
+    
+            db.store.commit()
+                
+
     def _onShowOnlyUnseen(self, event):
         """
         Toggle filter for seen / unseen events. Also save this in 

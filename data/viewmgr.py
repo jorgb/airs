@@ -127,7 +127,7 @@ def get_all_series():
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        item = series_queue.SeriesQueueItem(series.id, series.name, series.url)
+        item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
         retriever.in_queue.put( item )
 
 
@@ -176,20 +176,20 @@ def probe_series():
             # we found the episode, we will update only certain parts
             # if they are updated properly, we willl inform and update the DB
             updated = False
-            if not result.title and episode.title != '':
+            if result.title == '' and episode.title != '':
                 result.title = unicode(episode.title)
                 updated = True
-            if episode.season:
+            if result.season == '' and episode.season != '':
                 result.season = unicode(episode.season)
                 updated = True
-            if episode.aired:
+            if result.aired == '' and episode.aired != '':
                 result.aired = unicode(episode.aired)
                 updated = True
                 
             if updated:
                 db_changed = True
                 result.last_in = 1
-                _series_sel.filterEpisode(episode, update = True)
+                _series_sel.filterEpisode(result, updated = True)
 
     # all changes are committed here
     if db_changed:
@@ -233,7 +233,7 @@ def get_selected_series():
     """
     series = db.store.get(series_list.Series, _series_sel._selection_id)
     if series:
-        item = series_queue.SeriesQueueItem(series.id, series.name, series.url)
+        item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split("\n"))
         retriever.in_queue.put(item)
     
     
