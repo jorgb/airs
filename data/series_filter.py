@@ -83,7 +83,19 @@ class SeriesSelectionList(object):
                 elif allowed and episode not in self._selection:
                     Publisher().sendMessage(signals.EPISODE_ADDED, episode)
                 break
-            
+          
+          
+    def delete_episode(self, episode):
+        """
+        Deletes episode from list if present
+        """
+        for ep in self._episodes:
+            if ep.id == episode.id:
+                self._episodes.remove(ep)
+                if ep in self._selection:
+                    Publisher().sendMessage(signals.EPISODE_DELETED, episode)
+                    break                
+                          
 
     def syncEpisodes(self):
         """
