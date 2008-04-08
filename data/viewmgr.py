@@ -6,7 +6,7 @@ import wx
 from wx.lib.pubsub import Publisher
 import series_queue
 from series_filter import SeriesSelectionList
-from storage import series_list_xml
+#from storage import series_list_xml
 import series_list
 import signals
 import appcfg

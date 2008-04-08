@@ -8,7 +8,6 @@ def _sort(a, b):
     """
     Sort episode
     """
-    # sort by series title first
     if a.season > b.season:
         return -1
     if a.season < b.season:
