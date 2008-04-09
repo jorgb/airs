@@ -1,3 +1,9 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 import storm.databases.sqlite
 from storm.locals import *
 import os.path

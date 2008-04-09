@@ -1,3 +1,9 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 APP_INITIALIZED      = ('app', 'initialized')        # is emitted when viewmgr.app_init is called
                                                      # should be sent AFTER all data is restored in 
                                                      # viewmgr.app_init

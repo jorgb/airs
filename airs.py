@@ -1,4 +1,9 @@
 #!/usr/bin/python
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
 
 # work around for wxPython since our sys.path[0] is adjusted after
 # importing wx and using wxversion to determine the proper wxWidgets version
