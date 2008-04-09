@@ -1,6 +1,13 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 import os
 from distutils.core import setup
 import py2exe
+
 
 manifest = """
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -35,12 +42,12 @@ for the window icon (not just the .exe)
 changelog and logo are included in dist
 """
 
-setup( console = [ { "script": "airs.py" } ] 
-      ,data_files=["setup\\dll\\msvcp71.dll"],
-    )
-
-#setup( windows = [ { "script": "airs.pyw",
-#                     "icon_resources": [(1, "airs.ico")],
-#                     "other_resources": [(24,1,manifest)] } ] 
+#setup( console = [ { "script": "airs.py" } ] 
 #      ,data_files=["setup\\dll\\msvcp71.dll"],
 #    )
+
+setup( windows = [ { "script": "airs.pyw",
+                     "icon_resources": [(1, "airs.ico")],
+                     "other_resources": [(24,1,manifest)] } ] 
+      ,data_files=["setup\\dll\\msvcp71.dll"],
+    )

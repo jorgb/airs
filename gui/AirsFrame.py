@@ -1,3 +1,9 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 import os.path
 import sys
 
@@ -251,12 +257,13 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
         
-        #if viewmgr.series_sel._crit_selection:
-        #    has_selection = True
-        #else:
-        #    has_selection = False        
-        #self._menuEdit.Enable(has_selection)
-        #self._menuDelete.Enable(has_selection)
+        if viewmgr._series_sel._selection_id != -1:
+            has_selection = True
+        else:
+            has_selection = False        
+        self._menuEdit.Enable(has_selection)
+        self._menuDelete.Enable(has_selection)
+        self._menuClearCache.Enable(has_selection)
         pass
     
         

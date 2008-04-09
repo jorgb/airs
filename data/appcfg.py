@@ -1,3 +1,9 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 import os.path
 import wx
 
@@ -6,7 +12,7 @@ APP_TITLE           = "Airs:: Automatic Series Monitor"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
-APP_VERSION         = "0.9b"
+APP_VERSION         = "0.9c"
 
 # the name of the default database
 DB_NAME             = 'airs.db'
@@ -40,7 +46,7 @@ MAX_HISTORY_FILES   = 10
 # Fill in the description of the application here
 description = ""
 
-SITE_URL = ("http://wxforum.shadonet.com", "%s Project Page" % APP_TITLE)
+SITE_URL = ("http://www.xs4all.nl/~jorgb/wb/MyProjects(2f)Airs.html", "%s Project Page" % APP_TITLE)
 
 licensetext = """
 Based upon GNU GENERAL PUBLIC LICENSE, Version 2, June 1991

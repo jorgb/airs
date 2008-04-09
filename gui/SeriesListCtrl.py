@@ -1,3 +1,9 @@
+#==============================================================================
+# Author:      Jorgen Bodde
+# Copyright:   (c) Jorgen Bodde
+# License:     GPLv2 (see LICENSE.txt)
+#==============================================================================
+
 import wx, sys
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from data import signals, viewmgr, db, series_list
