@@ -25,13 +25,15 @@
                 <flag>wxALIGN_LEFT|wxALL</flag>
                 <border>5</border>
                 <object class="wxStaticText" name="wxID_STATIC">
-                    <label>Enter the link on TV.com which leads to the summary of the series</label>
+                    <label>Enter the link of the site(s) that needs to scanned (one per line starting with http://)</label>
                 </object>
             </object>
             <object class="sizeritem">
                 <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
                 <border>5</border>
                 <object class="wxTextCtrl" name="ID_SERIES_LINK">
+                    <size>-1,60</size>
+                    <style>wxTE_MULTILINE</style>
                 </object>
             </object>
             <object class="spacer">
@@ -43,7 +45,40 @@
                 <flag>wxALIGN_LEFT|wxALL</flag>
                 <border>5</border>
                 <object class="wxStaticText" name="wxID_STATIC">
-                    <label>Explanation:</label>
+                    <font>
+                        <size>8</size>
+                        <family>swiss</family>
+                        <weight>bold</weight>
+                        <face>Tahoma</face>
+                    </font>
+                    <label>Supported sites are:</label>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="wxID_STATIC">
+                    <label>     http://tv.com, http://epguides.com</label>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>5</border>
+                <object class="wxStaticLine" name="wxID_STATIC">
+                    <style>wxLI_HORIZONTAL</style>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="wxID_STATIC">
+                    <font>
+                        <size>8</size>
+                        <family>swiss</family>
+                        <weight>bold</weight>
+                        <face>Tahoma</face>
+                    </font>
+                    <label>Explanation</label>
                 </object>
             </object>
             <object class="sizeritem">
@@ -68,7 +103,7 @@
                         <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>On TV.com use the search function to find the series</label>
+                            <label>On the tv series site, use the search function to find the series you want</label>
                         </object>
                     </object>
                 </object>
@@ -95,7 +130,7 @@
                         <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Select the series that you are looking for</label>
+                            <label>Select the proper summaries page where the series are updated</label>
                         </object>
                     </object>
                 </object>

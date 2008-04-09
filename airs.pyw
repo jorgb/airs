@@ -2,7 +2,7 @@
 
 # work around for wxPython since our sys.path[0] is adjusted after
 # importing wx and using wxversion to determine the proper wxWidgets version
-import sys, os
+import sys, os.path
 
 if sys.path:
     execpath = sys.path[0]

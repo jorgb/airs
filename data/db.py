@@ -1,6 +1,8 @@
+import storm.databases.sqlite
 from storm.locals import *
 import os.path
 from datetime import datetime
+
 
 VERSION = 1
 

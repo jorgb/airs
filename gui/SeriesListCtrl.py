@@ -37,12 +37,14 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(1, "Season", width = 70)
         self.InsertColumn(2, "Series", width = 100)        
         self.InsertColumn(3, "Title", width = 220) 
-        self.InsertColumn(4, "Date", width = 100) 
+        self.InsertColumn(4, "Upd", width = 40) 
+        self.InsertColumn(5, "Date", width = 100) 
         
         
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
         Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
+        Publisher().subscribe(self._onEpisodeUpdated, signals.EPISODE_UPDATED)
         
 
     def OnItemActivated(self, evt):
@@ -102,13 +104,35 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         if series:
             self.SetStringItem(index, 2, series.name)
         self.SetStringItem(index, 3, ep.title)
-        self.SetStringItem(index, 4, ep.aired)
+        str = ""
+        if ep.last_in != 0:
+            str = "*"
+        self.SetStringItem(index, 4, str)
+        self.SetStringItem(index, 5, ep.aired)
         
         self._updating = True
         self.CheckItem(index, ep.seen != 0)
         self._updating = False
         
         self.SetItemData(index, ep.id)
+        
+
+    def _onEpisodeUpdated(self, msg):
+        """
+        Inserts the episode in the list
+        """
+        
+        ep = msg.data
+        idx = self.FindItemData(-1, ep.id) 
+        if idx != wx.NOT_FOUND:     
+            self.SetStringItem(idx, 0, ep.number)
+            self.SetStringItem(idx, 1, ep.season)
+            self.SetStringItem(idx, 3, ep.title)
+            str = ""
+            if ep.last_in != 0:
+                str = "*"
+            self.SetStringItem(idx, 4, str)
+            self.SetStringItem(idx, 5, ep.aired)        
         
         
     def _onEpisodeDeleted(self, msg):

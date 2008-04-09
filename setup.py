@@ -2,6 +2,7 @@ import os
 from distutils.core import setup
 import py2exe
 
+
 manifest = """
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
@@ -34,6 +35,10 @@ but icon is still needed as we open it
 for the window icon (not just the .exe)
 changelog and logo are included in dist
 """
+
+#setup( console = [ { "script": "airs.py" } ] 
+#      ,data_files=["setup\\dll\\msvcp71.dll"],
+#    )
 
 setup( windows = [ { "script": "airs.pyw",
                      "icon_resources": [(1, "airs.ico")],
