@@ -38,11 +38,7 @@ def app_init():
 
     # set up classes
     retriever = series_queue.SeriesRetrieveThread()
-    
-    # initialize / create database
-    dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
-    db.init(dbfile)
-    
+        
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
     retriever.start()
@@ -225,9 +221,10 @@ def app_destroy():
     Close down thread, save changes
     """
     
-    retriever.stop = True
-    retriever.join(2000)
-        
+    if retriever:
+        retriever.stop = True
+        retriever.join(2000)
+    
     db.close()
         
     

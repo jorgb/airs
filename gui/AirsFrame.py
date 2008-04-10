@@ -30,8 +30,6 @@ class AirsFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
-        self._connectSignals()
-
         # instantiate the GUI
         self._createMenu()
         self._createWindows()
@@ -52,6 +50,8 @@ class AirsFrame(wx.Frame):
         # signals to be emitted can access controls)
         viewmgr.app_init()
         
+        self._connectSignals()
+                
         # periodic GUI update timer
         self.tmr = wx.Timer(self)
         self.tmr.Start(500)
