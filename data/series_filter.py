@@ -14,6 +14,12 @@ import signals
 import series_list
 import db
 
+# this filter has effect only in the UPDATED view
+
+SHOW_ALL      = 0        # show all series (undated episodes as well)
+SHOW_UPCOMING = 1        # show upcoming (only upcoming and lower)
+SHOW_AIRED    = 2        # show all aired but not undated or upcoming
+
 class SeriesSelectionList(object):
     def __init__(self):
         self._selection = dict()
@@ -23,6 +29,7 @@ class SeriesSelectionList(object):
         # if id is -1, the last updated list is shown
         self._selection_id = -1
         self._show_only_unseen = False
+        self._update_mode = SHOW_ALL
         
     
     def setSelection(self, sel_id):
@@ -96,6 +103,13 @@ class SeriesSelectionList(object):
         if we can keep or add it, false to delete it
         """        
         
+        # if we are in update mode, perform other logic
+        if self._selection_id == -1:
+            if self._update_mode == SHOW_UPCOMING:
+                if episode.airs.strip() == '':      # do not allow unaired
+                    return
+                
+
         if (episode.last_in == 0 and self._selection_id == -1):
             return False
         

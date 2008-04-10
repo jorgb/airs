@@ -1,0 +1,5 @@
+Done items for next release
+
+* Series is auto selected now when a new series is added
+* Question is added if an update must be done after adding a series
+* Series that is processed is now shown in status bar

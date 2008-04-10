@@ -5,6 +5,7 @@
 #==============================================================================
 
 from storm.locals import *
+from datetime import date
 
 #
 # Module that contains functionality
@@ -43,6 +44,24 @@ class Episode(object):
         self.seen = 0
         self.last_in = 0
         
+    def getDate(self):
+        """
+        Returns date
+        """
+        if self.aired:
+            try:
+                dy = int(self.aired[0:2])
+                mn = int(self.aired[3:5])
+                yr = int(self.aired[6:])
+                if yr < 100:
+                    if yr < 99 and yr > 39:
+                        yr = 1900 + yr
+                    else:
+                        yr = 2000 + yr
+            except ValueError:
+                return None    
+            return date(yr, mn, dy)
+        return None
     
 class SeriesList(object):
     """
