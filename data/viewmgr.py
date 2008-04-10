@@ -74,12 +74,10 @@ def add_series(series):
     """
     db.store.add(series)
     db.store.commit()
+    # reflect ID to series object 
+    db.store.flush()
     
     Publisher().sendMessage(signals.SERIES_ADDED, series)
-
-    # now, if not selected, select this one
-    if _series_sel._selection_id == -1:
-        set_selection(series)
         
     
 def app_settings_changed():

@@ -164,6 +164,14 @@ class AirsFrame(wx.Frame):
             
             viewmgr.add_series(series)
             
+            # select the new series
+            viewmgr.set_selection(series)
+
+            # ask if this needs to be scheduled too
+            if wx.MessageBox("Do you wish to run an update for this series?", 
+                             "Question", wx.ICON_QUESTION | wx.YES_NO) == wx.YES:
+                viewmgr.get_selected_series()
+            
         dlg.Destroy()
 
 
@@ -304,12 +312,10 @@ class AirsFrame(wx.Frame):
         We could use OnGUIUpdate but it is sent too sporadically
         """
         series_title = viewmgr.get_current_title()        
-        #if series_title:
-        #    self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
-        #else:
-        #    self._statusbar.SetStatusText("%i of %i items in view" % \
-        #                                  (len(viewmgr.series_sel._selection), \
-        #                                   len(viewmgr.series_sel._episodes)), 1)
+        if series_title:
+            self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
+        else:
+            self._statusbar.SetStatusText("Idle ...", 1)
         pass
     
         
