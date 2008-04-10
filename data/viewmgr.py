@@ -129,8 +129,9 @@ def get_all_series():
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
-        retriever.in_queue.put( item )
+        if series.postponed == 0:
+            item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
+            retriever.in_queue.put( item )
 
 
 def probe_series():

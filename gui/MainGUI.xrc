@@ -251,6 +251,14 @@ Enter your options here
             <object class="sizeritem">
                 <flag>wxALIGN_LEFT|wxALL</flag>
                 <border>5</border>
+                <object class="wxCheckBox" name="ID_CANCELLED">
+                    <label>This series is cancelled or finished. Don't include it in "UPDATE ALL"</label>
+                    <checked>0</checked>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxALL</flag>
+                <border>5</border>
                 <object class="wxStaticText" name="wxID_STATIC">
                     <font>
                         <size>8</size>

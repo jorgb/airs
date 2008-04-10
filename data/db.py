@@ -24,7 +24,9 @@ _db_create_list = [ "CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, 
 
 _db_update_list = [ ( 1, 2, [ "ALTER TABLE series ADD last_update VARCHAR",
                               "ALTER TABLE series ADD update_period INTEGER",
-                              "update series set update_period = 0" ] ) ]
+                              "ALTER TABLE series ADD postponed INTEGER",
+                              "update series set update_period = 0",
+                              "update series set postponed = 0"] ) ]
 
 class Version(object):
    __storm_table__ = "version"
