@@ -54,7 +54,7 @@ class Episode(object):
                 mn = int(self.aired[3:5])
                 yr = int(self.aired[6:])
                 if yr < 100:
-                    if yr < 99:
+                    if yr < 99 and yr > 39:
                         yr = 1900 + yr
                     else:
                         yr = 2000 + yr
