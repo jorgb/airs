@@ -32,13 +32,14 @@ CFG_LAYOUT_LAST_W    = 'window/last_width'           # last width when closing w
 CFG_LAYOUT_LAST_X    = 'window/last_xpos'            # last height when closing window
 CFG_LAYOUT_LAST_Y    = 'window/last_ypos'            # last width when closing window
 CFG_SHOW_UNSEEN      = 'series/show_unseen'
+CFG_UPDATED_VIEW     = 'series/updated_view'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 700  ),
             (CFG_LAYOUT_LAST_H,         'i', 600  ),
             (CFG_LAYOUT_LAST_X,         'i', -1   ),
             (CFG_LAYOUT_LAST_Y,         'i', -1   ),
-            (CFG_SHOW_UNSEEN,           'b', False)
-          ]
+            (CFG_SHOW_UNSEEN,           'b', False),
+            (CFG_UPDATED_VIEW,          'i', 0    ) ]
 
 # max files in the file history
 MAX_HISTORY_FILES   = 10

@@ -10,7 +10,7 @@ from wx.lib.pubsub import Publisher
 from data import appcfg, viewmgr, signals
 import xmlres
 from SeriesListCtrl import SeriesListCtrl
-from data import db, series_list
+from data import db, series_list, series_filter
 
 class MainPanel(wx.Panel):
 
@@ -29,6 +29,7 @@ class MainPanel(wx.Panel):
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
         self._reset_updated = xrc.XRCCTRL(self, "ID_RESET_UPDATED")
+        self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -51,6 +52,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         self.Bind(wx.EVT_BUTTON, self._onResetUpdated, self._reset_updated) 
+        self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -100,6 +102,7 @@ class MainPanel(wx.Panel):
 
         # enable / disable some button
         self._reset_updated.Enable(self._series_list.GetFirstSelected() != wx.NOT_FOUND)
+        self._updated_view.Enable(viewmgr._series_sel._selection_id == -1)
             
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
@@ -122,8 +125,23 @@ class MainPanel(wx.Panel):
         
         # show only updated
         sel = self._series_selection
-        sel.Append("[Updated Series]", -1)
+        sel.Append("[Updated View]", -1)
         
+        # populate the criteria filter
+        uv = self._updated_view
+        lst = [ ("Show all updated episodes (also incompletes)", series_filter.SHOW_ALL), 
+                ("Show aired + upcoming episodes", series_filter.SHOW_UPCOMING),
+                ("Show only aired episodes", series_filter.SHOW_AIRED) ]
+        for str, data in lst:
+            uv.Append(str, data)
+        
+        # look up last selection in list
+        lastsel = appcfg.options[appcfg.CFG_UPDATED_VIEW]
+        for i in xrange(0, uv.GetCount()):
+            if uv.GetClientData(i) == lastsel:
+                uv.SetSelection(i)
+                break
+                        
         # get a list of series, and show them
         result = db.store.find(series_list.Series)
         for series in result.order_by(series_list.Series.name):
@@ -131,6 +149,17 @@ class MainPanel(wx.Panel):
         
         self._show_unseen.SetValue(appcfg.options[appcfg.CFG_SHOW_UNSEEN])
         
+        
+    def _onUpdatedViewSelect(self, event):
+        """
+        Sync the last view
+        """
+        uv = self._updated_view        
+        idx = uv.GetSelection()
+        if idx != wx.NOT_FOUND:
+            appcfg.options[appcfg.CFG_UPDATED_VIEW] = uv.GetClientData(idx)
+            viewmgr.app_settings_changed()
+            
         
     def _onSelectSeries(self, event):
         """ 
@@ -196,8 +225,8 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         series = msg.data
         idx = 0
-        for i in xrange(0, sel.GetCount()):
-            if sel.GetStringSelection() < series.name :
+        for i in xrange(1, sel.GetCount()):
+            if sel.GetString(i) < series.name :
                 idx += 1
         sel.Insert(series.name, idx, series.id)
                 

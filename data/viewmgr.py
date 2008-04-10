@@ -41,6 +41,7 @@ def app_init():
         
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
     retriever.start()
     
     # send signal to listeners telling the data is ready
@@ -83,6 +84,7 @@ def app_settings_changed():
     should investigate if their view needs to be updated
     """
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
     _series_sel.syncEpisodes()
     
     Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
@@ -221,11 +223,9 @@ def app_destroy():
     Close down thread, save changes
     """
     
-    if retriever:
-        retriever.stop = True
-        retriever.join(2000)
+    retriever.stop = True
+    retriever.join(2000)
     
-    db.close()
         
     
 def get_selected_series():
