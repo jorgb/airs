@@ -41,6 +41,7 @@ def app_init():
         
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
     retriever.start()
     
     # send signal to listeners telling the data is ready
@@ -83,6 +84,7 @@ def app_settings_changed():
     should investigate if their view needs to be updated
     """
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
+    _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
     _series_sel.syncEpisodes()
     
     Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
@@ -127,8 +129,9 @@ def get_all_series():
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
-        retriever.in_queue.put( item )
+        if series.postponed == 0:
+            item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
+            retriever.in_queue.put( item )
 
 
 def probe_series():
@@ -221,11 +224,9 @@ def app_destroy():
     Close down thread, save changes
     """
     
-    if retriever:
-        retriever.stop = True
-        retriever.join(2000)
+    retriever.stop = True
+    retriever.join(2000)
     
-    db.close()
         
     
 def get_selected_series():

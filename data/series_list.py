@@ -20,6 +20,9 @@ class Series(object):
     id = Int(primary = True)
     name = Unicode()
     url = Unicode()
+    postponed = Int()
+    last_update = Unicode()
+    update_period = Int()
     
 
 class Episode(object):

@@ -45,5 +45,6 @@ class AirsApp(wx.App):
         """
         Exit the application
         """
+        db.close()
         appcfg.Write()
 

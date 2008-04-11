@@ -10,6 +10,7 @@
 #
 
 from wx.lib.pubsub import Publisher
+import datetime
 import signals
 import series_list
 import db
@@ -30,6 +31,7 @@ class SeriesSelectionList(object):
         self._selection_id = -1
         self._show_only_unseen = False
         self._update_mode = SHOW_ALL
+        self._today = datetime.date.today()
         
     
     def setSelection(self, sel_id):
@@ -76,6 +78,8 @@ class SeriesSelectionList(object):
         to the selection list and emit the proper signals
         """
         # first filter out all unwanted
+        self._today = datetime.date.today()
+        
         episodes = [episode for episode in self._selection.itervalues()]
         for episode in episodes:
             self.filterEpisode(episode)
@@ -104,21 +108,23 @@ class SeriesSelectionList(object):
         """        
         
         # if we are in update mode, perform other logic
+        allowed = True
         if self._selection_id == -1:
-            if self._update_mode == SHOW_UPCOMING:
-                if episode.airs.strip() == '':      # do not allow unaired
-                    return
-                
+            if episode.last_in != 0:
+                airdate = episode.getDate()
+                if self._update_mode == SHOW_UPCOMING:
+                    allowed = (airdate != None)
+                elif self._update_mode == SHOW_AIRED:
+                    allowed = (airdate != None and airdate <= self._today)
+            else:
+                allowed = False
 
-        if (episode.last_in == 0 and self._selection_id == -1):
-            return False
-        
-        if self._selection_id != -1:
-            if (episode.series_id != self._selection_id):
+        # further criteria matching
+        if allowed:
+            if self._selection_id != -1 and (episode.series_id != self._selection_id):            
                 return False
-            
-        if episode.seen != 0 and self._show_only_unseen:
-            return False
-                                
-        return True
                 
+            if episode.seen != 0 and self._show_only_unseen:
+                return False
+                                
+        return allowed

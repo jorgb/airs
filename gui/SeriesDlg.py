@@ -23,6 +23,7 @@ class SeriesDlg(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self._onOK,  xrc.XRCCTRL(self, "wxID_OK"))
         self._series_id = xrc.XRCCTRL(self, "ID_SERIES_ID")
         self._series_link = xrc.XRCCTRL(self, "ID_SERIES_LINK")
+        self._postponed = xrc.XRCCTRL(self, "ID_CANCELLED")
         
 
     # --------------------------------------------------------------------------
@@ -54,6 +55,10 @@ class SeriesDlg(wx.Dialog):
         
         series.name = unicode(series_name)
         series.url = unicode(series_link)
+        if self._postponed.GetValue():
+            series.postponed = 1
+        else:
+            series.postponed = 0
         
 
     def objectToGui(self, series):
@@ -63,5 +68,6 @@ class SeriesDlg(wx.Dialog):
         
         self._series_id.SetValue(series.name)
         self._series_link.SetValue(series.url)
+        self._postponed.SetValue(series.postponed != 0)
         
         

@@ -74,11 +74,32 @@
                 </object>
             </object>
             <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                <flag>wxGROW|wxALL</flag>
                 <border>5</border>
-                <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
-                    <label>Show only unseen episodes</label>
-                    <checked>0</checked>
+                <object class="wxBoxSizer">
+                    <orient>wxHORIZONTAL</orient>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxLEFT|wxBOTTOM</flag>
+                        <border>5</border>
+                        <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
+                            <label>Show only unseen episodes</label>
+                            <checked>0</checked>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>, and in update view</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                        <border>5</border>
+                        <option>1</option>
+                        <object class="wxChoice" name="ID_UPDATED_VIEW">
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">
@@ -226,6 +247,14 @@ Enter your options here
                 <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
                 <border>5</border>
                 <size>5,5</size>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxALL</flag>
+                <border>5</border>
+                <object class="wxCheckBox" name="ID_CANCELLED">
+                    <label>This series is cancelled or finished. Don't include it in "UPDATE ALL"</label>
+                    <checked>0</checked>
+                </object>
             </object>
             <object class="sizeritem">
                 <flag>wxALIGN_LEFT|wxALL</flag>

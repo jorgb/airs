@@ -22,11 +22,11 @@ _db_create_list = [ "CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, 
                     "CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR)" ]
 
 
-_db_update_list = [ ( 1, 2, [ "ALTER TABLE episode ADD hide_until_update INTEGER",
-                              "ALTER TABLE series ADD last_update VARCHAR",
+_db_update_list = [ ( 1, 2, [ "ALTER TABLE series ADD last_update VARCHAR",
                               "ALTER TABLE series ADD update_period INTEGER",
+                              "ALTER TABLE series ADD postponed INTEGER",
                               "update series set update_period = 0",
-                              "update episode set hide_until_update = 0" ] ) ]
+                              "update series set postponed = 0"] ) ]
 
 class Version(object):
    __storm_table__ = "version"
@@ -41,54 +41,54 @@ version = None
    
 
 def init(db_filename, upgrade = False):
-    """
-    Initializes the database if it doesn't exist, create one. 
-    Returns
-    """
-    global database, store, version
+   """
+   Initializes the database if it doesn't exist, create one. 
+   Returns
+   """
+   global database, store, version
    
-    new_db = not os.path.isfile(db_filename)
+   new_db = not os.path.isfile(db_filename)
    
-    # create instance
-    database = create_database("sqlite:" + db_filename)
-    store = Store(database)
+   # create instance
+   database = create_database("sqlite:" + db_filename)
+   store = Store(database)
    
-    # create a new database 
-    if new_db:
-        for sql_str in _db_create_list:
+   # create a new database 
+   if new_db:
+         for sql_str in _db_create_list:
             store.execute(sql_str)
         
-        #  set version
-        version = Version()
-        version.version = VERSION
-        version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
+         #  set version
+         version = Version()
+         version.version = VERSION
+         version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
         
-        store.add(version)
-        store.commit()
-    else:
-        version = store.find(Version).one()
+         store.add(version)
+         store.commit()
+   else:
+      version = store.find(Version).one()
 
-        # run updates if needed, return        
-        if version.version < VERSION:
-            if not upgrade:
-                close()
-                return UPGRADE_NEEDED
-            else:
-                for from_version, to_version, upd_list in _db_update_list:
-                    if from_version == version.version:
-                        for qry in upd_list:
-                            store.execute(qry)
-                        version.version = to_version
-                        version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
-                        store.commit()
+      # run updates if needed, return        
+      if version.version < VERSION:
+         if not upgrade:
+            close()
+            return UPGRADE_NEEDED
+         else:
+            for from_version, to_version, upd_list in _db_update_list:
+               if from_version == version.version:
+                  for qry in upd_list:
+                     store.execute(qry)
+                  version.version = to_version
+                  version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
+                  store.commit()
                             
 def close():
-    """
-    Close the database connection
-    """
-    global database, store
+   """
+   Close the database connection
+   """
+   global database, store
     
-    if store:
-          store.close()
-    store = None
-    database = None    
+   if store:
+      store.close()
+   store = None
+   database = None    
