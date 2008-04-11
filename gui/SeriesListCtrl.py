@@ -83,10 +83,18 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
         Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
         Publisher().subscribe(self._onEpisodeUpdated, signals.EPISODE_UPDATED)
+        Publisher().subscribe(self._onClearAll, signals.EPISODES_CLEARED)
         
 
     def OnItemActivated(self, evt):
         self.ToggleItem(evt.m_itemIndex)
+
+
+    def _onClearAll(self, msg):
+        """
+        Clear all episodes
+        """
+        self.DeleteAllItems()
 
 
     def OnCheckItem(self, index, flag):

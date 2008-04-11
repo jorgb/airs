@@ -15,14 +15,15 @@ APP_CLOSE            = ('app', 'close')              # final call before window 
                                                      # application WILL close after this call
 APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')   # sent when the settings are changed, submitted after
                                                         # a call to viewmgr.app_settings_changed() is made
-APP_LOG              = ('app',    'log')
+APP_LOG              = ('app',     'log')
 EPISODE_ADDED        = ('episode', 'added')
 EPISODE_DELETED      = ('episode', 'deleted')
 EPISODE_UPDATED      = ('episode', 'updated')
-SERIES_DELETED       = ('series', 'deleted')
-SERIES_ADDED         = ('series', 'added')
-SERIES_SELECT        = ('series', 'selected')
-SERIES_UPDATED       = ('series', 'updated')
+SERIES_DELETED       = ('series',  'deleted')
+SERIES_ADDED         = ('series',  'added')
+SERIES_SELECT        = ('series',  'selected')
+SERIES_UPDATED       = ('series',  'updated')
+EPISODES_CLEARED     = ('episode', 'cleared')
 
 
 # from data model
