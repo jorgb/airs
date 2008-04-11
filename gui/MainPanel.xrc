@@ -55,6 +55,12 @@
                         </object>
                     </object>
                     <object class="notebookpage">
+                        <label>Queue</label>
+                        <object class="wxPanel" name="ID_PANEL">
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
                         <label>Log</label>
                         <object class="wxPanel" name="ID_PANEL2">
                             <style>wxTAB_TRAVERSAL</style>

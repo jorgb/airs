@@ -1,5 +1,8 @@
 Done items for next release
 
+* Episodes list has a popup menu now, where you can quickly perform actions
+  on multiple episodes such as: Mark Seen, Mark Unseen, Mark Updated, Mark
+  Unupdated
 * New and updated series are now reported so the user is triggered
 * Improved speed switching to updated epsisodes
 * Episodes in updated view are now sorted on date, season and then the rest

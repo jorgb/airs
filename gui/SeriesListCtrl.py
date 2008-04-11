@@ -85,12 +85,70 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         
         
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
+        self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
         Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
         Publisher().subscribe(self._onEpisodeUpdated, signals.EPISODE_UPDATED)
         Publisher().subscribe(self._onClearAll, signals.EPISODES_CLEARED)
         
 
+    def _onMenuPopup(self, event):
+        """
+        Create popup menu to perform some options
+        """
+        if self.GetFirstSelected() != wx.NOT_FOUND:        
+            menu = wx.Menu()
+    
+            m1 = menu.Append(wx.NewId(), "&Check Item")
+            m2 = menu.Append(wx.NewId(), "&Uncheck Item")
+            menu.AppendSeparator()
+            
+            m3 = menu.Append(wx.NewId(), "&Reset Updated")
+            m4 = menu.Append(wx.NewId(), "&Set Updated")
+            menu.AppendSeparator()
+    
+            m5 = menu.Append(wx.NewId(), "&Queue Item")
+            
+            self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
+            self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
+            
+            self.PopupMenu(menu)
+            menu.Destroy()    
+
+            
+    def __getSelectedEpisodes(self):
+        episodes = list()
+        idx = self.GetFirstSelected()
+        while idx != wx.NOT_FOUND:
+            episode = db.store.get(series_list.Episode, self.GetItemData(idx))           
+            if episode:
+                episodes.append(episode)
+            idx = self.GetNextSelected(idx)
+        return episodes
+            
+            
+    def _onCheckItem(self, event):
+        """
+        Check all the selected items
+        """
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.seen = 1
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+        
+
+    def _onUncheckItem(self, event):
+        """
+        Check all the selected items
+        """
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.seen = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+            
+            
     def OnItemActivated(self, evt):
         self.ToggleItem(evt.m_itemIndex)
 
@@ -189,7 +247,11 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
                 str = "*"
             self.SetStringItem(idx, 4, str)
             self.SetStringItem(idx, 5, ep.aired)        
-        
+
+            self._updating = True
+            self.CheckItem(idx, ep.seen != 0)
+            self._updating = False            
+            
         
     def _onEpisodeDeleted(self, msg):
         """
