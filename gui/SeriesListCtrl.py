@@ -50,6 +50,11 @@ def _sort_normal(a, b):
         return -1
     if a.season < b.season:
         return 1
+    if a._date and b._date:
+        if a._date < b._date:
+            return 1
+        if a._date > b._date:
+            return -1
     if a.number > b.number:
         return -1
     if a.number < b.number:

@@ -315,7 +315,10 @@ class AirsFrame(wx.Frame):
         if series_title:
             self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
         else:
-            self._statusbar.SetStatusText("Idle ...", 1)
+            if viewmgr.is_busy():
+                self._statusbar.SetStatusText("Working hard ..", 1)
+            else:
+                self._statusbar.SetStatusText("Idle ...", 1)
         pass
     
         

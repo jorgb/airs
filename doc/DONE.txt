@@ -1,5 +1,10 @@
 Done items for next release
 
+* New and updated series are now reported so the user is triggered
+* Improved speed switching to updated epsisodes
+* Episodes in updated view are now sorted on date, season and then the rest
+* Added postponed flag where you can exclude certain series from auto updating
+
 * Updated view selector, you're able to hide future or incomplete episodes
 
 * Series is auto selected now when a new series is added
