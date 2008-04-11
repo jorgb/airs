@@ -18,11 +18,14 @@ class MainPanel(wx.Panel):
 
         pre = wx.PrePanel()
 
+        self.new_c = 0
+        self.upd_c = 0
+
         res = xmlres.loadGuiResource('MainPanel.xrc')
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        #self.SetBackgroundColour(wx.WHITE)
+        self.SetBackgroundColour(wx.WHITE)
         
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
@@ -36,8 +39,6 @@ class MainPanel(wx.Panel):
         self._list_panel = xrc.XRCCTRL(self, "ID_LIST_MIXIN")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = SeriesListCtrl(self._list_panel)
-
-        #self._series_selection.Append("[All Series]", clientData = None)
         
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
@@ -62,6 +63,22 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         
         
+    def _onNewUpdatedEpisodes(self):
+        """
+        Display a message when we are ready to do so
+        """
+        str = ''
+        if self.new_c > 0 and self.upd_c == 0:
+            str = "You have %i new episodes!" % self.new_c
+        elif self.upd_c > 0 and self.new_c == 0:
+            str = "You have %i updated episodes!" % self.upd_c
+        elif self.upd_c > 0 and self.new_c > 0:
+            str = "You have %i new and %i updated episodes!" % (self.new_c, self.upd_c)
+        if str:
+            self.new_c = self.upd_c = 0
+            wx.MessageBox(str, "Information" , wx.ICON_INFORMATION)
+           
+
     def _onUpdateAll(self, event):
         """
         Update all event, will send all series to the receive thread, where they 
@@ -106,9 +123,14 @@ class MainPanel(wx.Panel):
             
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
-        viewmgr.probe_series()        
         
-        
+        # TODO: Might need to be suppressed when the order given 
+        # for update was not scheduled (this is not needed yet)
+        self.new_c, self.upd_c = viewmgr.probe_series()      
+        if self.new_c > 0 or self.upd_c > 0:
+            wx.CallAfter(self._onNewUpdatedEpisodes)
+           
+           
     def _onSignalRestoreSeries(self, msg):
         """
         Perform adding of a restored item to the 

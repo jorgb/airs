@@ -39,6 +39,9 @@ class SeriesSelectionList(object):
         Sets the ID of the selection. This will trigger an episodes
         restore and an update of the view filter
         """
+        if self._selection_id != sel_id:
+            self._selection = dict()
+            Publisher().sendMessage(signals.EPISODES_CLEARED)
         self._selection_id = sel_id
         self.syncEpisodes()
                 

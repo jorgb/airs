@@ -12,6 +12,24 @@ from datetime import date
 # to store a number of series and functionality
 #
 
+def _convertDate(datestr):
+    if datestr:
+        try:
+            dy = int(datestr[0:2])
+            mn = int(datestr[3:5])
+            yr = int(datestr[6:])
+            if yr < 100:
+                if yr < 99 and yr > 39:
+                    yr = 1900 + yr
+                else:
+                    yr = 2000 + yr
+            return date(yr, mn, dy)
+        except ValueError:
+            return None   
+    else:
+        return None
+
+
 class Series(object):
     """
     List of episodes manager
@@ -22,9 +40,15 @@ class Series(object):
     url = Unicode()
     postponed = Int()
     last_update = Unicode()
-    update_period = Int()
+    update_period = Int()       # in how many days later
     
-
+    def __storm_loaded__(self):
+        self._last_update = _convertDate(self.last_update)
+        
+    def __init__(self):
+        self._last_update = None
+        
+        
 class Episode(object):
     """
     Serie episode item
@@ -39,6 +63,13 @@ class Episode(object):
     last_in = Int()               # present in last update
     series_id = Int()             # id of series table entry
 
+    def __storm_loaded__(self):
+        """
+        Load hook used to convert the date to a 
+        proper class
+        """
+        self._date = _convertDate(self.aired)
+        
     def __init__(self):
         self.title = u""
         self.number = u""
@@ -46,25 +77,13 @@ class Episode(object):
         self.aired = u""
         self.seen = 0
         self.last_in = 0
+        self._date = None
         
     def getDate(self):
         """
         Returns date
         """
-        if self.aired:
-            try:
-                dy = int(self.aired[0:2])
-                mn = int(self.aired[3:5])
-                yr = int(self.aired[6:])
-                if yr < 100:
-                    if yr < 99 and yr > 39:
-                        yr = 1900 + yr
-                    else:
-                        yr = 2000 + yr
-            except ValueError:
-                return None    
-            return date(yr, mn, dy)
-        return None
+        return self._date
     
 class SeriesList(object):
     """

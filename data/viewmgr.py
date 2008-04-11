@@ -146,10 +146,11 @@ def probe_series():
     # we use this to verify the series is present 
     series_cache = []
     db_changed = False
+    added = 0
+    updated = 0
     
     while not retriever.out_queue.empty():
         episode = retriever.out_queue.get()
-        
         
         # for every episode, check if it exists in the DB. If it does 
         # attempt an update. If it doesn't, we add it. We use the 
@@ -170,6 +171,7 @@ def probe_series():
                     can_add = True
             
             if can_add:
+                added += 1
                 episode.last_in = 1
                 db.store.add(episode)
                 db_changed = True
@@ -190,6 +192,7 @@ def probe_series():
                 updated = True
                 
             if updated:
+                updated += 1
                 db_changed = True
                 result.last_in = 1
                 _series_sel.filterEpisode(result, updated = True)
@@ -198,6 +201,7 @@ def probe_series():
     if db_changed:
         db.store.commit()
         
+    return (added, updated)
         
 def is_busy():
     """
