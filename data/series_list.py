@@ -39,18 +39,12 @@ class Episode(object):
     last_in = Int()               # present in last update
     series_id = Int()             # id of series table entry
 
-    def __init__(self):
-        self.title = u""
-        self.number = u""
-        self.season = u""
-        self.aired = u""
-        self.seen = 0
-        self.last_in = 0
-        
-    def getDate(self):
+    def __storm_loaded__(self):
         """
-        Returns date
+        Load hook used to convert the date to a 
+        proper class
         """
+        self._date = None
         if self.aired:
             try:
                 dy = int(self.aired[0:2])
@@ -61,10 +55,25 @@ class Episode(object):
                         yr = 1900 + yr
                     else:
                         yr = 2000 + yr
+                self._date = date(yr, mn, dy)
             except ValueError:
-                return None    
-            return date(yr, mn, dy)
-        return None
+                return    
+        
+
+    def __init__(self):
+        self.title = u""
+        self.number = u""
+        self.season = u""
+        self.aired = u""
+        self.seen = 0
+        self.last_in = 0
+        self._date = None
+        
+    def getDate(self):
+        """
+        Returns date
+        """
+        return self._date
     
 class SeriesList(object):
     """

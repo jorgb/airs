@@ -10,9 +10,41 @@ from data import signals, viewmgr, db, series_list
 from wx.lib.pubsub import Publisher
 
 
-def _sort(a, b):
+def _sort_updated(a, b):
     """
-    Sort episode
+    Sort method, updated view 
+    """
+    if a._date and b._date:
+        if a._date < b._date:
+            return 1
+        if a._date > b._date:
+            return -1
+    else:
+        if a._date and not b._date:
+            return -1
+        if not a._date and b._date:
+            return 1
+                
+    if a.season > b.season:
+        return -1
+    if a.season < b.season:
+        return 1
+    if a.number > b.number:
+        return -1
+    if a.number < b.number:
+        return 1
+    # sort by episode title
+    if a.title > b.title:
+        return 1
+    if a.title < b.title:
+        return -1
+    # else it's equal enough
+    return 0
+
+
+def _sort_normal(a, b):
+    """
+    Sort method, normal view (no updated) 
     """
     if a.season > b.season:
         return -1
@@ -86,11 +118,16 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         pos = 0
         
         # dynamically determine position
+        if viewmgr._series_sel._selection_id != -1:
+            sortfunc = _sort_normal
+        else:
+            sortfunc = _sort_updated
+        
         if self.GetItemCount() > 0:            
             for idx in xrange(0, self.GetItemCount()):
                 curr_ep = db.store.get(series_list.Episode, self.GetItemData(idx))
                 if curr_ep:
-                    if _sort(ep, curr_ep) <= 0:
+                    if sortfunc(ep, curr_ep) <= 0:
                         pos = idx
                         break
                     pos += 1
