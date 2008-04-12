@@ -120,8 +120,8 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
                 self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
                 self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
                 self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
-                self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m1)
-                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m2)
+                self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
+                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
             else:
                 m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
                 menu.AppendSeparator()
@@ -279,7 +279,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         if ep.last_in != 0:
             str = "U"
         if ep.queued != 0:
-            str += "D"
+            str += "Q"
         self.SetStringItem(index, 4, str)
         self.SetStringItem(index, 5, ep.aired)
         
@@ -305,7 +305,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             if ep.last_in != 0:
                 str = "U"
             if ep.queued != 0:
-                str += "D"
+                str += "Q"
             self.SetStringItem(idx, 4, str)
             self.SetStringItem(idx, 5, ep.aired)        
 
