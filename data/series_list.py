@@ -69,7 +69,7 @@ class Episode(object):
         Load hook used to convert the date to a 
         proper class
         """
-        self._date = _convertDate(self.aired)
+        self.__date = _convertDate(self.aired)
         
     def __init__(self):
         self.title = u""
@@ -78,13 +78,16 @@ class Episode(object):
         self.aired = u""
         self.seen = 0
         self.last_in = 0
-        self._date = None
+        self.__date = None
+        self.queued = 0
         
     def getDate(self):
         """
         Returns date
         """
-        return self._date
+        if not self.__date and self.aired:
+            self.__date = _convertDate(self.aired)
+        return self.__date
     
 class SeriesList(object):
     """

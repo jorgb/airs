@@ -138,7 +138,7 @@
                         <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>In Download Queue:</label>
+                            <label>In Download:</label>
                         </object>
                     </object>
                     <object class="sizeritem">

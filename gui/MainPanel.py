@@ -26,7 +26,7 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        self.SetBackgroundColour(wx.WHITE)
+        #self.SetBackgroundColour(wx.WHITE)
         
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
@@ -109,7 +109,8 @@ class MainPanel(wx.Panel):
     
         # update some controls
         self._update_all.Enable(not viewmgr.is_busy())
-        
+        self._update_one.Enable(viewmgr._series_sel._selection_id >= 0)
+
         # send messages from thread queue to log window
         q = viewmgr.retriever.msg_queue
         msgs = 30

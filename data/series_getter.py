@@ -228,26 +228,3 @@ class TvComSeriesDownloadCmd(object):
             return self.__compose_result(None, "No valid series found!")
         else:
             return self.__compose_result(ep_list, "")
-    
-
-# testing code! 
-if __name__ == "__main__":
-
-    log = Queue()
-    
-    alt_site = ''
-
-    import sys
-
-    if len(sys.argv) > 1:
-        alt_site = sys.argv[1]
-          
-        print "Testing -- %s" % alt_site
-        c = EpGuidesSeriesDownloadCmd(log, 'test', alt_site)
-        series_lst, err_str = c.retrieve()
-        if err_str:
-            print "ERROR: %s" % err_str 
-        else:
-            for episode in series_lst:
-                print "(%s) %s - %s. %s" % (episode._date, episode._season, episode._ep_nr, episode._ep_title)
-                

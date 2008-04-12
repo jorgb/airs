@@ -14,15 +14,18 @@ def _sort_updated(a, b):
     """
     Sort method, updated view 
     """
-    if a._date and b._date:
-        if a._date < b._date:
+    adate = a.getDate()
+    bdate = b.getDate()
+    
+    if adate and bdate:
+        if adate < bdate:
             return 1
-        if a._date > b._date:
+        if adate > bdate:
             return -1
     else:
-        if a._date and not b._date:
+        if adate and not bdate:
             return -1
-        if not a._date and b._date:
+        if not adate and bdate:
             return 1
                 
     if a.season > b.season:
@@ -50,10 +53,14 @@ def _sort_normal(a, b):
         return -1
     if a.season < b.season:
         return 1
-    if a._date and b._date:
-        if a._date < b._date:
+
+    adate = a.getDate()
+    bdate = b.getDate()    
+    
+    if adate and bdate:
+        if adate < bdate:
             return 1
-        if a._date > b._date:
+        if adate > bdate:
             return -1
     if a.number > b.number:
         return -1
@@ -80,7 +87,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(1, "Season", width = 70)
         self.InsertColumn(2, "Series", width = 100)        
         self.InsertColumn(3, "Title", width = 220) 
-        self.InsertColumn(4, "Upd", width = 40) 
+        self.InsertColumn(4, "Stat", width = 40) 
         self.InsertColumn(5, "Date", width = 100) 
         
         
@@ -113,10 +120,15 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
                 self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
                 self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
                 self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
+                self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m1)
+                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m2)
             else:
                 m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
                 menu.AppendSeparator()
                 m6 = menu.Append(wx.NewId(), "&Revert to Updated")
+
+                self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
+                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
     
             self.PopupMenu(menu)
             menu.Destroy()    
@@ -141,7 +153,34 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             db.store.commit()
             viewmgr.episode_updated(episode)
     
-    
+
+    def _onRemoveQueueView(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.last_in = 0
+            episode.queued = 0
+            episode.seen = 1
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+            
+            
+    def _onClearUpdatedStatus(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.last_in = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+
+
+    def _onSetUpdatedStatus(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.last_in = 1
+            episode.queued = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+
+            
     def _onCheckItem(self, event):
         """
         Check all the selected items
@@ -149,6 +188,8 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         episodes = self.__getSelectedEpisodes()
         for episode in episodes:
             episode.seen = 1
+            episode.last_in = 0
+            episode.queued = 0
             db.store.commit()
             viewmgr.episode_updated(episode)
         
@@ -188,6 +229,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             if flag:
                 episode.seen = 1
                 episode.last_in = 0
+                episode.queued = 0
             else:
                 episode.seen = 0
             
@@ -235,7 +277,9 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.SetStringItem(index, 3, ep.title)
         str = ""
         if ep.last_in != 0:
-            str = "*"
+            str = "U"
+        if ep.queued != 0:
+            str += "D"
         self.SetStringItem(index, 4, str)
         self.SetStringItem(index, 5, ep.aired)
         
@@ -259,7 +303,9 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             self.SetStringItem(idx, 3, ep.title)
             str = ""
             if ep.last_in != 0:
-                str = "*"
+                str = "U"
+            if ep.queued != 0:
+                str += "D"
             self.SetStringItem(idx, 4, str)
             self.SetStringItem(idx, 5, ep.aired)        
 

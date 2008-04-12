@@ -1,5 +1,6 @@
 Done items for next release
 
+* Improved the process by setting the status flags more intelligently
 * Download batch gauge added to show progress of downloading
 * Added Queue view which shows all episodes that are queued (for downloading 
   or whatever)
