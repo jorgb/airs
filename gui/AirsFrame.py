@@ -177,9 +177,10 @@ class AirsFrame(wx.Frame):
 
     def _onGuiEdit(self, event):
         """ Event handler to edit a Series """
-
+        
+        # only edit when a genuine series is selected
         sel_id = viewmgr._series_sel._selection_id
-        if sel_id != -1:        
+        if sel_id >= 0:        
             dlg = SeriesDlg.SeriesDlg(self)
             dlg._editing = True
             
@@ -196,7 +197,7 @@ class AirsFrame(wx.Frame):
         """ Event handler for deleting a Series """
 
         sel_id = viewmgr._series_sel._selection_id
-        if sel_id != -1:
+        if sel_id >= 0:
             series = db.store.get(series_list.Series, sel_id)
     
             if wx.MessageBox("Are you sure you want to delete this series?\n" + \
@@ -265,7 +266,7 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
         
-        if viewmgr._series_sel._selection_id != -1:
+        if viewmgr._series_sel._selection_id >= 0:
             has_selection = True
         else:
             has_selection = False        

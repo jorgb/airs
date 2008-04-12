@@ -99,19 +99,25 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         if self.GetFirstSelected() != wx.NOT_FOUND:        
             menu = wx.Menu()
     
-            m1 = menu.Append(wx.NewId(), "&Check Item")
-            m2 = menu.Append(wx.NewId(), "&Uncheck Item")
-            menu.AppendSeparator()
-            
-            m3 = menu.Append(wx.NewId(), "&Reset Updated")
-            m4 = menu.Append(wx.NewId(), "&Set Updated")
-            menu.AppendSeparator()
+            if viewmgr._series_sel._selection_id != -2:
+                m5 = menu.Append(wx.NewId(), "&Add to Queue View")
+                menu.AppendSeparator()
     
-            m5 = menu.Append(wx.NewId(), "&Queue Item")
-            
-            self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
-            self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
-            
+                m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
+                m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
+                menu.AppendSeparator()
+                
+                m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
+                m4 = menu.Append(wx.NewId(), "&Set Updated Status")
+
+                self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
+                self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
+                self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
+            else:
+                m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
+                menu.AppendSeparator()
+                m6 = menu.Append(wx.NewId(), "&Revert to Updated")
+    
             self.PopupMenu(menu)
             menu.Destroy()    
 
@@ -127,6 +133,15 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         return episodes
             
             
+    def _onAddToQueueView(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.last_in = 0
+            episode.queued = 1
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+    
+    
     def _onCheckItem(self, event):
         """
         Check all the selected items
@@ -189,7 +204,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         pos = 0
         
         # dynamically determine position
-        if viewmgr._series_sel._selection_id != -1:
+        if viewmgr._series_sel._selection_id >= 0:
             sortfunc = _sort_normal
         else:
             sortfunc = _sort_updated

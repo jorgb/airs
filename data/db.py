@@ -17,7 +17,7 @@ UPGRADE_NEEDED = 1
 _db_create_list = [ "CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR, " + \
                     "                     last_update VARCHAR, update_period INTEGER,postponed INTEGER)",
                     "CREATE TABLE episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, " + \
-                    "                      season VARCHAR, aired VARCHAR, seen INTEGER, " + \
+                    "                      season VARCHAR, aired VARCHAR, seen INTEGER, queued INTEGER, " + \
                     "                      last_in INTEGER, series_id INTEGER, hide_until_update INTEGER)",
                     "CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR)" ]
 
@@ -25,6 +25,8 @@ _db_create_list = [ "CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, 
 _db_update_list = [ ( 1, 2, [ "ALTER TABLE series ADD last_update VARCHAR",
                               "ALTER TABLE series ADD update_period INTEGER",
                               "ALTER TABLE series ADD postponed INTEGER",
+                              "ALTER TABLE episode ADD queued INTEGER",
+                              "update episode set queued = 0",
                               "update series set update_period = 0",
                               "update series set postponed = 0"] ) ]
 

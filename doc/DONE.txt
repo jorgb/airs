@@ -1,5 +1,8 @@
 Done items for next release
 
+* Download batch gauge added to show progress of downloading
+* Added Queue view which shows all episodes that are queued (for downloading 
+  or whatever)
 * Episodes list has a popup menu now, where you can quickly perform actions
   on multiple episodes such as: Mark Seen, Mark Unseen, Mark Updated, Mark
   Unupdated

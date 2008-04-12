@@ -62,6 +62,7 @@ class Episode(object):
     seen = Int()                  # seen or not by the user
     last_in = Int()               # present in last update
     series_id = Int()             # id of series table entry
+    queued = Int()                # also listed in queue
 
     def __storm_loaded__(self):
         """

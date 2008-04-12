@@ -28,6 +28,7 @@ class SeriesSelectionList(object):
         # selection criteria for the series ID. If an ID is selected
         # all episodes belonging to a different series are removed
         # if id is -1, the last updated list is shown
+        # if id is -2, the download list is shown
         self._selection_id = -1
         self._show_only_unseen = False
         self._update_mode = SHOW_ALL
@@ -88,18 +89,24 @@ class SeriesSelectionList(object):
             self.filterEpisode(episode)
 
         # reset the DB selection    
-        if self._selection_id != -1:
-            # restore the episode list belonging to this series_id
-            result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.series_id == self._selection_id)
-            episodes = [episode for episode in result]
-        else:
+        if self._selection_id == -1:
             # we restore all episodes that are last updated
             result = db.store.find(series_list.Episode, 
                                    series_list.Episode.last_in != 0)
-            episodes = [episode for episode in result]
-            
+        elif self._selection_id == -2:
+            # we restore all episodes that are queued
+            result = db.store.find(series_list.Episode, 
+                                   series_list.Episode.queued != 0)
+        else:
+            # restore the episode list belonging to this series_id
+            # TODO: Add filter criteria that narrows the selection being
+            # returned (e.g. if there are seen items and the filter is 
+            # set to hide these items)
+            result = db.store.find(series_list.Episode, 
+                                   series_list.Episode.series_id == self._selection_id)
+                        
         # resync for adding new items        
+        episodes = [episode for episode in result]
         for episode in episodes:
             self.filterEpisode(episode)
                 
@@ -124,9 +131,12 @@ class SeriesSelectionList(object):
 
         # further criteria matching
         if allowed:
-            if self._selection_id != -1 and (episode.series_id != self._selection_id):            
-                return False
-                
+            # hide unqueued items if our view is 
+            # for queued items only
+            if self._selection_id == -2:
+                if episode.queued == 0:
+                    return False
+                            
             if episode.seen != 0 and self._show_only_unseen:
                 return False
                                 

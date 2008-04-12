@@ -20,6 +20,7 @@ class MainPanel(wx.Panel):
 
         self.new_c = 0
         self.upd_c = 0
+        self._min_idx = 0
 
         res = xmlres.loadGuiResource('MainPanel.xrc')
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
@@ -31,8 +32,8 @@ class MainPanel(wx.Panel):
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
-        self._reset_updated = xrc.XRCCTRL(self, "ID_RESET_UPDATED")
         self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
+        self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -52,7 +53,6 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
-        self.Bind(wx.EVT_BUTTON, self._onResetUpdated, self._reset_updated) 
         self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
@@ -117,9 +117,13 @@ class MainPanel(wx.Panel):
             viewmgr.app_log(q.get())
             msgs -= 1
 
+        # show queue progress
+        bs, cs = viewmgr.retriever.getProgress()
+        self._queue.SetRange(bs)
+        self._queue.SetValue(cs)
+            
         # enable / disable some button
-        self._reset_updated.Enable(self._series_list.GetFirstSelected() != wx.NOT_FOUND)
-        self._updated_view.Enable(viewmgr._series_sel._selection_id == -1)
+        self._updated_view.Enable(not viewmgr._series_sel._selection_id >= 0)
             
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
@@ -129,7 +133,7 @@ class MainPanel(wx.Panel):
         self.new_c, self.upd_c = viewmgr.probe_series()      
         if self.new_c > 0 or self.upd_c > 0:
             wx.CallAfter(self._onNewUpdatedEpisodes)
-           
+        
            
     def _onSignalRestoreSeries(self, msg):
         """
@@ -147,7 +151,8 @@ class MainPanel(wx.Panel):
         
         # show only updated
         sel = self._series_selection
-        sel.Append("[Updated View]", -1)
+        sel.Append("[Updated Episodes]", -1)
+        self._min_idx = sel.Append("[Queued Episodes]", -2)
         
         # populate the criteria filter
         uv = self._updated_view
@@ -192,11 +197,13 @@ class MainPanel(wx.Panel):
         
         sel = self._series_selection
         series_id = sel.GetClientData(sel.GetSelection())
-        if series_id != -1:
+        if series_id >= 0:
             series = db.store.get(series_list.Series, series_id)
+            viewmgr.set_selection(series)
+        elif series_id == -1:
+            viewmgr.set_updated_selection()
         else:
-            series = None
-        viewmgr.set_selection(series)
+            viewmgr.set_queue_selection()
        
         busy.Destroy()
         self._series_list.Thaw()
@@ -214,7 +221,7 @@ class MainPanel(wx.Panel):
             curr_id = sel.GetClientData(sel.GetSelection()) 
         
         # first remove
-        for i in xrange(0, sel.GetCount()):
+        for i in xrange(self._min_idx, sel.GetCount()):
             if sel.GetClientData(i) == series.id:
                 sel.Delete(i)
                 break
@@ -233,7 +240,7 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         series = msg.data
         
-        for i in xrange(0, sel.GetCount()):
+        for i in xrange(self._min_idx, sel.GetCount()):
             if sel.GetClientData(i) == series.id:
                 sel.SetString(i, series.name)
                 sel.SetSelection(i)
@@ -247,7 +254,7 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         series = msg.data
         idx = 0
-        for i in xrange(1, sel.GetCount()):
+        for i in xrange(self._min_idx, sel.GetCount()):
             if sel.GetString(i) < series.name :
                 idx += 1
         sel.Insert(series.name, idx, series.id)

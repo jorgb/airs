@@ -37,6 +37,9 @@ class SeriesRetrieveThread(Thread):
         self.stop = False
         self._is_downloading = False
         self._current_series = ""
+        self._batchSize = 0              # a number how many items seen at once
+        self._batch = list()
+        self._currSize = 0               # use this for current size
         
         self.__report('Series retrieve thread initialized...')
         pass
@@ -59,13 +62,22 @@ class SeriesRetrieveThread(Thread):
         
         # process stuff here
         while not self.stop:
-            if not self.in_queue.empty():
             
+            # first take a batch from the queue
+            while not self.in_queue.empty():
                 series = self.in_queue.get()
+                self._batch.append(series)
+            if self._batchSize < len(self._batch):
+                self._batchSize = len(self._batch)
                 
+            # process the batch one at the time
+            while len(self._batch) > 0 and not self.stop:
+                self._is_downloading = True
+                series = self._batch[0]
+                del self._batch[0]
+                self._currSize = len(self._batch)
                 self.__report("Processing series '%s' ..." % series.name)
                 self._current_series = series.name
-                self._is_downloading = True
                 
                 # do all URL's 
                 for url in series.url:
@@ -81,7 +93,6 @@ class SeriesRetrieveThread(Thread):
                         if cmd:                            
                             items = cmd.retrieve()
                             
-                            self._is_downloading = False
                             self._current_series = ''
                             
                             # in case of errors
@@ -96,6 +107,10 @@ class SeriesRetrieveThread(Thread):
                         else:
                                 self.__report("ERROR: Unknown series url to process: %s" % url)
                             
+            
+            self._batchSize = 0
+            self._currSize = 0
+            self._is_downloading = False
             time.sleep(0.2)
         
         self.__report('Series retrieve thread stopped')
@@ -112,4 +127,9 @@ class SeriesRetrieveThread(Thread):
         """
         return self._current_series
 
-    
+
+    def getProgress(self):
+        """
+        Returns a tuple that reports the batch size and the current size
+        """
+        return (self._batchSize, self._currSize)

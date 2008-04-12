@@ -55,12 +55,6 @@
                         </object>
                     </object>
                     <object class="notebookpage">
-                        <label>Queue</label>
-                        <object class="wxPanel" name="ID_PANEL">
-                            <style>wxTAB_TRAVERSAL</style>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
                         <label>Log</label>
                         <object class="wxPanel" name="ID_PANEL2">
                             <style>wxTAB_TRAVERSAL</style>
@@ -88,16 +82,14 @@
                         <flag>wxGROW|wxLEFT|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
-                            <label>Show only unseen episodes</label>
+                            <label>Show only unprocessed episodes</label>
                             <checked>0</checked>
                         </object>
                     </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM</flag>
+                    <object class="spacer">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>, and in update view</label>
-                        </object>
+                        <size>5,5</size>
                     </object>
                     <object class="sizeritem">
                         <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
@@ -116,10 +108,14 @@
                 </object>
             </object>
             <object class="sizeritem">
-                <flag>wxALIGN_CENTER_HORIZONTAL</flag>
+                <flag>wxGROW</flag>
                 <border>5</border>
                 <object class="wxBoxSizer">
                     <orient>wxHORIZONTAL</orient>
+                    <object class="spacer">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                    </object>
                     <object class="sizeritem">
                         <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
@@ -134,18 +130,25 @@
                             <label>&amp;Update All</label>
                         </object>
                     </object>
-                    <object class="sizeritem">
+                    <object class="spacer">
                         <flag>wxGROW|wxALL</flag>
                         <border>5</border>
-                        <object class="wxStaticLine" name="wxID_STATIC">
-                            <style>wxLI_VERTICAL</style>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>In Download Queue:</label>
                         </object>
                     </object>
                     <object class="sizeritem">
                         <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
-                        <object class="wxButton" name="ID_RESET_UPDATED">
-                            <label>&amp;Reset Updated</label>
+                        <option>1</option>
+                        <object class="wxGauge" name="ID_QUEUE">
+                            <style>wxGA_HORIZONTAL</style>
+                            <value>0</value>
+                            <range>100</range>
                         </object>
                     </object>
                 </object>
