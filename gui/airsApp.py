@@ -25,6 +25,9 @@ class AirsApp(wx.App):
         appcfg.Read()
 
         # initialize / create database
+        if not os.path.exists(wx.StandardPaths.Get().GetUserDataDir()):
+            os.makedirs(wx.StandardPaths.Get().GetUserDataDir())
+        
         dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), 'series.db')
         if db.init(dbfile, False) == db.UPGRADE_NEEDED:
             res = wx.MessageBox("The database needs upgrading. Please backup the file:\n" + \
