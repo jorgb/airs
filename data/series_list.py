@@ -89,6 +89,23 @@ class Episode(object):
             self.__date = _convertDate(self.aired)
         return self.__date
     
+    def setDate(self, d):
+        """
+        Sets date
+        """
+        self.__date = d
+        if d:
+            self.aired = unicode("%02i-%02i-%i" % (d.day, d.month, d.year))
+        else:
+            self.aired = unicode('')
+    
+    def getDateStr(self):
+        d = self.getDate()
+        if d:
+            return "%02i-%02i-%i" % (d.day, d.month, d.year)
+        else:
+            return self.aired
+            
 class SeriesList(object):
     """
     List of series collection manager 

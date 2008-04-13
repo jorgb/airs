@@ -18,8 +18,9 @@ class MainPanel(wx.Panel):
 
         pre = wx.PrePanel()
 
-        self.new_c = 0
-        self.upd_c = 0
+        # two count values displaying number of
+        # episodes that are reported new / updated
+        
         self._min_idx = 0
 
         res = xmlres.loadGuiResource('MainPanel.xrc')
@@ -34,7 +35,10 @@ class MainPanel(wx.Panel):
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
         self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
         self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
-
+        self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
+        self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
+        self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
+        
         # put the mixin control in place and initialize the
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_LIST_MIXIN")
@@ -54,6 +58,8 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
+        self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
+        
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -62,21 +68,47 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSerieSelected, signals.SERIES_SELECT)
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         
+        self._initNotifyArea()
+        
+    
+    def _initNotifyArea(self):
+        """
+        Clear notification area
+        """
+        self._notifyarea.SetBackgroundColour(wx.NullColor)
+        self._notifyarea.Refresh()  
+        self._notifytext.SetLabel("No changes ...")
+        self._updcount = 0
+        self._newcount = 0        
+        
+        
+    def _onClearNotify(self, event):
+        """
+        Clear message
+        """
+        self._initNotifyArea()
+                
         
     def _onNewUpdatedEpisodes(self):
         """
         Display a message when we are ready to do so
         """
+        
+        if self._newcount > 0 or self._updcount > 0:
+            self._notifyarea.SetBackgroundColour(wx.Colour(150, 255, 145))
+        else:
+            self._notifyarea.SetBackgroundColour(wx.NullColor())
+        self._notifyarea.Refresh()
+        
         str = ''
-        if self.new_c > 0 and self.upd_c == 0:
-            str = "You have %i new episodes!" % self.new_c
-        elif self.upd_c > 0 and self.new_c == 0:
-            str = "You have %i updated episodes!" % self.upd_c
-        elif self.upd_c > 0 and self.new_c > 0:
-            str = "You have %i new and %i updated episodes!" % (self.new_c, self.upd_c)
+        if self._newcount > 0 and self._updcount == 0:
+            str = "You have %i new episodes!" % self._newcount
+        elif self._updcount > 0 and self._newcount == 0:
+            str = "You have %i updated episodes!" % self._updcount
+        elif self._updcount > 0 and self._newcount > 0:
+            str = "You have %i new and %i updated episodes!" % (self._newcount, self._updcount)
         if str:
-            self.new_c = self.upd_c = 0
-            wx.MessageBox(str, "Information" , wx.ICON_INFORMATION)
+            self._notifytext.SetLabel(str)
            
 
     def _onUpdateAll(self, event):
@@ -129,10 +161,10 @@ class MainPanel(wx.Panel):
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
         
-        # TODO: Might need to be suppressed when the order given 
-        # for update was not scheduled (this is not needed yet)
-        self.new_c, self.upd_c = viewmgr.probe_series()      
-        if self.new_c > 0 or self.upd_c > 0:
+        new_c, upd_c = viewmgr.probe_series()      
+        if new_c > 0 or upd_c > 0:
+            self._newcount += new_c
+            self._updcount += upd_c
             wx.CallAfter(self._onNewUpdatedEpisodes)
         
            

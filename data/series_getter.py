@@ -150,6 +150,31 @@ class EpGuidesSeriesDownloadCmd(object):
             return self.__compose_result(ep_list, "")
 
 
+def _parseTvComDate(s):
+    """
+    Parses the date in the format:
+       MonthName DayNr, YearNr
+    """
+    l = s.split(' ')    
+    # remove all empty pieces
+    if l:
+        l = [s for s in l if s != '']
+
+    if len(l) < 3:
+        return ''
+            
+    if l[0].lower() in _months:
+        month = _months[l[0].lower()]
+    
+    try:
+        daynr = int(l[1].strip(','))
+        yearnr = int(l[2])
+    except ValueError:
+        return ''
+    
+    return "%02i-%s-%04i" % (daynr, month, yearnr)
+    
+        
 class TvComSeriesDownloadCmd(object):
     """ Extract serie from tv.com site and returns result """
     
@@ -218,7 +243,16 @@ class TvComSeriesDownloadCmd(object):
                 episode = series_list.Episode()
                 episode.number = unicode(ep[0].strip().rstrip('.'))
                 episode.title = unicode(ep[1].strip())
-                episode.series_id = self._series.id                                                
+                episode.series_id = self._series.id  
+                
+                # find date 
+                td_date = r.findNextSibling("td")
+                if td_date:
+                    txt = td_date.fetchText(text = True)
+                    if txt:
+                        date_txt = txt[0].strip()
+                        episode.aired = unicode(_parseTvComDate(date_txt))
+                
                 ep_list.append( episode )
         
                 

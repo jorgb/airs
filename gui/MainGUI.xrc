@@ -74,7 +74,46 @@
                 </object>
             </object>
             <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
+                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                <border>5</border>
+                <object class="wxPanel" name="ID_NOTIFICATION_AREA">
+                    <style>wxSIMPLE_BORDER|wxTAB_TRAVERSAL</style>
+                    <object class="wxBoxSizer">
+                        <orient>wxHORIZONTAL</orient>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
+                            <border>5</border>
+                            <object class="wxStaticBitmap" name="wxID_STATIC">
+                                <size>16,16</size>
+                                <bitmap>images/information.png</bitmap>
+                            </object>
+                        </object>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
+                            <border>5</border>
+                            <object class="wxStaticText" name="ID_NOTIFY_TEXT">
+                                <label>No information yet</label>
+                            </object>
+                        </object>
+                        <object class="spacer">
+                            <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                            <border>5</border>
+                            <option>1</option>
+                            <size>5,5</size>
+                        </object>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                            <border>5</border>
+                            <object class="wxButton" name="ID_CLEAR_NOTIFICATION">
+                                <size>20,-1</size>
+                                <label>X</label>
+                            </object>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW|wxLEFT|wxRIGHT</flag>
                 <border>5</border>
                 <object class="wxBoxSizer">
                     <orient>wxHORIZONTAL</orient>
@@ -92,7 +131,7 @@
                         <size>5,5</size>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxBOTTOM</flag>
                         <border>5</border>
                         <option>1</option>
                         <object class="wxChoice" name="ID_UPDATED_VIEW">

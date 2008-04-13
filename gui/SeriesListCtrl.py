@@ -281,7 +281,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         if ep.queued != 0:
             str += "Q"
         self.SetStringItem(index, 4, str)
-        self.SetStringItem(index, 5, ep.aired)
+        self.SetStringItem(index, 5, ep.getDateStr())
         
         self._updating = True
         self.CheckItem(index, ep.seen != 0)
@@ -307,7 +307,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             if ep.queued != 0:
                 str += "Q"
             self.SetStringItem(idx, 4, str)
-            self.SetStringItem(idx, 5, ep.aired)        
+            self.SetStringItem(idx, 5, ep.getDateStr())        
 
             self._updating = True
             self.CheckItem(idx, ep.seen != 0)

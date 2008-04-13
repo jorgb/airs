@@ -79,7 +79,7 @@ class AirsFrame(wx.Frame):
 
         # Series menu
         mnu = wx.Menu()
-        self._menuAddNew = wx.MenuItem(mnu, wx.NewId(), "&Add ...\tCtrl+A", 
+        self._menuAddNew = wx.MenuItem(mnu, wx.NewId(), "&Add ...\tCtrl+N", 
                                        "Add a new Series", wx.ITEM_NORMAL)
         self._menuAddNew.SetBitmap(icon_add.getBitmap())
         mnu.AppendItem(self._menuAddNew)
@@ -128,6 +128,7 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self._onGuiAbout, self._menuHelpAbout)
         self.Bind(wx.EVT_MENU, self._onGuiExit, self._menuExit)
         self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelpVisitSite)
+        self.Bind(wx.EVT_MENU, self._onGuiHelp, self._menuHelp)
 
         self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
@@ -373,3 +374,8 @@ class AirsFrame(wx.Frame):
         # use execute_uri
         if appcfg.SITE_URL[0]:
             wx.LaunchDefaultBrowser(appcfg.SITE_URL[0])
+
+    def _onGuiHelp(self, event):
+        # use execute_uri
+        if appcfg.SITE_URL[0]:
+            wx.LaunchDefaultBrowser("http://www.xs4all.nl/~jorgb/wb/MyProjects(2f)Airs(2f)Manual.html") 

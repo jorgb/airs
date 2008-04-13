@@ -201,8 +201,8 @@ def probe_series():
             if result.season == '' and episode.season != '':
                 result.season = unicode(episode.season)
                 updated = True
-            if result.aired == '' and episode.aired != '':
-                result.aired = unicode(episode.aired)
+            if result.getDate() == None and episode.getDate() != None:
+                result.setDate(episode.getDate())
                 updated = True
                 
             if updated:

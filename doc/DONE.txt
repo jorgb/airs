@@ -1,5 +1,6 @@
 Done items for next release
 
+* tv.com retrieve thread also extracts the date
 * Improved the process by setting the status flags more intelligently
 * Download batch gauge added to show progress of downloading
 * Added Queue view which shows all episodes that are queued (for downloading 
@@ -7,7 +8,7 @@ Done items for next release
 * Episodes list has a popup menu now, where you can quickly perform actions
   on multiple episodes such as: Mark Seen, Mark Unseen, Mark Updated, Mark
   Unupdated
-* New and updated series are now reported so the user is triggered
+* New and updated series are now reported so the user is triggered by a notification area
 * Improved speed switching to updated epsisodes
 * Episodes in updated view are now sorted on date, season and then the rest
 * Added postponed flag where you can exclude certain series from auto updating
