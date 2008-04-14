@@ -3,15 +3,15 @@ Source: ..\airs.py; DestDir: {app}
 Source: ..\airs.pyw; DestDir: {app}
 Source: ..\gui\*.xrc; DestDir: {app}\gui
 Source: ..\gui\*.py; DestDir: {app}\gui
-Source: ..\db\*.py; DestDir: {app}\db
+Source: ..\data\*.py; DestDir: {app}\data
 Source: ..\gui\images\*.png; DestDir: {app}\gui\images
 Source: ..\gui\images\*.py; DestDir: {app}\gui\images
 Source: ..\airs.ico; DestDir: {app}
 [Setup]
-OutputDir=.\
+OutputDir=.
 SourceDir=.\
 OutputBaseFilename=Airs-Src
-VersionInfoVersion=1.0
+VersionInfoVersion=0.9
 VersionInfoCompany=ImpossibleSoft
 VersionInfoCopyright=(c) Jorgen Bodde
 AppCopyright=© Jorgen Bodde

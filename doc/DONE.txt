@@ -1,20 +1,3 @@
 Done items for next release
 
-* tv.com retrieve thread also extracts the date
-* Improved the process by setting the status flags more intelligently
-* Download batch gauge added to show progress of downloading
-* Added Queue view which shows all episodes that are queued (for downloading 
-  or whatever)
-* Episodes list has a popup menu now, where you can quickly perform actions
-  on multiple episodes such as: Mark Seen, Mark Unseen, Mark Updated, Mark
-  Unupdated
-* New and updated series are now reported so the user is triggered by a notification area
-* Improved speed switching to updated epsisodes
-* Episodes in updated view are now sorted on date, season and then the rest
-* Added postponed flag where you can exclude certain series from auto updating
-
-* Updated view selector, you're able to hide future or incomplete episodes
-
-* Series is auto selected now when a new series is added
-* Question is added if an update must be done after adding a series
-* Series that is processed is now shown in status bar
+* Fixed unicode problem with SQLite database filename conversion

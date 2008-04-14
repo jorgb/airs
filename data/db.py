@@ -52,7 +52,7 @@ def init(db_filename, upgrade = False):
    new_db = not os.path.isfile(db_filename)
    
    # create instance
-   database = create_database("sqlite:" + db_filename)
+   database = create_database("sqlite:" + db_filename.encode('utf-8'))
    store = Store(database)
    
    # create a new database 
