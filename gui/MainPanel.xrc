@@ -6,42 +6,6 @@
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxGROW</flag>
-                <border>5</border>
-                <object class="wxBoxSizer">
-                    <orient>wxHORIZONTAL</orient>
-                    <object class="sizeritem">
-                        <flag>wxGROW|wxALL</flag>
-                        <border>5</border>
-                        <option>1</option>
-                        <object class="wxBoxSizer">
-                            <orient>wxVERTICAL</orient>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_LEFT|wxRIGHT|wxBOTTOM</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <label>Select which series you would like to monitor</label>
-                                </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxGROW|wxRIGHT</flag>
-                                <border>5</border>
-                                <object class="wxChoice" name="ID_SERIES_LIST">
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxPanel" name="ID_PANEL1">
-                            <size>32,32</size>
-                            <style>wxTAB_TRAVERSAL</style>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
                 <flag>wxGROW|wxALL</flag>
                 <border>5</border>
                 <option>1</option>
@@ -49,9 +13,51 @@
                     <style>wxBK_DEFAULT</style>
                     <bg>#FFFFFF</bg>
                     <object class="notebookpage">
-                        <label>Series</label>
-                        <object class="wxPanel" name="ID_LIST_MIXIN">
+                        <label>What's New</label>
+                        <object class="wxPanel" name="ID_PANEL3">
                             <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>Downloading</label>
+                        <object class="wxPanel" name="ID_PANEL1">
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>On  Disk</label>
+                        <object class="wxPanel" name="ID_PANEL5">
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>All Series</label>
+                        <object class="wxPanel" name="ID_PANEL">
+                            <style>wxTAB_TRAVERSAL</style>
+                            <object class="wxBoxSizer">
+                                <orient>wxVERTICAL</orient>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>Select which series you would like to monitor</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxChoice" name="ID_SERIES_LIST">
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxALL</flag>
+                                    <border>5</border>
+                                    <option>1</option>
+                                    <object class="wxPanel" name="ID_LIST_MIXIN">
+                                        <style>wxTAB_TRAVERSAL</style>
+                                    </object>
+                                </object>
+                            </object>
                         </object>
                     </object>
                     <object class="notebookpage">
