@@ -13,13 +13,13 @@
                     <style>wxBK_DEFAULT</style>
                     <bg>#FFFFFF</bg>
                     <object class="notebookpage">
-                        <label>What's New</label>
+                        <label>New Episodes</label>
                         <object class="wxPanel" name="ID_PANEL3">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
                     </object>
                     <object class="notebookpage">
-                        <label>Downloading</label>
+                        <label>Downloaded</label>
                         <object class="wxPanel" name="ID_PANEL1">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
@@ -27,6 +27,12 @@
                     <object class="notebookpage">
                         <label>On  Disk</label>
                         <object class="wxPanel" name="ID_PANEL5">
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>Whats On TV</label>
+                        <object class="wxPanel" name="ID_PANEL4">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
                     </object>
