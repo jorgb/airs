@@ -10,6 +10,7 @@ from wx.lib.pubsub import Publisher
 from data import appcfg, viewmgr, signals
 import xmlres
 from SeriesListCtrl import SeriesListCtrl
+from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
 
 class MainPanel(wx.Panel):
@@ -45,10 +46,27 @@ class MainPanel(wx.Panel):
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = SeriesListCtrl(self._list_panel)
         
+        # create main view (for now)
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
         self._list_panel.SetSizer(sizer)        
         
+        # add lists to all views 
+        self._views = dict()
+        views = [ ( "ID_NEW_UPDATED_VIEW", "updated" ), 
+                  ( "ID_WHATS_ON_VIEW",    "whatson" ),
+                  ( "ID_DOWNLOAD_VIEW",    "download" ),
+                  ( "ID_DOWNLOADING_VIEW", "downloading") ]
+        
+        for view in views:
+            pnl = xrc.XRCCTRL(self, view[0])
+            sizer = wx.BoxSizer()
+            el = EpisodeListCtrl(pnl)
+            self._views[view[1]] = el
+            sizer.Add(el, 1, wx.EXPAND)
+            pnl.SetSizer(sizer)        
+            
+
         self.tmr = wx.Timer(self)
         self.tmr.Start(300)
         
