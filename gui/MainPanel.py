@@ -41,7 +41,7 @@ class MainPanel(wx.Panel):
         
         # put the mixin control in place and initialize the
         # columns and styles
-        self._list_panel = xrc.XRCCTRL(self, "ID_LIST_MIXIN")
+        self._list_panel = xrc.XRCCTRL(self, "ID_SERIES_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = SeriesListCtrl(self._list_panel)
         
