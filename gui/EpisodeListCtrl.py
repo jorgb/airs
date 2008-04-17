@@ -88,15 +88,17 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.InsertColumn(4, "Stat", width = 40) 
         self.InsertColumn(5, "Date", width = 100) 
         
-        
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
-        Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
-        Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
-        Publisher().subscribe(self._onEpisodeUpdated, signals.EPISODE_UPDATED)
-        Publisher().subscribe(self._onClearAll, signals.EPISODES_CLEARED)
         
 
+    def clear(self):
+        """
+        Proxy method to clear list
+        """
+        self.DeleteAllItems()
+        
+        
     def _onMenuPopup(self, event):
         """
         Create popup menu to perform some options
@@ -207,19 +209,11 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.ToggleItem(evt.m_itemIndex)
 
 
-    def _onClearAll(self, msg):
-        """
-        Clear all episodes
-        """
-        self.DeleteAllItems()
-
-    
-    def _onEpisodeAdded(self, msg):
+    def add(self, ep):
         """
         Add an episode to the list, but sort it first and
         add the item to the list later with the given index
         """
-        ep = msg.data
         pos = 0
         
         # dynamically determine position
@@ -271,18 +265,16 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.SetStringItem(index, 5, ep.getDateStr())
                
             
-    def _onEpisodeUpdated(self, msg):
+    def update(self, ep):
         """
         Inserts the episode in the list
         """
-        
-        ep = msg.data
         idx = self.FindItemData(-1, ep.id) 
         if idx != wx.NOT_FOUND:     
             self._updateEpisode(idx, ep)
         
             
-    def _onEpisodeDeleted(self, msg):
+    def delete(self, ep):
         """
         Respond to a deleted command of an episode
         """
@@ -290,7 +282,6 @@ class EpisodeListCtrl(wx.ListCtrl):
         # Who ever made the wx.ListCtrl must be punished by a life sentence
         # because there is no way to store a reference to the object in 
         # the wx.ListCtrl we must poorly scan through the list ourselves
-        ep = msg.data
         if self.GetItemCount() > 0:            
             idx = self.FindItemData(-1, ep.id)                
             if idx != wx.NOT_FOUND:
