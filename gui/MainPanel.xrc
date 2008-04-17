@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
     <object class="wxPanel" name="ID_MAIN_PANEL" subclass="MainPanel">
+        <size>550,400</size>
         <title>Middle Panel</title>
         <centered>1</centered>
         <object class="wxBoxSizer">
@@ -13,31 +14,37 @@
                     <style>wxBK_DEFAULT</style>
                     <bg>#FFFFFF</bg>
                     <object class="notebookpage">
-                        <label>New Episodes</label>
+                        <label>New / Updated</label>
+                        <bitmap>images/whats_new.png</bitmap>
                         <object class="wxPanel" name="ID_PANEL3">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
                     </object>
                     <object class="notebookpage">
-                        <label>Downloaded</label>
-                        <object class="wxPanel" name="ID_PANEL1">
+                        <label>Whats On TV</label>
+                        <bitmap>images/whats_on.png</bitmap>
+                        <object class="wxPanel" name="ID_PANEL6">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
                     </object>
                     <object class="notebookpage">
-                        <label>On  Disk</label>
+                        <label>To Download</label>
+                        <bitmap>images/to_download.png</bitmap>
+                        <object class="wxPanel" name="ID_PANEL1">
+                            <size>500,-1</size>
+                            <style>wxTAB_TRAVERSAL</style>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>Downloading</label>
+                        <bitmap>images/downloading.png</bitmap>
                         <object class="wxPanel" name="ID_PANEL5">
                             <style>wxTAB_TRAVERSAL</style>
                         </object>
                     </object>
                     <object class="notebookpage">
-                        <label>Whats On TV</label>
-                        <object class="wxPanel" name="ID_PANEL4">
-                            <style>wxTAB_TRAVERSAL</style>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
                         <label>All Series</label>
+                        <bitmap>images/all_series.png</bitmap>
                         <object class="wxPanel" name="ID_PANEL">
                             <style>wxTAB_TRAVERSAL</style>
                             <object class="wxBoxSizer">
@@ -68,6 +75,7 @@
                     </object>
                     <object class="notebookpage">
                         <label>Log</label>
+                        <bitmap>images/progess_log.png</bitmap>
                         <object class="wxPanel" name="ID_PANEL2">
                             <style>wxTAB_TRAVERSAL</style>
                             <object class="wxBoxSizer">
