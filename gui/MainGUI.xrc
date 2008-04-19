@@ -10,7 +10,7 @@
                 <flag>wxGROW|wxALL</flag>
                 <border>5</border>
                 <option>1</option>
-                <object class="wxNotebook" name="ID_NOTEBOOK2">
+                <object class="wxNotebook" name="ID_VIEW_BOOK">
                     <style>wxBK_DEFAULT</style>
                     <bg>#FFFFFF</bg>
                     <object class="notebookpage">

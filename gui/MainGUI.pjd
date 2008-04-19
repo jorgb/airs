@@ -299,7 +299,7 @@
             <bool name="proxy-wxFIXED_MINSIZE">0</bool>
             <string name="proxy-Platform">"&lt;Any platform&gt;"</string>
             <document>
-              <string name="title">"wxNotebook: ID_NOTEBOOK2"</string>
+              <string name="title">"wxNotebook: ID_VIEW_BOOK"</string>
               <string name="type">"dialog-control-document"</string>
               <string name="filename">""</string>
               <string name="icon-name">"notebook"</string>
@@ -309,7 +309,7 @@
               <long name="locked">0</long>
               <string name="created">"27/3/2008"</string>
               <string name="proxy-type">"wbNotebookProxy"</string>
-              <string name="proxy-Id name">"ID_NOTEBOOK2"</string>
+              <string name="proxy-Id name">"ID_VIEW_BOOK"</string>
               <long name="proxy-Id value">10005</long>
               <string name="proxy-Name">""</string>
               <string name="proxy-Class">"wxNotebook"</string>

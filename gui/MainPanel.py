@@ -12,6 +12,7 @@ import xmlres
 from SeriesListCtrl import SeriesListCtrl
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
+from ListViewProxy import ListViewProxy
 
 class MainPanel(wx.Panel):
 
@@ -23,7 +24,7 @@ class MainPanel(wx.Panel):
         # episodes that are reported new / updated
         
         self._min_idx = 0
-
+        
         res = xmlres.loadGuiResource('MainPanel.xrc')
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
@@ -39,6 +40,7 @@ class MainPanel(wx.Panel):
         self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
         self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
+        self._notebook = xrc.XRCCTRL(self, "ID_VIEW_BOOK")
         
         # put the mixin control in place and initialize the
         # columns and styles
@@ -53,20 +55,24 @@ class MainPanel(wx.Panel):
         
         # add lists to all views 
         self._views = dict()
-        views = [ ( "ID_NEW_UPDATED_VIEW", "updated" ), 
-                  ( "ID_WHATS_ON_VIEW",    "whatson" ),
-                  ( "ID_DOWNLOAD_VIEW",    "download" ),
-                  ( "ID_DOWNLOADING_VIEW", "downloading") ]
+        self._tabToView = dict()
+        views = [ ( "ID_NEW_UPDATED_VIEW", series_filter.VIEW_WHATS_NEW), 
+                  ( "ID_WHATS_ON_VIEW",    series_filter.VIEW_WHATS_ON ),
+                  ( "ID_DOWNLOAD_VIEW",    series_filter.VIEW_TO_DOWNLOAD ),
+                  ( "ID_DOWNLOADING_VIEW", series_filter.VIEW_DOWNLOADING) ]
         
         for view in views:
             pnl = xrc.XRCCTRL(self, view[0])
             sizer = wx.BoxSizer()
             el = EpisodeListCtrl(pnl)
             self._views[view[1]] = el
+            el.viewID = view[1]
             sizer.Add(el, 1, wx.EXPAND)
-            pnl.SetSizer(sizer)        
+            pnl.SetSizer(sizer) 
+            self._tabToView[pnl.GetParent().GetId()] = el.viewID
             
-
+        self._proxy = ListViewProxy(self._views)
+         
         self.tmr = wx.Timer(self)
         self.tmr.Start(300)
         
@@ -77,6 +83,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._onPageChanged, self._notebook)
         
         Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
@@ -88,7 +95,16 @@ class MainPanel(wx.Panel):
         
         self._initNotifyArea()
         
-    
+        
+    def _onPageChanged(self, event):
+        """
+        Event happens before notebook is changed
+        """
+        pnl = self._notebook.GetPage(event.GetSelection())
+        if pnl.GetId() in self._tabToView:
+            self._proxy.setView(self._tabToView[pnl.GetId()])
+            
+
     def _initNotifyArea(self):
         """
         Clear notification area

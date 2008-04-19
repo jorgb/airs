@@ -21,6 +21,12 @@ SHOW_ALL      = 0        # show all series (undated episodes as well)
 SHOW_UPCOMING = 1        # show upcoming (only upcoming and lower)
 SHOW_AIRED    = 2        # show all aired but not undated or upcoming
 
+VIEW_WHATS_NEW   = 0
+VIEW_WHATS_ON    = 1
+VIEW_TO_DOWNLOAD = 2
+VIEW_DOWNLOADING = 3
+VIEW_SERIES      = 4
+
 class SeriesSelectionList(object):
     def __init__(self):
         self._selection = dict()

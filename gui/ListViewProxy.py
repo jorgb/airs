@@ -18,7 +18,7 @@ class ListViewProxy(object):
         Publisher().subscribe(self._onClearAll, signals.EPISODES_CLEARED)
         
     
-    def setView(viewname):
+    def setView(self, viewname):
         """
         Sets the view to a specific listctrl, and makes sure
         that the other listctrl's are cleared.

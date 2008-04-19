@@ -80,6 +80,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         
         self._ep_idx = 0
         self._updating = False
+        self.viewID = ''    # kind of view
 
         self.InsertColumn(0, "Nr.", width = 50)
         self.InsertColumn(1, "Season", width = 70)
@@ -206,8 +207,9 @@ class EpisodeListCtrl(wx.ListCtrl):
             
             
     def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
-
+        #self.ToggleItem(evt.m_itemIndex)
+        pass
+    
 
     def add(self, ep):
         """
