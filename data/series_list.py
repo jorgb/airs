@@ -7,6 +7,12 @@
 from storm.locals import *
 from datetime import date
 
+EP_CHANGED     = 0
+EP_TO_DOWNLOAD = 1
+EP_DOWNLOADING = 2
+EP_READY       = 3
+EP_PROCESSED   = 4
+
 #
 # Module that contains functionality
 # to store a number of series and functionality
@@ -15,14 +21,9 @@ from datetime import date
 def _convertDate(datestr):
     if datestr:
         try:
-            dy = int(datestr[0:2])
-            mn = int(datestr[3:5])
-            yr = int(datestr[6:])
-            if yr < 100:
-                if yr < 99 and yr > 39:
-                    yr = 1900 + yr
-                else:
-                    yr = 2000 + yr
+            dy = int(datestr[6:])
+            mn = int(datestr[4:6])
+            yr = int(datestr[0:4])
             return date(yr, mn, dy)
         except ValueError:
             return None   
@@ -59,53 +60,39 @@ class Episode(object):
     number = Unicode()            # follow up number
     season = Unicode()            # season string e.g. (S01E01)
     aired = Unicode()             # date when aired
-    seen = Int()                  # seen or not by the user
-    last_in = Int()               # present in last update
+    last_update = Unicode()       # last update
+    status = Int()                # status of episode
+    changed = Int()
     series_id = Int()             # id of series table entry
-    queued = Int()                # also listed in queue
-
-    def __storm_loaded__(self):
-        """
-        Load hook used to convert the date to a 
-        proper class
-        """
-        self.__date = _convertDate(self.aired)
         
     def __init__(self):
         self.title = u""
         self.number = u""
         self.season = u""
         self.aired = u""
-        self.seen = 0
-        self.last_in = 0
-        self.__date = None
-        self.queued = 0
-        
-    def getDate(self):
-        """
-        Returns date
-        """
-        if not self.__date and self.aired:
-            self.__date = _convertDate(self.aired)
-        return self.__date
-    
-    def setDate(self, d):
+        self.last_update = u""
+        self.status = EP_READY
+        self.changed = 0 
+            
+    def setAired(self, d):
         """
         Sets date
         """
-        self.__date = d
         if d:
-            self.aired = unicode("%02i-%02i-%i" % (d.day, d.month, d.year))
+            self.aired = unicode("%04i%02i%02" % (d.year, d.month, d.day))
         else:
             self.aired = unicode('')
     
-    def getDateStr(self):
-        d = self.getDate()
+    def setLastUpdate(self, d):
+        """
+        Sets date
+        """
         if d:
-            return "%02i-%02i-%i" % (d.day, d.month, d.year)
+            self.last_update = unicode("%04i%02i%02" % (d.year, d.month, d.day))
         else:
-            return self.aired
+            self.last_update = unicode('')
             
+                    
 class SeriesList(object):
     """
     List of series collection manager 

@@ -12,7 +12,7 @@ from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import Publisher
 
 from data import appcfg, viewmgr, signals
-from data import series_list, db
+from data import series_list, db, series_filter
 
 # gui elements
 import MainPanel
@@ -143,6 +143,7 @@ class AirsFrame(wx.Frame):
         # create main panel
         pnl = MainPanel.MainPanel(self)
         
+        
     def _createStatusBar(self):
         """
         Creates a status bar on the current frame
@@ -180,43 +181,45 @@ class AirsFrame(wx.Frame):
         """ Event handler to edit a Series """
         
         # only edit when a genuine series is selected
-        sel_id = viewmgr._series_sel._selection_id
-        if sel_id >= 0:        
-            dlg = SeriesDlg.SeriesDlg(self)
-            dlg._editing = True
-            
-            series = db.store.get(series_list.Series, sel_id)
-            dlg.objectToGui(series)
-            if dlg.ShowModal() == wx.ID_OK:
-                dlg.guiToObject(series)
-                viewmgr.update_series(series)
-            
-            dlg.Destroy()
+        if viewmgr.series_active():
+            sel_id = viewmgr._series_sel._selected_series_id
+            if sel_id != -1:        
+                dlg = SeriesDlg.SeriesDlg(self)
+                dlg._editing = True
+                
+                series = db.store.get(series_list.Series, sel_id)
+                dlg.objectToGui(series)
+                if dlg.ShowModal() == wx.ID_OK:
+                    dlg.guiToObject(series)
+                    viewmgr.update_series(series)
+                
+                dlg.Destroy()
 
         
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
 
-        sel_id = viewmgr._series_sel._selection_id
-        if sel_id >= 0:
-            series = db.store.get(series_list.Series, sel_id)
-    
-            if wx.MessageBox("Are you sure you want to delete this series?\n" + \
-                             "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
-                # delete 
-                viewmgr.delete_series(series)
+        if viewmgr.series_active():
+            sel_id = viewmgr._series_sel._selected_series_id
+            if sel_id != -1:
+                series = db.store.get(series_list.Series, sel_id)
+        
+                if wx.MessageBox("Are you sure you want to delete this series?\n" + \
+                                 "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
+                    # delete 
+                    viewmgr.delete_series(series)
     
 
     def _onClearCache(self, event):
         """
         Clear cache of one or all items
         """
-        
-        if wx.MessageBox("Clearing the cache means that the downloaded series the selected\n" + \
-                         "series will be lost. The next update, the series will be refreshed again.\n" + \
-                         "Be aware that earlier downloaded items not found on the webpage, are lost forever.\n" +
-                         "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
-            viewmgr.clear_current_cache()
+        if viewmgr.series_active():
+            if wx.MessageBox("Clearing the cache means that the downloaded series the selected\n" + \
+                             "series will be lost. The next update, the series will be refreshed again.\n" + \
+                             "Be aware that earlier downloaded items not found on the webpage, are lost forever.\n" +
+                             "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
+                viewmgr.clear_current_cache()
             
     # ============================= CLOSE METHODS ==============================
     
@@ -266,11 +269,7 @@ class AirsFrame(wx.Frame):
         This event is called periodically to allow the user to update the
         menu / toolbar / buttons based upon the internal application state.
         """
-        
-        if viewmgr._series_sel._selection_id >= 0:
-            has_selection = True
-        else:
-            has_selection = False        
+        has_selection = viewmgr.series_active()
         self._menuEdit.Enable(has_selection)
         self._menuDelete.Enable(has_selection)
         self._menuClearCache.Enable(has_selection)

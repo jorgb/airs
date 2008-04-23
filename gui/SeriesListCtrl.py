@@ -14,8 +14,8 @@ def _sort_updated(a, b):
     """
     Sort method, updated view 
     """
-    adate = a.getDate()
-    bdate = b.getDate()
+    adate = a.aired
+    bdate = b.aired
     
     if adate and bdate:
         if adate < bdate:
@@ -91,7 +91,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.InsertColumn(5, "Date", width = 100) 
         
         
-        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
+        #self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
         Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
@@ -103,36 +103,36 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         """
         Create popup menu to perform some options
         """
-        if self.GetFirstSelected() != wx.NOT_FOUND:        
-            menu = wx.Menu()
+        #if self.GetFirstSelected() != wx.NOT_FOUND:        
+            #menu = wx.Menu()
     
-            if viewmgr._series_sel._selection_id != -2:
-                m5 = menu.Append(wx.NewId(), "&Add to Queue View")
-                menu.AppendSeparator()
+            #if viewmgr._series_sel._selection_id != -2:
+                #m5 = menu.Append(wx.NewId(), "&Add to Queue View")
+                #menu.AppendSeparator()
     
-                m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
-                m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
-                menu.AppendSeparator()
+                #m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
+                #m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
+                #menu.AppendSeparator()
                 
-                m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
-                m4 = menu.Append(wx.NewId(), "&Set Updated Status")
+                #m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
+                #m4 = menu.Append(wx.NewId(), "&Set Updated Status")
 
-                self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
-                self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
-                self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
-                self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
-                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
-            else:
-                m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
-                menu.AppendSeparator()
-                m6 = menu.Append(wx.NewId(), "&Revert to Updated")
+                #self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
+                #self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
+                #self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
+                #self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
+                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
+            #else:
+                #m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
+                #menu.AppendSeparator()
+                #m6 = menu.Append(wx.NewId(), "&Revert to Updated")
 
-                self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
-                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
+                #self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
+                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
     
-            self.PopupMenu(menu)
-            menu.Destroy()    
-
+            #self.PopupMenu(menu)
+            #menu.Destroy()    
+        pass
             
     def __getSelectedEpisodes(self):
         episodes = list()
@@ -146,68 +146,68 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             
             
     def _onAddToQueueView(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            episode.queued = 1
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-    
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    episode.queued = 1
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
     def _onRemoveQueueView(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            episode.queued = 0
-            episode.seen = 1
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    episode.queued = 0
+        #    episode.seen = 1
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
             
             
     def _onClearUpdatedStatus(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
 
     def _onSetUpdatedStatus(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 1
-            episode.queued = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 1
+        #    episode.queued = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
-            
     def _onCheckItem(self, event):
         """
         Check all the selected items
         """
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.seen = 1
-            episode.last_in = 0
-            episode.queued = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.seen = 1
+        #    episode.last_in = 0
+        #    episode.queued = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
         
-
     def _onUncheckItem(self, event):
         """
         Check all the selected items
         """
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.seen = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.seen = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        #    
+        pass
             
-            
-    def OnItemActivated(self, evt):
-        self.ToggleItem(evt.m_itemIndex)
-
 
     def _onClearAll(self, msg):
         """
@@ -223,18 +223,19 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         # unfortunately, some really dump developers hook up an event
         # when the CheckItem is called PROGRAMATICALLY, and I have to 
         # work around not letting it screw up my flow of events (*sigh*)
-        if not self._updating:
-            episode_id = self.GetItemData(index)
-            episode = db.store.get(series_list.Episode, episode_id)
-            if flag:
-                episode.seen = 1
-                episode.last_in = 0
-                episode.queued = 0
-            else:
-                episode.seen = 0
+        #if not self._updating:
+        #    episode_id = self.GetItemData(index)
+        #    episode = db.store.get(series_list.Episode, episode_id)
+        #    if flag:
+        #        episode.seen = 1
+        #        episode.last_in = 0
+        #        episode.queued = 0
+        #    else:
+        #        episode.seen = 0
             
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
             
     
     def _onEpisodeAdded(self, msg):
@@ -246,7 +247,7 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
         pos = 0
         
         # dynamically determine position
-        if viewmgr._series_sel._selection_id >= 0:
+        if viewmgr.series_active():
             sortfunc = _sort_normal
         else:
             sortfunc = _sort_updated
@@ -276,16 +277,16 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             self.SetStringItem(index, 2, series.name)
         self.SetStringItem(index, 3, ep.title)
         str = ""
-        if ep.last_in != 0:
+        if ep.changed != 0:
             str = "U"
-        if ep.queued != 0:
+        if ep.status != series_list.EP_CHANGED:
             str += "Q"
         self.SetStringItem(index, 4, str)
-        self.SetStringItem(index, 5, ep.getDateStr())
+        self.SetStringItem(index, 5, ep.aired)
         
-        self._updating = True
-        self.CheckItem(index, ep.seen != 0)
-        self._updating = False
+        #self._updating = True
+        #self.CheckItem(index, ep.seen != 0)
+        #self._updating = False
         
         self.SetItemData(index, ep.id)
         
@@ -302,12 +303,12 @@ class SeriesListCtrl(wx.ListCtrl, CheckListCtrlMixin):
             self.SetStringItem(idx, 1, ep.season)
             self.SetStringItem(idx, 3, ep.title)
             str = ""
-            if ep.last_in != 0:
+            if ep.changed != 0:
                 str = "U"
-            if ep.queued != 0:
+            if ep.status != series_list.EP_CHANGED:
                 str += "Q"
             self.SetStringItem(idx, 4, str)
-            self.SetStringItem(idx, 5, ep.getDateStr())        
+            self.SetStringItem(idx, 5, ep.aired)        
 
             self._updating = True
             self.CheckItem(idx, ep.seen != 0)

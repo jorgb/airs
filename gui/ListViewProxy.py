@@ -30,6 +30,7 @@ class ListViewProxy(object):
             
             # set the new view
             self._currView = self._views[viewname]
+            print "set view"
             
 
     def _onEpisodeAdded(self, msg):

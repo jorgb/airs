@@ -133,7 +133,12 @@ class EpGuidesSeriesDownloadCmd(object):
                                 try:
                                     epday = int(datelist[0].strip(' '))
                                     epyr = int(datelist[2].strip(' '))
-                                    datestr = "%02i-%s-%02i" % (epday, _months[monthstr], epyr)
+                                    if epyr < 1900:
+                                        if epyr > 39:
+                                            epyr += 1900
+                                        else:
+                                            epyr += 2000
+                                    datestr = "%04i%s%02i" % (epyr, _months[monthstr], epday)
                                     episode.aired = unicode(datestr)
                                 except ValueError:
                                     pass
@@ -169,10 +174,15 @@ def _parseTvComDate(s):
     try:
         daynr = int(l[1].strip(','))
         yearnr = int(l[2])
+        if yearnr < 1900:
+            if yearnr > 39:
+                yearnr += 1900
+            else:
+                yearnr += 2000
     except ValueError:
         return ''
     
-    return "%02i-%s-%04i" % (daynr, month, yearnr)
+    return "%04i%s%02i" % (yearnr, month, daynr)
     
         
 class TvComSeriesDownloadCmd(object):

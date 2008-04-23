@@ -5,7 +5,7 @@
 #==============================================================================
 
 import wx, sys
-from data import signals, viewmgr, db, series_list
+from data import signals, viewmgr, db, series_list, series_filter
 from wx.lib.pubsub import Publisher
 
 
@@ -13,8 +13,8 @@ def _sort_updated(a, b):
     """
     Sort method, updated view 
     """
-    adate = a.getDate()
-    bdate = b.getDate()
+    adate = a.aired
+    bdate = b.aired
     
     if adate and bdate:
         if adate < bdate:
@@ -53,8 +53,8 @@ def _sort_normal(a, b):
     if a.season < b.season:
         return 1
 
-    adate = a.getDate()
-    bdate = b.getDate()    
+    adate = a.aired
+    bdate = b.aired    
     
     if adate and bdate:
         if adate < bdate:
@@ -89,7 +89,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.InsertColumn(4, "Stat", width = 40) 
         self.InsertColumn(5, "Date", width = 100) 
         
-        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
+        #self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
 
@@ -104,36 +104,36 @@ class EpisodeListCtrl(wx.ListCtrl):
         """
         Create popup menu to perform some options
         """
-        if self.GetFirstSelected() != wx.NOT_FOUND:        
-            menu = wx.Menu()
+        #if self.GetFirstSelected() != wx.NOT_FOUND:        
+            #menu = wx.Menu()
     
-            if viewmgr._series_sel._selection_id != -2:
-                m5 = menu.Append(wx.NewId(), "&Add to Queue View")
-                menu.AppendSeparator()
+            #if viewmgr._series_sel._view_type != series_filter:
+                #m5 = menu.Append(wx.NewId(), "&Add to Queue View")
+                #menu.AppendSeparator()
     
-                m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
-                m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
-                menu.AppendSeparator()
+                #m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
+                #m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
+                #menu.AppendSeparator()
                 
-                m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
-                m4 = menu.Append(wx.NewId(), "&Set Updated Status")
+                #m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
+                #m4 = menu.Append(wx.NewId(), "&Set Updated Status")
 
-                self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
-                self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
-                self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
-                self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
-                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
-            else:
-                m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
-                menu.AppendSeparator()
-                m6 = menu.Append(wx.NewId(), "&Revert to Updated")
+                #self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
+                #self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
+                #self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
+                #self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
+                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
+            #else:
+                #m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
+                #menu.AppendSeparator()
+                #m6 = menu.Append(wx.NewId(), "&Revert to Updated")
 
-                self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
-                self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
+                #self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
+                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
     
-            self.PopupMenu(menu)
-            menu.Destroy()    
-
+            #self.PopupMenu(menu)
+            #menu.Destroy()    
+        pass
             
     def __getSelectedEpisodes(self):
         episodes = list()
@@ -147,70 +147,66 @@ class EpisodeListCtrl(wx.ListCtrl):
             
             
     def _onAddToQueueView(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            episode.queued = 1
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-    
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    episode.queued = 1
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
     def _onRemoveQueueView(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            episode.queued = 0
-            episode.seen = 1
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-            
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    episode.queued = 0
+        #    episode.seen = 1
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
             
     def _onClearUpdatedStatus(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
     def _onSetUpdatedStatus(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.last_in = 1
-            episode.queued = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
-            
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.last_in = 1
+        #    episode.queued = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
+    
     def _onCheckItem(self, event):
         """
         Check all the selected items
         """
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.seen = 1
-            episode.last_in = 0
-            episode.queued = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-        
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.seen = 1
+        #    episode.last_in = 0
+        #    episode.queued = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass
 
     def _onUncheckItem(self, event):
         """
         Check all the selected items
         """
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.seen = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+        #episodes = self.__getSelectedEpisodes()
+        #for episode in episodes:
+        #    episode.seen = 0
+        #    db.store.commit()
+        #    viewmgr.episode_updated(episode)
+        pass   
             
-            
-    def OnItemActivated(self, evt):
-        #self.ToggleItem(evt.m_itemIndex)
-        pass
     
-
     def add(self, ep):
         """
         Add an episode to the list, but sort it first and
@@ -219,7 +215,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         pos = 0
         
         # dynamically determine position
-        if viewmgr._series_sel._selection_id >= 0:
+        if viewmgr.series_active():
             sortfunc = _sort_normal
         else:
             sortfunc = _sort_updated
@@ -259,12 +255,12 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.SetStringItem(index, 3, ep.title)
 
         str = ""
-        if ep.last_in != 0:
+        if ep.changed != 0:
             str = "U"
-        if ep.queued != 0:
+        if ep.status == series_list.EP_TO_DOWNLOAD:
             str += "Q"
         self.SetStringItem(index, 4, str)
-        self.SetStringItem(index, 5, ep.getDateStr())
+        self.SetStringItem(index, 5, ep.aired)
                
             
     def update(self, ep):

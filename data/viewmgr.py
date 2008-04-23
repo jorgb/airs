@@ -12,6 +12,7 @@ import wx
 from wx.lib.pubsub import Publisher
 import series_queue
 from series_filter import SeriesSelectionList
+import series_filter
 #from storage import series_list_xml
 import series_list
 import signals
@@ -64,6 +65,23 @@ def app_close():
     return res.allowed()
     
 
+def set_view(viewtype):
+    """
+    Sets a certain view. This is to sync the data belonging to that view
+    and trigger a new update
+    """
+    _series_sel.setView(viewtype)
+
+
+def series_active():
+    """
+    Returns true if the view is VIEW_SERIES and there is a series selected
+    to look at
+    """
+    return _series_sel._selected_series_id != -1 and \
+           _series_sel._view_type == series_filter.VIEW_SERIES
+
+
 def add_series(series):
     """ 
     Add this new series object to the database, and emit signal that
@@ -110,10 +128,7 @@ def set_selection(series):
     """
     Publisher().sendMessage(signals.SERIES_SELECT, series)
     if series:
-        sel_id = series.id
-    else:
-        sel_id = -1
-    _series_sel.setSelection(sel_id)
+        _series_sel.setSelection(series.id)
     
     
 def app_restore():
@@ -186,7 +201,7 @@ def probe_series():
             
             if can_add:
                 added += 1
-                episode.last_in = 1
+                episode.changed = 1
                 db.store.add(episode)
                 db_changed = True
                 db.store.flush()
@@ -201,14 +216,14 @@ def probe_series():
             if result.season == '' and episode.season != '':
                 result.season = unicode(episode.season)
                 updated = True
-            if result.getDate() == None and episode.getDate() != None:
-                result.setDate(episode.getDate())
+            if result.aired == "" and episode.aired != "":
+                result.aired = episode.aired
                 updated = True
                 
             if updated:
                 updated += 1
                 db_changed = True
-                result.last_in = 1
+                result.changed = 1
                 _series_sel.filterEpisode(result, updated = True)
 
     # all changes are committed here
@@ -251,7 +266,7 @@ def get_selected_series():
     """
     Determine selected series, get that one or else get all
     """
-    series = db.store.get(series_list.Series, _series_sel._selection_id)
+    series = db.store.get(series_list.Series, _series_sel._selected_series_id)
     if series:
         item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split("\n"))
         retriever.in_queue.put(item)
@@ -263,7 +278,7 @@ def delete_series(series):
     itself.
     """
 
-    if series.id == _series_sel._selection_id:        
+    if series.id == _series_sel._selected_series_id:        
         # select a different series first
         result = db.store.find(series_list.Series)
         slist = [serie for serie in result.order_by(series_list.Series.name)]
@@ -326,7 +341,7 @@ def clear_current_cache():
     Clear all or some series
     """
     # get current selected series
-    sid = _series_sel._selection_id
+    sid = _series_sel._selected_series_id
     if sid != -1:
         series = db.store.get(series_list.Series, sid) 
         if series:

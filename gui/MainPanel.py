@@ -23,13 +23,9 @@ class MainPanel(wx.Panel):
         # two count values displaying number of
         # episodes that are reported new / updated
         
-        self._min_idx = 0
-        
         res = xmlres.loadGuiResource('MainPanel.xrc')
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
-
-        #self.SetBackgroundColour(wx.WHITE)
         
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
@@ -69,8 +65,12 @@ class MainPanel(wx.Panel):
             el.viewID = view[1]
             sizer.Add(el, 1, wx.EXPAND)
             pnl.SetSizer(sizer) 
+            # NOTE: This is potentially not working when the panel on which 
+            # the list ctrl is not the direct child of the notebook ctrl.
             self._tabToView[pnl.GetParent().GetId()] = el.viewID
-            
+
+        # the proxy class will dynamically assign all the
+        # exposed methods to the current view            
         self._proxy = ListViewProxy(self._views)
          
         self.tmr = wx.Timer(self)
@@ -102,7 +102,9 @@ class MainPanel(wx.Panel):
         """
         pnl = self._notebook.GetPage(event.GetSelection())
         if pnl.GetId() in self._tabToView:
+            print "Setting: ", self._tabToView[pnl.GetId()]
             self._proxy.setView(self._tabToView[pnl.GetId()])
+            viewmgr.set_view(self._tabToView[pnl.GetId()])
             
 
     def _initNotifyArea(self):
@@ -128,21 +130,22 @@ class MainPanel(wx.Panel):
         Display a message when we are ready to do so
         """
         
-        if self._newcount > 0 or self._updcount > 0:
-            self._notifyarea.SetBackgroundColour(wx.Colour(150, 255, 145))
-        else:
-            self._notifyarea.SetBackgroundColour(wx.NullColor())
-        self._notifyarea.Refresh()
+        #if self._newcount > 0 or self._updcount > 0:
+        #    self._notifyarea.SetBackgroundColour(wx.Colour(150, 255, 145))
+        #else:
+        #    self._notifyarea.SetBackgroundColour(wx.NullColor())
+        #self._notifyarea.Refresh()
         
-        str = ''
-        if self._newcount > 0 and self._updcount == 0:
-            str = "You have %i new episodes!" % self._newcount
-        elif self._updcount > 0 and self._newcount == 0:
-            str = "You have %i updated episodes!" % self._updcount
-        elif self._updcount > 0 and self._newcount > 0:
-            str = "You have %i new and %i updated episodes!" % (self._newcount, self._updcount)
-        if str:
-            self._notifytext.SetLabel(str)
+        #str = ''
+        #if self._newcount > 0 and self._updcount == 0:
+        #    str = "You have %i new episodes!" % self._newcount
+        #elif self._updcount > 0 and self._newcount == 0:
+        #    str = "You have %i updated episodes!" % self._updcount
+        #elif self._updcount > 0 and self._newcount > 0:
+        #    str = "You have %i new and %i updated episodes!" % (self._newcount, self._updcount)
+        #if str:
+        #    self._notifytext.SetLabel(str)
+        pass
            
 
     def _onUpdateAll(self, event):
@@ -175,7 +178,7 @@ class MainPanel(wx.Panel):
     
         # update some controls
         self._update_all.Enable(not viewmgr.is_busy())
-        self._update_one.Enable(viewmgr._series_sel._selection_id >= 0)
+        self._update_one.Enable(viewmgr.series_active())
 
         # send messages from thread queue to log window
         q = viewmgr.retriever.msg_queue
@@ -190,16 +193,16 @@ class MainPanel(wx.Panel):
         self._queue.SetValue(cs)
             
         # enable / disable some button
-        self._updated_view.Enable(not viewmgr._series_sel._selection_id >= 0)
+        self._updated_view.Enable(not viewmgr.series_active())
             
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
         
         new_c, upd_c = viewmgr.probe_series()      
-        if new_c > 0 or upd_c > 0:
-            self._newcount += new_c
-            self._updcount += upd_c
-            wx.CallAfter(self._onNewUpdatedEpisodes)
+        #if new_c > 0 or upd_c > 0:
+            #self._newcount += new_c
+            #self._updcount += upd_c
+            #wx.CallAfter(self._onNewUpdatedEpisodes)
         
            
     def _onSignalRestoreSeries(self, msg):
@@ -266,14 +269,11 @@ class MainPanel(wx.Panel):
         series_id = sel.GetClientData(sel.GetSelection())
         if series_id >= 0:
             series = db.store.get(series_list.Series, series_id)
+            print "Selected series with ID: ", series_id
             viewmgr.set_selection(series)
-        elif series_id == -1:
-            viewmgr.set_updated_selection()
-        else:
-            viewmgr.set_queue_selection()
        
-        busy.Destroy()
         self._series_list.Thaw()
+        busy.Destroy()
 
         
     def _onDeleteSeries(self, msg):
@@ -346,31 +346,6 @@ class MainPanel(wx.Panel):
                     sel.SetSelection(i)
                     return
           
-
-    def _onResetUpdated(self, event):
-        """
-        Reset the updated flag of the selected series
-        """
-        
-        episodes = list()
-        
-        idx = self._series_list.GetFirstSelected()
-        while idx != wx.NOT_FOUND:
-            id = self._series_list.GetItemData(idx)
-            episode = db.store.get(series_list.Episode, id)
-            if episode:
-                episodes.append(episode)
-            idx = self._series_list.GetNextSelected(idx)
-        
-        # we do it in two steps, not to disturb the selections
-        if episodes:
-            for episode in episodes:
-                episode.last_in = 0
-                db.store.flush()
-                viewmgr.episode_updated(episode)
-    
-            db.store.commit()
-                
 
     def _onShowOnlyUnseen(self, event):
         """

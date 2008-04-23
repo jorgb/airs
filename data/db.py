@@ -7,84 +7,33 @@
 import storm.databases.sqlite
 from storm.locals import *
 import os.path
-from datetime import datetime
-
-VERSION = 2
+import db_sqlite
 
 ALL_OK = 0
 UPGRADE_NEEDED = 1
-
-_db_create_list = [ "CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR, " + \
-                    "                     last_update VARCHAR, update_period INTEGER,postponed INTEGER)",
-                    "CREATE TABLE episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, " + \
-                    "                      season VARCHAR, aired VARCHAR, seen INTEGER, queued INTEGER, " + \
-                    "                      last_in INTEGER, series_id INTEGER, hide_until_update INTEGER)",
-                    "CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR)" ]
-
-
-_db_update_list = [ ( 1, 2, [ "ALTER TABLE series ADD last_update VARCHAR",
-                              "ALTER TABLE series ADD update_period INTEGER",
-                              "ALTER TABLE series ADD postponed INTEGER",
-                              "ALTER TABLE episode ADD queued INTEGER",
-                              "update episode set queued = 0",
-                              "update series set update_period = 0",
-                              "update series set postponed = 0"] ) ]
+UPGRADE_FAILED = 2
+DB_OK = 4
 
 class Version(object):
    __storm_table__ = "version"
    id = Int(primary=True)
    version = Int()
    updated_on = Unicode()
-
    
 database = None
 store = None
 version = None
    
 
-def init(db_filename, upgrade = False):
-   """
-   Initializes the database if it doesn't exist, create one. 
-   Returns
-   """
-   global database, store, version
-   
-   new_db = not os.path.isfile(db_filename)
-   
+def _setup_db(db_filename):
+   global database, store
+
    # create instance
    database = create_database("sqlite:" + db_filename.encode('utf-8'))
    store = Store(database)
-   
-   # create a new database 
-   if new_db:
-         for sql_str in _db_create_list:
-            store.execute(sql_str)
-        
-         #  set version
-         version = Version()
-         version.version = VERSION
-         version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
-        
-         store.add(version)
-         store.commit()
-   else:
-      version = store.find(Version).one()
 
-      # run updates if needed, return        
-      if version.version < VERSION:
-         if not upgrade:
-            close()
-            return UPGRADE_NEEDED
-         else:
-            for from_version, to_version, upd_list in _db_update_list:
-               if from_version == version.version:
-                  for qry in upd_list:
-                     store.execute(qry)
-                  version.version = to_version
-                  version.updated_on = unicode(datetime.today().strftime("%d-%m-%Y %H:%M:%S"))
-                  store.commit()
-                            
-def close():
+
+def _close():
    """
    Close the database connection
    """
@@ -93,4 +42,32 @@ def close():
    if store:
       store.close()
    store = None
-   database = None    
+   database = None      
+   
+   
+def init(db_filename, upgrade = False):
+   """ 
+   Initializes the database if it doesn't exist, create one. 
+   """   
+
+   new_db = not os.path.isfile(db_filename)
+   
+   if new_db:
+      db_sqlite.create(db_filename)
+   _setup_db(db_filename)           
+
+   version = store.find(Version).one()
+   if version.version < db_sqlite.VERSION:      
+      # perform upgrade if needed
+      _close()
+      
+      if not upgrade:
+         return UPGRADE_NEEDED
+      else:
+         if not db_sqlite.upgrade(db_filename):
+            return UPGRADE_FAILED
+      
+      _setup_db(db_filename)
+      
+   return DB_OK
+ 

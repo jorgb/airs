@@ -33,24 +33,40 @@ class SeriesSelectionList(object):
 
         # selection criteria for the series ID. If an ID is selected
         # all episodes belonging to a different series are removed
-        # if id is -1, the last updated list is shown
-        # if id is -2, the download list is shown
-        self._selection_id = -1
-        self._show_only_unseen = False
+        self._selected_series_id = -1
         self._update_mode = SHOW_ALL
-        self._today = datetime.date.today()
+        self._view_type = VIEW_WHATS_ON
         
-    
+        self._show_only_unseen = False
+        self._today = datetime.date.today().strftime("%Y%m%d")
+        
+        
+    def setView(self, viewtype):
+        """
+        Sets a certain view. Will trigger a resync for episodes. 
+        """
+        #if self._view_type != viewtype:
+        self._view_type = viewtype
+        # clear all series
+        self._selection = dict()
+        Publisher().sendMessage(signals.EPISODES_CLEARED)
+        # reload eps and fill
+        self.syncEpisodes()
+        
+
     def setSelection(self, sel_id):
         """
         Sets the ID of the selection. This will trigger an episodes
         restore and an update of the view filter
         """
-        if self._selection_id != sel_id:
-            self._selection = dict()
-            Publisher().sendMessage(signals.EPISODES_CLEARED)
-        self._selection_id = sel_id
-        self.syncEpisodes()
+        # only clear list when the series view is active
+        if self._view_type == VIEW_SERIES:
+            print "set selection"
+            if self._selected_series_id != sel_id:
+                self._selection = dict()
+                Publisher().sendMessage(signals.EPISODES_CLEARED)
+            self._selected_series_id = sel_id
+            self.syncEpisodes()
                 
         
     def filterEpisode(self, episode, updated = False):
@@ -88,28 +104,39 @@ class SeriesSelectionList(object):
         to the selection list and emit the proper signals
         """
         # first filter out all unwanted
-        self._today = datetime.date.today()
+        self._today = datetime.date.today().strftime("%Y%m%d")
         
-        episodes = [episode for episode in self._selection.itervalues()]
-        for episode in episodes:
-            self.filterEpisode(episode)
+        if self._selection:
+            episodes = [episode for episode in self._selection.itervalues()]
+            for episode in episodes:
+                self.filterEpisode(episode)
 
         # reset the DB selection    
-        if self._selection_id == -1:
+        if self._view_type == VIEW_WHATS_NEW:
             # we restore all episodes that are last updated
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.last_in != 0)
-        elif self._selection_id == -2:
+                                   series_list.Episode.changed != 0)
+        elif self._view_type == VIEW_TO_DOWNLOAD:
             # we restore all episodes that are queued
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.queued != 0)
+                                   series_list.Episode.status != series_list.EP_TO_DOWNLOAD)
+        elif self._view_type == VIEW_DOWNLOADING:
+            # we restore all episodes that are queued
+            result = db.store.find(series_list.Episode, 
+                                   series_list.Episode.status != series_list.EP_DOWNLOADING)
+        if self._view_type == VIEW_WHATS_ON:
+            # we restore all episodes that are last updated
+            result = db.store.find(series_list.Episode, 
+                                   series_list.Episode.aired != unicode(""),
+                                   series_list.Episode.aired <= unicode(self._today),
+                                   series_list.Episode.status == series_list.EP_READY)
         else:
             # restore the episode list belonging to this series_id
             # TODO: Add filter criteria that narrows the selection being
             # returned (e.g. if there are seen items and the filter is 
             # set to hide these items)
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.series_id == self._selection_id)
+                                   series_list.Episode.series_id == self._selected_series_id)
                         
         # resync for adding new items        
         episodes = [episode for episode in result]
@@ -124,26 +151,24 @@ class SeriesSelectionList(object):
         """        
         
         # if we are in update mode, perform other logic
-        allowed = True
-        if self._selection_id == -1:
-            if episode.last_in != 0:
-                airdate = episode.getDate()
-                if self._update_mode == SHOW_UPCOMING:
-                    allowed = (airdate != None)
-                elif self._update_mode == SHOW_AIRED:
-                    allowed = (airdate != None and airdate <= self._today)
-            else:
-                allowed = False
+        if self._view_type == VIEW_WHATS_NEW and episode.changed != 0:
+            return Return
+            
+        if self._view_type == VIEW_WHATS_ON and \
+           (episode.aired == "" or episode.aired > self._today):
+           return False
+           
+        if self._view_type == VIEW_TO_DOWNLOAD and \
+           episode.status != series_list.EP_TO_DOWNLOAD:
+           return False
+            
+        if self._view_type == VIEW_DOWNLOADING and \
+           episode.status != series_list.EP_DOWNLOADING:
+           return False
 
-        # further criteria matching
-        if allowed:
-            # hide unqueued items if our view is 
-            # for queued items only
-            if self._selection_id == -2:
-                if episode.queued == 0:
-                    return False
-                            
-            if episode.seen != 0 and self._show_only_unseen:
-                return False
-                                
-        return allowed
+        if self._view_type == VIEW_SERIES and \
+           (episode.series_id != self._selected_series_id or \
+            self._selected_series_id == -1):
+           return False
+    
+        return True
