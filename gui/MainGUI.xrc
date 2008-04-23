@@ -10,266 +10,298 @@
                 <flag>wxGROW|wxALL</flag>
                 <border>5</border>
                 <option>1</option>
-                <object class="wxNotebook" name="ID_VIEW_BOOK">
-                    <style>wxBK_DEFAULT</style>
-                    <bg>#FFFFFF</bg>
-                    <object class="notebookpage">
-                        <label>New / Updated</label>
-                        <bitmap>images/whats_new.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL3">
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxVERTICAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxPanel" name="ID_NEW_UPDATED_VIEW">
-                                        <style>wxTAB_TRAVERSAL</style>
-                                        <bg>#FF8000</bg>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_LEFT</flag>
-                                    <border>5</border>
-                                    <object class="wxBoxSizer">
-                                        <orient>wxHORIZONTAL</orient>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxBOTTOM</flag>
-                                            <border>5</border>
-                                            <object class="wxBitmapButton" name="ID_BITMAPBUTTON1">
-                                                <style>wxBU_AUTODRAW</style>
-                                                <bitmap>images/clear_updated.png</bitmap>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                                            <border>5</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
-                                                <label>Clear all updated / new episodes</label>
-                                            </object>
-                                        </object>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
-                        <label>Whats On TV</label>
-                        <bitmap>images/whats_on.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL6">
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxVERTICAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxPanel" name="ID_WHATS_ON_VIEW">
-                                        <style>wxTAB_TRAVERSAL</style>
-                                        <bg>#FF8000</bg>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <object class="wxChoice" name="ID_UPDATED_VIEW">
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
-                        <label>To Download</label>
-                        <bitmap>images/to_download.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL1">
-                            <size>500,-1</size>
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxVERTICAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxPanel" name="ID_DOWNLOAD_VIEW">
-                                        <style>wxTAB_TRAVERSAL</style>
-                                        <bg>#FF8000</bg>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
-                        <label>Downloading</label>
-                        <bitmap>images/downloading.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL5">
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxVERTICAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxPanel" name="ID_DOWNLOADING_VIEW">
-                                        <style>wxTAB_TRAVERSAL</style>
-                                        <bg>#FF8000</bg>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
-                        <label>All Series</label>
-                        <bitmap>images/all_series.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL">
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxVERTICAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP</flag>
-                                    <border>5</border>
-                                    <object class="wxStaticText" name="wxID_STATIC">
-                                        <label>Select which series you would like to monitor</label>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxGROW</flag>
-                                    <border>5</border>
-                                    <object class="wxBoxSizer">
-                                        <orient>wxHORIZONTAL</orient>
-                                        <object class="sizeritem">
-                                            <flag>wxGROW|wxALL</flag>
-                                            <border>5</border>
-                                            <option>1</option>
-                                            <object class="wxChoice" name="ID_SERIES_LIST">
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
-                                            <border>5</border>
-                                            <object class="wxButton" name="ID_UPDATE_ONE">
-                                                <label>&amp;Update</label>
-                                            </object>
-                                        </object>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxPanel" name="ID_SERIES_VIEW">
-                                        <style>wxTAB_TRAVERSAL</style>
-                                        <bg>#FF8000</bg>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_LEFT|wxLEFT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
-                                        <label>Show only unprocessed episodes</label>
-                                        <checked>0</checked>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="notebookpage">
-                        <label>Log</label>
-                        <bitmap>images/progess_log.png</bitmap>
-                        <object class="wxPanel" name="ID_PANEL2">
-                            <style>wxTAB_TRAVERSAL</style>
-                            <object class="wxBoxSizer">
-                                <orient>wxHORIZONTAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <object class="wxTextCtrl" name="ID_LOG_WINDOW">
-                                        <style>wxTE_MULTILINE|wxTE_READONLY</style>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxPanel" name="ID_NOTIFICATION_AREA">
-                    <style>wxSIMPLE_BORDER|wxTAB_TRAVERSAL</style>
-                    <object class="wxBoxSizer">
-                        <orient>wxHORIZONTAL</orient>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
-                            <border>5</border>
-                            <object class="wxStaticBitmap" name="wxID_STATIC">
-                                <size>16,16</size>
-                                <bitmap>images/information.png</bitmap>
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
-                            <border>5</border>
-                            <object class="wxStaticText" name="ID_NOTIFY_TEXT">
-                                <label>No information yet</label>
-                            </object>
-                        </object>
-                        <object class="spacer">
-                            <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                            <border>5</border>
-                            <option>1</option>
-                            <size>5,5</size>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxBitmapButton" name="ID_CLEAR_NOTIFICATION">
-                                <style>wxBU_AUTODRAW</style>
-                                <bitmap>images/dismiss.png</bitmap>
-                            </object>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT</flag>
-                <border>5</border>
-                <object class="wxStaticLine" name="wxID_STATIC">
-                    <style>wxLI_HORIZONTAL</style>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW</flag>
-                <border>5</border>
                 <object class="wxBoxSizer">
                     <orient>wxHORIZONTAL</orient>
                     <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxButton" name="ID_UPDATE_ALL">
-                            <label>&amp;Update All</label>
-                        </object>
-                    </object>
-                    <object class="spacer">
                         <flag>wxGROW|wxALL</flag>
                         <border>5</border>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Queue</label>
+                        <object class="wxBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxBOTTOM</flag>
+                                <border>5</border>
+                                <option>1</option>
+                                <object class="wxListCtrl" name="ID_VIEW_SELECT">
+                                    <size>140,100</size>
+                                    <style>wxLC_REPORT</style>
+                                </object>
+                            </object>
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <flag>wxGROW</flag>
                         <border>5</border>
                         <option>1</option>
-                        <object class="wxGauge" name="ID_QUEUE">
-                            <style>wxGA_HORIZONTAL</style>
-                            <value>0</value>
-                            <range>100</range>
+                        <object class="wxBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxALL</flag>
+                                <border>5</border>
+                                <option>1</option>
+                                <object class="wxNotebook" name="ID_VIEW_BOOK">
+                                    <style>wxBK_DEFAULT</style>
+                                    <bg>#FFFFFF</bg>
+                                    <object class="notebookpage">
+                                        <label>New / Updated</label>
+                                        <bitmap>images/whats_new.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL3">
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxALL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxPanel" name="ID_NEW_UPDATED_VIEW">
+                                                        <style>wxTAB_TRAVERSAL</style>
+                                                        <bg>#FF8000</bg>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT</flag>
+                                                    <border>5</border>
+                                                    <object class="wxBoxSizer">
+                                                        <orient>wxHORIZONTAL</orient>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxBOTTOM</flag>
+                                                            <border>5</border>
+                                                            <object class="wxBitmapButton" name="ID_BITMAPBUTTON1">
+                                                                <style>wxBU_AUTODRAW</style>
+                                                                <bitmap>images/clear_updated.png</bitmap>
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                                            <border>5</border>
+                                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                                <label>Clear all updated / new episodes</label>
+                                                            </object>
+                                                        </object>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="notebookpage">
+                                        <label>Whats On TV</label>
+                                        <bitmap>images/whats_on.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL6">
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxALL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxPanel" name="ID_WHATS_ON_VIEW">
+                                                        <style>wxTAB_TRAVERSAL</style>
+                                                        <bg>#FF8000</bg>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                                    <border>5</border>
+                                                    <object class="wxChoice" name="ID_UPDATED_VIEW">
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="notebookpage">
+                                        <label>To Download</label>
+                                        <bitmap>images/to_download.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL1">
+                                            <size>500,-1</size>
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxALL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxPanel" name="ID_DOWNLOAD_VIEW">
+                                                        <style>wxTAB_TRAVERSAL</style>
+                                                        <bg>#FF8000</bg>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="notebookpage">
+                                        <label>Downloading</label>
+                                        <bitmap>images/downloading.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL5">
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxALL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxPanel" name="ID_DOWNLOADING_VIEW">
+                                                        <style>wxTAB_TRAVERSAL</style>
+                                                        <bg>#FF8000</bg>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="notebookpage">
+                                        <label>All Series</label>
+                                        <bitmap>images/all_series.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL">
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP</flag>
+                                                    <border>5</border>
+                                                    <object class="wxStaticText" name="wxID_STATIC">
+                                                        <label>Select which series you would like to monitor</label>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW</flag>
+                                                    <border>5</border>
+                                                    <object class="wxBoxSizer">
+                                                        <orient>wxHORIZONTAL</orient>
+                                                        <object class="sizeritem">
+                                                            <flag>wxGROW|wxALL</flag>
+                                                            <border>5</border>
+                                                            <option>1</option>
+                                                            <object class="wxChoice" name="ID_SERIES_LIST">
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+                                                            <border>5</border>
+                                                            <object class="wxButton" name="ID_UPDATE_ONE">
+                                                                <label>&amp;Update</label>
+                                                            </object>
+                                                        </object>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxPanel" name="ID_SERIES_VIEW">
+                                                        <style>wxTAB_TRAVERSAL</style>
+                                                        <bg>#FF8000</bg>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxLEFT|wxBOTTOM</flag>
+                                                    <border>5</border>
+                                                    <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
+                                                        <label>Show only unprocessed episodes</label>
+                                                        <checked>0</checked>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="notebookpage">
+                                        <label>Log</label>
+                                        <bitmap>images/progess_log.png</bitmap>
+                                        <object class="wxPanel" name="ID_PANEL2">
+                                            <style>wxTAB_TRAVERSAL</style>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxHORIZONTAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxALL</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxTextCtrl" name="ID_LOG_WINDOW">
+                                                        <style>wxTE_MULTILINE|wxTE_READONLY</style>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxPanel" name="ID_NOTIFICATION_AREA">
+                                    <style>wxSIMPLE_BORDER|wxTAB_TRAVERSAL</style>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticBitmap" name="wxID_STATIC">
+                                                <size>16,16</size>
+                                                <bitmap>images/information.png</bitmap>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="ID_NOTIFY_TEXT">
+                                                <label>No information yet</label>
+                                            </object>
+                                        </object>
+                                        <object class="spacer">
+                                            <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <option>1</option>
+                                            <size>5,5</size>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxBitmapButton" name="ID_CLEAR_NOTIFICATION">
+                                                <style>wxBU_AUTODRAW</style>
+                                                <bitmap>images/dismiss.png</bitmap>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxLEFT|wxRIGHT</flag>
+                                <border>5</border>
+                                <object class="wxStaticLine" name="wxID_STATIC">
+                                    <style>wxLI_HORIZONTAL</style>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW</flag>
+                                <border>5</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                        <border>5</border>
+                                        <object class="wxButton" name="ID_UPDATE_ALL">
+                                            <label>&amp;Update All</label>
+                                        </object>
+                                    </object>
+                                    <object class="spacer">
+                                        <flag>wxGROW|wxALL</flag>
+                                        <border>5</border>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                        <border>5</border>
+                                        <object class="wxStaticText" name="wxID_STATIC">
+                                            <label>Queue</label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                        <border>5</border>
+                                        <option>1</option>
+                                        <object class="wxGauge" name="ID_QUEUE">
+                                            <style>wxGA_HORIZONTAL</style>
+                                            <value>0</value>
+                                            <range>100</range>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
                         </object>
                     </object>
                 </object>
