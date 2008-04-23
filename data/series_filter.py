@@ -119,17 +119,22 @@ class SeriesSelectionList(object):
         elif self._view_type == VIEW_TO_DOWNLOAD:
             # we restore all episodes that are queued
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.status != series_list.EP_TO_DOWNLOAD)
+                                   series_list.Episode.status == series_list.EP_TO_DOWNLOAD)
         elif self._view_type == VIEW_DOWNLOADING:
             # we restore all episodes that are queued
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.status != series_list.EP_DOWNLOADING)
-        if self._view_type == VIEW_WHATS_ON:
+                                   series_list.Episode.status == series_list.EP_DOWNLOADING)
+        elif self._view_type == VIEW_WHATS_ON:
             # we restore all episodes that are last updated
             result = db.store.find(series_list.Episode, 
                                    series_list.Episode.aired != unicode(""),
-                                   series_list.Episode.aired <= unicode(self._today),
-                                   series_list.Episode.status == series_list.EP_READY)
+                                   series_list.Episode.aired <= unicode(self._today))
+            # narrow list
+            result = [ ep for ep in result if ep.status != series_list.EP_PROCESSED and \
+                                              ep.status != series_list.EP_TO_DOWNLOAD and \
+                                              ep.status != series_list.EP_DOWNLOADING ]
+            
+            
         else:
             # restore the episode list belonging to this series_id
             # TODO: Add filter criteria that narrows the selection being
@@ -140,8 +145,12 @@ class SeriesSelectionList(object):
                         
         # resync for adding new items        
         episodes = [episode for episode in result]
+        max = 100
         for episode in episodes:
             self.filterEpisode(episode)
+            max -= 1
+            if max <= 0:
+                break
                 
                 
     def _checkAgainstCriteria(self, episode):
@@ -152,23 +161,23 @@ class SeriesSelectionList(object):
         
         # if we are in update mode, perform other logic
         if self._view_type == VIEW_WHATS_NEW and episode.changed != 0:
-            return Return
+            return True
             
         if self._view_type == VIEW_WHATS_ON and \
            (episode.aired == "" or episode.aired > self._today):
-           return False
+            return False
            
         if self._view_type == VIEW_TO_DOWNLOAD and \
            episode.status != series_list.EP_TO_DOWNLOAD:
-           return False
+            return False
             
         if self._view_type == VIEW_DOWNLOADING and \
            episode.status != series_list.EP_DOWNLOADING:
-           return False
+            return False
 
         if self._view_type == VIEW_SERIES and \
            (episode.series_id != self._selected_series_id or \
             self._selected_series_id == -1):
-           return False
+            return False
     
         return True

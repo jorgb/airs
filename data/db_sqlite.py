@@ -5,7 +5,7 @@
 #==============================================================================
 
 import sys
-from pysqlite2 import dbapi2 as sqlite3
+import sqlite3
 import os.path
 import datetime
 from data import series_list
@@ -74,14 +74,14 @@ def upgr_pre_v3(conn):
     c.execute("select id, last_update from series")
     lst = list()
     for rec in c:
-        lst.append(rec[0], _conv_date_v2(rec[1]))
+        lst.append( (rec[0], _conv_date_v2(rec[1])) )
     
     for i in lst:
         c.execute("update series set last_update=\"%s\" where id=%i" % (i[1], i[0])) 
-    c.commit()
+    conn.commit()
     
     # cleanup in the episode table, recreate with better fields
-    c.execute("select title, number, season, aired, seen, queued, last_in, series_id, hide_until_update from episode")
+    c.execute("select title, number, season, aired, seen, queued, last_in, series_id from episode")
     records = [ rec for rec in c ]
     
     c.execute("drop table episode")
@@ -91,13 +91,13 @@ def upgr_pre_v3(conn):
               "                      season VARCHAR, aired VARCHAR, last_update VARCHAR, " + \
               "                      status INTEGER,  series_id INTEGER, changed INTEGER)")
     
+    td = datetime.date.today().strftime("%Y%m%d")
     for r in records:
-        td = datetime.today().strftime("%Y%m%d")
         st = series_list.EP_READY
         upd = ""
         changed = 0
         if r[5] != 0:
-            st = series_list.EP_DOWNLOADING
+            st = series_list.EP_TO_DOWNLOAD
         elif r[4] != 0:
             st = series_list.EP_PROCESSED
         elif r[6] != 0:
@@ -109,7 +109,7 @@ def upgr_pre_v3(conn):
         c.execute("insert into episode (title, number, season, aired, last_update, status, series_id, changed) values " +\
                   "(?, ?, ?, ?, ?, ?, ?, ?)", rec)
         
-    c.commit()    
+    conn.commit()    
     c.close()
     
 

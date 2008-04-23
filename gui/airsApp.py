@@ -34,7 +34,7 @@ class AirsApp(wx.App):
                                 dbfile + "\n" + "And press YES to upgrade, NO to close the application",
                                 "Warning", wx.ICON_WARNING | wx.YES_NO)
             if res == wx.YES:
-                if db.init(dbfile, True) == UPGRADE_FAILED:
+                if db.init(dbfile, True) == db.UPGRADE_FAILED:
                     wx.MessageBox("Somehow the upgrade failed. Contact me for help!", "Error" , wx.ICON_HAND)
                     return 0
             else:
