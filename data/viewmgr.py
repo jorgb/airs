@@ -36,18 +36,18 @@ def app_init():
     Initialize all singleton and data elements of viewmgr
     """
     global retriever, _series_sel
-
+    
     # set up classes
     retriever = series_queue.SeriesRetrieveThread()
-        
+
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
     _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
     retriever.start()
-    
+
     # send signal to listeners telling the data is ready
     Publisher().sendMessage(signals.APP_INITIALIZED)
-    
+       
     
 def app_close():
     """ 

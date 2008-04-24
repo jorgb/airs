@@ -27,6 +27,8 @@ APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
 # configuration values
+CFG_LAYOUT_DEFAULT   = 'window/default_layout'       # default layout upon saving (saved one time only)
+CFG_LAYOUT_LAST      = 'window/last_layout'          # last layout when closing window
 CFG_LAYOUT_LAST_H    = 'window/last_height'          # last height when closing window
 CFG_LAYOUT_LAST_W    = 'window/last_width'           # last width when closing window
 CFG_LAYOUT_LAST_X    = 'window/last_xpos'            # last height when closing window
@@ -36,6 +38,8 @@ CFG_UPDATED_VIEW     = 'series/updated_view'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 700  ),
             (CFG_LAYOUT_LAST_H,         'i', 600  ),
+            (CFG_LAYOUT_LAST,           's', ''   ),
+            (CFG_LAYOUT_DEFAULT,        's', ''   ),
             (CFG_LAYOUT_LAST_X,         'i', -1   ),
             (CFG_LAYOUT_LAST_Y,         'i', -1   ),
             (CFG_SHOW_UNSEEN,           'b', False),

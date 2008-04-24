@@ -28,7 +28,7 @@ class MainPanel(wx.Panel):
         res = xmlres.loadGuiResource('MainPanel.xrc')
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
-        
+
         self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
@@ -40,7 +40,7 @@ class MainPanel(wx.Panel):
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
         self._notebook = xrc.XRCCTRL(self, "ID_VIEW_BOOK")
         self._view_select = xrc.XRCCTRL(self, "ID_VIEW_SELECT")
-        
+
         # put the mixin control in place and initialize the
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_SERIES_VIEW")

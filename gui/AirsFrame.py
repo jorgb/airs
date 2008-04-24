@@ -8,6 +8,7 @@ import os.path
 import sys
 
 import wx
+import wx.aui
 from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import Publisher
 
@@ -15,6 +16,8 @@ from data import appcfg, viewmgr, signals
 from data import series_list, db, series_filter
 
 # gui elements
+import ViewSelectPanel
+import ProgressLogPanel
 import MainPanel
 import SeriesDlg
 
@@ -22,7 +25,9 @@ import SeriesDlg
 from images import icon_main, icon_about
 from images import icon_home, icon_help, \
                    icon_visit_site
+from images import icon_default_layout
 from images import icon_add, icon_delete, icon_edit
+
 
 class AirsFrame(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -30,6 +35,8 @@ class AirsFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
+        self._connectSignals()
+        
         # instantiate the GUI
         self._createMenu()
         self._createWindows()
@@ -45,13 +52,11 @@ class AirsFrame(wx.Frame):
 
         # put windows like they were the last time
         self._restoreWindowLayout()
-                
+
         # init viewmgr (always do this last so that
         # signals to be emitted can access controls)
         viewmgr.app_init()
         
-        self._connectSignals()
-                
         # periodic GUI update timer
         self.tmr = wx.Timer(self)
         self.tmr.Start(500)
@@ -64,6 +69,8 @@ class AirsFrame(wx.Frame):
         Creates the menu system for the application, and initializes the
         event handlers for it.
         """
+
+        self._toggleWindowLookup = {}
 
         # create menu
         self._menuBar = wx.MenuBar()
@@ -95,13 +102,31 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuDelete)    
 
         mnu.AppendSeparator()
-        
         self._menuClearCache = wx.MenuItem(mnu, wx.NewId(), "&Clear Cache", 
-                                       "Clear cache of one or all series", wx.ITEM_NORMAL)
+                                           "Clear cache of one or all series", wx.ITEM_NORMAL)
         mnu.AppendItem(self._menuClearCache)    
-        
         self._menuBar.Append(mnu, "&Series")
 
+        # window layout menu
+        mnu = wx.Menu()                          
+        self._menuRestoreLayout = wx.MenuItem(mnu, wx.NewId(), "&Restore Default Layout", 
+                                              "Restore default layout of windows", wx.ITEM_NORMAL)
+        self._menuRestoreLayout.SetBitmap(icon_default_layout.getBitmap())
+        mnu.AppendItem(self._menuRestoreLayout)
+        mnu.AppendSeparator()
+
+        self._menuToggleLeft = wx.MenuItem(mnu, wx.NewId(), "Toggle View Selector", 
+                                           "Hide or show View Selector window", wx.ITEM_CHECK)
+        mnu.AppendItem(self._menuToggleLeft)
+        self._toggleWindowLookup[self._menuToggleLeft.GetId()] = "viewselectpanel"
+        
+        self._menuToggleBottom = wx.MenuItem(mnu, wx.NewId(), "Toggle Progress Log", 
+                                             "Hide or show Progress Log window", wx.ITEM_CHECK)
+        mnu.AppendItem(self._menuToggleBottom)
+        self._toggleWindowLookup[self._menuToggleBottom.GetId()] = "progresslogpanel"
+        
+        self._menuBar.Append(mnu, "&Window")
+        
         # help menu
         mnu = wx.Menu()
         self._menuHelp = wx.MenuItem(mnu, wx.NewId(), "&Help ... ", 
@@ -120,16 +145,18 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuHelpAbout)
         self._menuBar.Append(mnu, "&Help")
 
-        # recent file list, put this last in menu creation
-        self._fileHistory = wx.FileHistory(appcfg.MAX_HISTORY_FILES, wx.ID_FILE1)
-        self._fileHistory.UseMenu(filemnu)
 
         # initialize menu event handlers
         self.Bind(wx.EVT_MENU, self._onGuiAbout, self._menuHelpAbout)
         self.Bind(wx.EVT_MENU, self._onGuiExit, self._menuExit)
         self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelpVisitSite)
-        self.Bind(wx.EVT_MENU, self._onGuiHelp, self._menuHelp)
+        self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelp)
 
+        self.Bind(wx.EVT_MENU, self._onGuiRestoreLayout, self._menuRestoreLayout)
+
+        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleBottom)
+        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleLeft)
+        
         self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
         self.Bind(wx.EVT_MENU, self._onGuiDelete, self._menuDelete)
@@ -140,8 +167,28 @@ class AirsFrame(wx.Frame):
         """
         Create the main window that this frame contains
         """
-        # create main panel
-        pnl = MainPanel.MainPanel(self)
+        self._panes = {}
+
+        # tell AUI to manage this frame
+        self._aui = wx.aui.AuiManager()
+        self._aui.SetManagedWindow(self)
+
+        
+        # construct the left panel
+        self._aui.AddPane(ViewSelectPanel.ViewSelectPanel(parent = self), wx.aui.AuiPaneInfo().
+                          Name("viewselectpanel").Caption("View Selector").MinSize(wx.Size(150,200)).
+                          BestSize(wx.Size(150, 200)).Left().MaximizeButton(True))
+        
+        # construct the bottom panel
+        self._aui.AddPane(ProgressLogPanel.ProgressLogPanel(parent = self), wx.aui.AuiPaneInfo().
+                          Name("progresslogpanel").Caption("Progress Log").MinSize(wx.Size(100,150)).
+                          Bottom().MaximizeButton(True))
+        
+        # construct the middle part
+        self._aui.AddPane(MainPanel.MainPanel(parent = self), wx.aui.AuiPaneInfo().
+                          Name("mainpanel").Caption("Main Window").
+                          CenterPane().CloseButton(False).MaximizeButton(True))
+        self._aui.Update()
         
         
     def _createStatusBar(self):
@@ -150,8 +197,8 @@ class AirsFrame(wx.Frame):
         """
         # specify your statusbar here, add more fields if needed
         self._statusbar = self.CreateStatusBar(2, wx.ST_SIZEGRIP)
-        self._statusbar.SetStatusWidths([-1, -2])            
-                
+        self._statusbar.SetStatusWidths([-1, -1])            
+    
     
     # ======================== ITEM MANAGEMENT METHODS ========================= 
     
@@ -195,7 +242,7 @@ class AirsFrame(wx.Frame):
                 
                 dlg.Destroy()
 
-        
+
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
 
@@ -220,46 +267,40 @@ class AirsFrame(wx.Frame):
                              "Be aware that earlier downloaded items not found on the webpage, are lost forever.\n" +
                              "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
                 viewmgr.clear_current_cache()
-            
+    
     # ============================= CLOSE METHODS ==============================
     
     def _onGuiExit(self, event):
         """ 
         Attempt to close the main window
         """
-        viewmgr.app_close()
-
-
-    def _onSignalClose(self, msg):
-        """
-        Last moment to save anything, let's do it here
-        """
-        self._saveWindowLayout()
-        
-        # TODO: Delete FileHistory object!!
-        
-        # save recent opened files
-        self._fileHistory.Save(appcfg.Get())
-
-        if viewmgr.is_closing:
-            viewmgr.app_destroy()
-            self.Close()
+        self.Close()
 
 
     def _onGuiClose(self, event):
         """
-        We send the close event and veto if the user does not want to close
+        Last moment to save anything, let's do it here
         """
+        self._saveWindowLayout()
 
-        # send a signal to the view manager if someone 
-        # closes the form by clicking the 'X' which is not
-        # the normal way to close
-        if not viewmgr.is_closing:
-            if not viewmgr.app_close() and event.CanVeto():
-                event.Veto()
-                return
+        viewmgr.app_destroy()
+        event.Skip()
 
-        event.Skip()            
+    # ============================== AUI METHODS ===============================
+
+    def _onGuiRestoreLayout(self, event):
+        pers = appcfg.options[appcfg.CFG_LAYOUT_DEFAULT]
+        if pers:
+            self._aui.LoadPerspective(pers, True)
+
+
+    def _onGuiToggleWindow(self, event):
+        if event.GetId() in self._toggleWindowLookup:
+            pane = self._aui.GetPane(self._toggleWindowLookup[event.GetId()])
+            if pane:
+                pane.Show(not pane.IsShown())
+        self._aui.Update()
+
 
 
     # ==================== LAYOUT AND UI UPDATE METHODS ========================
@@ -269,19 +310,23 @@ class AirsFrame(wx.Frame):
         This event is called periodically to allow the user to update the
         menu / toolbar / buttons based upon the internal application state.
         """
-        has_selection = viewmgr.series_active()
-        self._menuEdit.Enable(has_selection)
-        self._menuDelete.Enable(has_selection)
-        self._menuClearCache.Enable(has_selection)
+
+        # sync the checkbox view based upon the view state of the panels
+        for menu_id in self._toggleWindowLookup.iterkeys():
+            pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
+            self._menuBar.Check(menu_id, pane.IsShown())
+
+        # TODO: Add your enable / disable control code here
         pass
+
     
-        
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
         """
         # save windows layout
         width, height = self.GetSize()
+        appcfg.options[appcfg.CFG_LAYOUT_LAST] = self._aui.SavePerspective()
 
         # prevent invalid sizes to be stored, check for iconized app
         if not self.IsIconized():
@@ -298,6 +343,16 @@ class AirsFrame(wx.Frame):
         Restores the layout from the windows written in the settings
         """
 
+        # store default perspective if needed, and load
+        # last perspective used if present
+        pers = appcfg.options[appcfg.CFG_LAYOUT_DEFAULT]
+        if not pers:
+            appcfg.options[appcfg.CFG_LAYOUT_DEFAULT] = self._aui.SavePerspective()
+        else:
+            pers = appcfg.options[appcfg.CFG_LAYOUT_LAST]
+            if pers:
+                self._aui.LoadPerspective(pers)
+        
         # retrieve height / width of main window
         width, height = appcfg.options[appcfg.CFG_LAYOUT_LAST_W], \
                         appcfg.options[appcfg.CFG_LAYOUT_LAST_H]
@@ -331,7 +386,6 @@ class AirsFrame(wx.Frame):
         main frame. The view manager sends out signals when functionality of
         your application is called
         """
-        Publisher().subscribe(self._onSignalClose, signals.APP_CLOSE)
         Publisher().subscribe(self._onSignalSettingsChanged, signals.APP_SETTINGS_CHANGED)
 
 
@@ -373,8 +427,3 @@ class AirsFrame(wx.Frame):
         # use execute_uri
         if appcfg.SITE_URL[0]:
             wx.LaunchDefaultBrowser(appcfg.SITE_URL[0])
-
-    def _onGuiHelp(self, event):
-        # use execute_uri
-        if appcfg.SITE_URL[0]:
-            wx.LaunchDefaultBrowser("http://www.xs4all.nl/~jorgb/wb/MyProjects(2f)Airs(2f)Manual.html") 
