@@ -13,8 +13,6 @@ from SeriesListCtrl import SeriesListCtrl
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
 from ListViewProxy import ListViewProxy
-from images import whats_new, whats_on, to_download, \
-                   downloading, all_series, progess_log
 
 class MainPanel(wx.Panel):
 
@@ -39,7 +37,6 @@ class MainPanel(wx.Panel):
         self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
         self._notebook = xrc.XRCCTRL(self, "ID_VIEW_BOOK")
-        self._view_select = xrc.XRCCTRL(self, "ID_VIEW_SELECT")
 
         # put the mixin control in place and initialize the
         # columns and styles
@@ -51,9 +48,7 @@ class MainPanel(wx.Panel):
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
         self._list_panel.SetSizer(sizer)        
-        
-        self._createViewSelect()
-        
+                
         # add lists to all views 
         self._views = dict()
         self._tabToView = dict()
@@ -99,34 +94,6 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         
         self._initNotifyArea()
-        
-        
-    def _createViewSelect(self):
-        """
-        Creates the view selector window
-        """
-        sel = self._view_select
-        sel.InsertColumn(0, "View Type", width = 130)
-
-        self._icons = wx.ImageList(16, 16)
-        self._icons.Add(whats_new.getBitmap())       #0
-        self._icons.Add(whats_on.getBitmap())        #1
-        self._icons.Add(to_download.getBitmap())     #2
-        self._icons.Add(downloading.getBitmap())     #3
-        self._icons.Add(all_series.getBitmap())      #4
-        self._icons.Add(progess_log.getBitmap())     #5
-        sel.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
-
-        lst = [ ("What's Changed", 0, series_filter.VIEW_WHATS_NEW),
-                ("Whats's On TV", 1, series_filter.VIEW_WHATS_ON),
-                ("To Download", 2, series_filter.VIEW_TO_DOWNLOAD),
-                ("Downloading...", 3, series_filter.VIEW_DOWNLOADING),
-                ("All Series", 4, series_filter.VIEW_SERIES) ]
-                
-        for l in lst:
-            index = sel.InsertStringItem(sys.maxint, l[0])
-            sel.SetItemData(index, l[2])
-            sel.SetItemImage(index, l[1], l[1])        
         
         
     def _onPageChanged(self, event):

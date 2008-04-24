@@ -6,19 +6,12 @@
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                <flag>wxGROW|wxBOTTOM</flag>
                 <border>5</border>
                 <option>1</option>
-                <object class="wxBoxSizer">
-                    <orient>wxHORIZONTAL</orient>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>View Selector Panel
-Edit ViewSelectPanel.xrc to add new controls</label>
-                        </object>
-                    </object>
+                <object class="wxListCtrl" name="ID_VIEW_SELECT">
+                    <size>140,100</size>
+                    <style>wxLC_SMALL_ICON</style>
                 </object>
             </object>
         </object>
