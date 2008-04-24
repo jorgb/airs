@@ -2,7 +2,7 @@ import os, wx
 import wx.xrc as xrc
 from wx.lib.pubsub import Publisher
 import xmlres
-from data import appcfg
+from data import appcfg, signals
 
 class ProgressLogPanel(wx.Panel):
 
@@ -14,5 +14,14 @@ class ProgressLogPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_PROGRESSLOGPANEL")
         self.PostCreate(pre)
 
-        # TODO: Implement some kind of demo functionality with the signals
-        self.SetBackgroundColour(wx.WHITE)
+        self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
+
+        Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
+
+        
+    def _onSignalLogMessage(self, msg):
+        """
+        Received a message, log it to the window
+        """
+
+        self._log_window.AppendText(msg.data + "\n")

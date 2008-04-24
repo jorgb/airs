@@ -27,7 +27,6 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        self._log_window = xrc.XRCCTRL(self, "ID_LOG_WINDOW")
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
@@ -85,7 +84,6 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._onPageChanged, self._notebook)
         
-        Publisher().subscribe(self._onSignalLogMessage, signals.APP_LOG)
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
         Publisher().subscribe(self._onDeleteSeries, signals.SERIES_DELETED)
@@ -162,13 +160,6 @@ class MainPanel(wx.Panel):
         """
         viewmgr.get_selected_series()
         
-
-    def _onSignalLogMessage(self, msg):
-        """
-        Received a message, log it to the window
-        """
-
-        self._log_window.AppendText(msg.data + "\n")
         
     def _onTimer(self, event):
         """
