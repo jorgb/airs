@@ -45,13 +45,13 @@ class SeriesSelectionList(object):
         """
         Sets a certain view. Will trigger a resync for episodes. 
         """
-        #if self._view_type != viewtype:
-        self._view_type = viewtype
-        # clear all series
-        self._selection = dict()
-        Publisher().sendMessage(signals.EPISODES_CLEARED)
-        # reload eps and fill
-        self.syncEpisodes()
+        if self._view_type != viewtype:
+            self._view_type = viewtype
+            # clear all series
+            self._selection = dict()
+            Publisher().sendMessage(signals.EPISODES_CLEARED)
+            # reload eps and fill
+            self.syncEpisodes()
         
 
     def setSelection(self, sel_id):
@@ -60,14 +60,12 @@ class SeriesSelectionList(object):
         restore and an update of the view filter
         """
         # only clear list when the series view is active
+        self._selected_series_id = sel_id
         if self._view_type == VIEW_SERIES:
-            print "set selection"
-            if self._selected_series_id != sel_id:
-                self._selection = dict()
-                Publisher().sendMessage(signals.EPISODES_CLEARED)
-            self._selected_series_id = sel_id
+            self._selection = dict()
+            Publisher().sendMessage(signals.EPISODES_CLEARED)
             self.syncEpisodes()
-                
+            
         
     def filterEpisode(self, episode, updated = False):
         """

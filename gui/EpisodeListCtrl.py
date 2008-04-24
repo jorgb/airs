@@ -88,12 +88,17 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.InsertColumn(3, "Title", width = 220) 
         self.InsertColumn(4, "Stat", width = 40) 
         self.InsertColumn(5, "Date", width = 100) 
+
+        Publisher().subscribe(self._add, signals.EPISODE_ADDED)
+        Publisher().subscribe(self._delete, signals.EPISODE_DELETED)
+        Publisher().subscribe(self._update, signals.EPISODE_UPDATED)
+        Publisher().subscribe(self._clear, signals.EPISODES_CLEARED)
         
         #self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
 
-    def clear(self):
+    def _clear(self, msg):
         """
         Proxy method to clear list
         """
@@ -207,11 +212,12 @@ class EpisodeListCtrl(wx.ListCtrl):
         pass   
             
     
-    def add(self, ep):
+    def _add(self, msg):
         """
         Add an episode to the list, but sort it first and
         add the item to the list later with the given index
         """
+        ep = msg.data
         pos = 0
         
         # dynamically determine position
@@ -263,16 +269,17 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.SetStringItem(index, 5, ep.aired)
                
             
-    def update(self, ep):
+    def _update(self, msg):
         """
         Inserts the episode in the list
         """
+        ep = msg.data
         idx = self.FindItemData(-1, ep.id) 
         if idx != wx.NOT_FOUND:     
             self._updateEpisode(idx, ep)
         
             
-    def delete(self, ep):
+    def _delete(self, msg):
         """
         Respond to a deleted command of an episode
         """
@@ -280,6 +287,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         # Who ever made the wx.ListCtrl must be punished by a life sentence
         # because there is no way to store a reference to the object in 
         # the wx.ListCtrl we must poorly scan through the list ourselves
+        ep = msg.data
         if self.GetItemCount() > 0:            
             idx = self.FindItemData(-1, ep.id)                
             if idx != wx.NOT_FOUND:

@@ -12,10 +12,6 @@ class ListViewProxy(object):
         self._currView = None
         self._views = views
 
-        Publisher().subscribe(self._onEpisodeAdded, signals.EPISODE_ADDED)
-        Publisher().subscribe(self._onEpisodeDeleted, signals.EPISODE_DELETED)
-        Publisher().subscribe(self._onEpisodeUpdated, signals.EPISODE_UPDATED)
-        Publisher().subscribe(self._onClearAll, signals.EPISODES_CLEARED)
         
     
     def setView(self, viewname):

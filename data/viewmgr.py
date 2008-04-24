@@ -128,9 +128,14 @@ def set_selection(series):
     """
     Publisher().sendMessage(signals.SERIES_SELECT, series)
     if series:
-        _series_sel.setSelection(series.id)
-    
-    
+        if _series_sel._view_type != series_filter.VIEW_SERIES:
+            Publisher().sendMessage(signals.SET_VIEW, series_filter.VIEW_SERIES)
+            _series_sel.setSelection(series.id)            
+            _series_sel.setView(series_filter.VIEW_SERIES)
+        else:
+            _series_sel.setSelection(series.id)            
+            
+            
 def app_restore():
     """
     Sends a signal that the application needs to restore it's window

@@ -9,10 +9,8 @@ import wx.xrc as xrc
 from wx.lib.pubsub import Publisher
 from data import appcfg, viewmgr, signals
 import xmlres
-from SeriesListCtrl import SeriesListCtrl
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
-from ListViewProxy import ListViewProxy
 
 class MainPanel(wx.Panel):
 
@@ -30,48 +28,23 @@ class MainPanel(wx.Panel):
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
-        self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
+        #self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
         self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
         self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
         self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
-        self._notebook = xrc.XRCCTRL(self, "ID_VIEW_BOOK")
 
         # put the mixin control in place and initialize the
         # columns and styles
-        self._list_panel = xrc.XRCCTRL(self, "ID_SERIES_VIEW")
+        self._list_panel = xrc.XRCCTRL(self, "ID_EPISODE_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
-        self._series_list = SeriesListCtrl(self._list_panel)
+        self._series_list = EpisodeListCtrl(self._list_panel)
         
         # create main view (for now)
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
         self._list_panel.SetSizer(sizer)        
                 
-        # add lists to all views 
-        self._views = dict()
-        self._tabToView = dict()
-        views = [ ( "ID_NEW_UPDATED_VIEW", series_filter.VIEW_WHATS_NEW), 
-                  ( "ID_WHATS_ON_VIEW",    series_filter.VIEW_WHATS_ON ),
-                  ( "ID_DOWNLOAD_VIEW",    series_filter.VIEW_TO_DOWNLOAD ),
-                  ( "ID_DOWNLOADING_VIEW", series_filter.VIEW_DOWNLOADING) ]
-        
-        for view in views:
-            pnl = xrc.XRCCTRL(self, view[0])
-            sizer = wx.BoxSizer()
-            el = EpisodeListCtrl(pnl)
-            self._views[view[1]] = el
-            el.viewID = view[1]
-            sizer.Add(el, 1, wx.EXPAND)
-            pnl.SetSizer(sizer) 
-            # NOTE: This is potentially not working when the panel on which 
-            # the list ctrl is not the direct child of the notebook ctrl.
-            self._tabToView[pnl.GetParent().GetId()] = el.viewID
-
-        # the proxy class will dynamically assign all the
-        # exposed methods to the current view            
-        self._proxy = ListViewProxy(self._views)
-         
         self.tmr = wx.Timer(self)
         self.tmr.Start(300)
         
@@ -80,9 +53,8 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
-        self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
+        #self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._onPageChanged, self._notebook)
         
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -93,17 +65,6 @@ class MainPanel(wx.Panel):
         
         self._initNotifyArea()
         
-        
-    def _onPageChanged(self, event):
-        """
-        Event happens before notebook is changed
-        """
-        pnl = self._notebook.GetPage(event.GetSelection())
-        if pnl.GetId() in self._tabToView:
-            print "Setting: ", self._tabToView[pnl.GetId()]
-            self._proxy.setView(self._tabToView[pnl.GetId()])
-            viewmgr.set_view(self._tabToView[pnl.GetId()])
-            
 
     def _initNotifyArea(self):
         """
@@ -184,7 +145,7 @@ class MainPanel(wx.Panel):
         self._queue.SetValue(cs)
             
         # enable / disable some button
-        self._updated_view.Enable(not viewmgr.series_active())
+        #self._updated_view.Enable(not viewmgr.series_active())
             
         # kick view manager to probe for new series
         # this will result in signals being emitted to update lists
@@ -216,19 +177,19 @@ class MainPanel(wx.Panel):
         self._min_idx = sel.Append("[Queued Episodes]", -2)
         
         # populate the criteria filter
-        uv = self._updated_view
-        lst = [ ("Show all updated episodes (also incompletes)", series_filter.SHOW_ALL), 
-                ("Show aired + upcoming episodes", series_filter.SHOW_UPCOMING),
-                ("Show only aired episodes", series_filter.SHOW_AIRED) ]
-        for str, data in lst:
-            uv.Append(str, data)
+        #uv = self._updated_view
+        #lst = [ ("Show all updated episodes (also incompletes)", series_filter.SHOW_ALL), 
+        #        ("Show aired + upcoming episodes", series_filter.SHOW_UPCOMING),
+        #        ("Show only aired episodes", series_filter.SHOW_AIRED) ]
+        #for str, data in lst:
+        #    uv.Append(str, data)
         
         # look up last selection in list
-        lastsel = appcfg.options[appcfg.CFG_UPDATED_VIEW]
-        for i in xrange(0, uv.GetCount()):
-            if uv.GetClientData(i) == lastsel:
-                uv.SetSelection(i)
-                break
+        #lastsel = appcfg.options[appcfg.CFG_UPDATED_VIEW]
+        #for i in xrange(0, uv.GetCount()):
+        #    if uv.GetClientData(i) == lastsel:
+        #        uv.SetSelection(i)
+        #        break
                         
         # get a list of series, and show them
         result = db.store.find(series_list.Series)
@@ -242,13 +203,14 @@ class MainPanel(wx.Panel):
         """
         Sync the last view
         """
-        uv = self._updated_view        
-        idx = uv.GetSelection()
-        if idx != wx.NOT_FOUND:
-            appcfg.options[appcfg.CFG_UPDATED_VIEW] = uv.GetClientData(idx)
-            viewmgr.app_settings_changed()
-            
+        #uv = self._updated_view        
+        #idx = uv.GetSelection()
+        #if idx != wx.NOT_FOUND:
+        #    appcfg.options[appcfg.CFG_UPDATED_VIEW] = uv.GetClientData(idx)
+        #    viewmgr.app_settings_changed()
+        pass    
         
+    
     def _onSelectSeries(self, event):
         """ 
         Select a series, or all
@@ -260,7 +222,6 @@ class MainPanel(wx.Panel):
         series_id = sel.GetClientData(sel.GetSelection())
         if series_id >= 0:
             series = db.store.get(series_list.Series, series_id)
-            print "Selected series with ID: ", series_id
             viewmgr.set_selection(series)
        
         self._series_list.Thaw()

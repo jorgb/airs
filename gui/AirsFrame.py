@@ -181,7 +181,7 @@ class AirsFrame(wx.Frame):
         
         # construct the bottom panel
         self._aui.AddPane(ProgressLogPanel.ProgressLogPanel(parent = self), wx.aui.AuiPaneInfo().
-                          Name("progresslogpanel").Caption("Progress Log").MinSize(wx.Size(100,150)).
+                          Name("progresslogpanel").Caption("Progress Log").MinSize(wx.Size(100,50)).
                           Bottom().MaximizeButton(True))
         
         # construct the middle part

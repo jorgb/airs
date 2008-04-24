@@ -24,6 +24,7 @@ SERIES_ADDED         = ('series',  'added')
 SERIES_SELECT        = ('series',  'selected')
 SERIES_UPDATED       = ('series',  'updated')
 EPISODES_CLEARED     = ('episode', 'cleared')
+SET_VIEW             = ('view',    'set')
 
 
 # from data model
