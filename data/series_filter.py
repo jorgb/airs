@@ -36,6 +36,7 @@ class SeriesSelectionList(object):
         self._selected_series_id = -1
         self._update_mode = SHOW_ALL
         self._view_type = -1
+        self._weeks_delta = 1
         
         self._show_only_unseen = False
         self._today = datetime.date.today().strftime("%Y%m%d")
@@ -47,9 +48,6 @@ class SeriesSelectionList(object):
         """
         if self._view_type != viewtype:
             self._view_type = viewtype
-            # clear all series
-            self._selection = dict()
-            Publisher().sendMessage(signals.EPISODES_CLEARED)
             # reload eps and fill
             self.syncEpisodes()
         
@@ -62,8 +60,6 @@ class SeriesSelectionList(object):
         # only clear list when the series view is active
         self._selected_series_id = sel_id
         if self._view_type == VIEW_SERIES:
-            self._selection = dict()
-            Publisher().sendMessage(signals.EPISODES_CLEARED)
             self.syncEpisodes()
             
         
@@ -104,10 +100,12 @@ class SeriesSelectionList(object):
         # first filter out all unwanted
         self._today = datetime.date.today().strftime("%Y%m%d")
         
-        if self._selection:
-            episodes = [episode for episode in self._selection.itervalues()]
-            for episode in episodes:
-                self.filterEpisode(episode)
+        #if self._selection:
+        #    episodes = [episode for episode in self._selection.itervalues()]
+        #    for episode in episodes:
+        #        self.filterEpisode(episode)
+        self._selection = dict()
+        Publisher().sendMessage(signals.EPISODES_CLEARED)        
 
         # reset the DB selection    
         if self._view_type == VIEW_WHATS_NEW:
@@ -124,9 +122,12 @@ class SeriesSelectionList(object):
                                    series_list.Episode.status == series_list.EP_DOWNLOADING)
         elif self._view_type == VIEW_WHATS_ON:
             # we restore all episodes that are last updated
+            bottom_date = datetime.date.today() - datetime.timedelta(weeks = self._weeks_delta)
+            bottom_str = bottom_date.strftime("%Y%m%d")
             result = db.store.find(series_list.Episode, 
                                    series_list.Episode.aired != unicode(""),
-                                   series_list.Episode.aired <= unicode(self._today))
+                                   series_list.Episode.aired <= unicode(self._today),
+                                   series_list.Episode.aired > unicode(bottom_str))
             # narrow list
             result = [ ep for ep in result if ep.status != series_list.EP_PROCESSED and \
                                               ep.status != series_list.EP_TO_DOWNLOAD and \
@@ -138,9 +139,15 @@ class SeriesSelectionList(object):
             # TODO: Add filter criteria that narrows the selection being
             # returned (e.g. if there are seen items and the filter is 
             # set to hide these items)
-            result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.series_id == self._selected_series_id)
-                        
+            if self._show_only_unseen:
+                result = db.store.find(series_list.Episode, 
+                                       series_list.Episode.series_id == self._selected_series_id,
+                                       series_list.Episode.status != series_list.EP_PROCESSED)
+            else:
+                result = db.store.find(series_list.Episode, 
+                                       series_list.Episode.series_id == self._selected_series_id)
+                
+                
         # resync for adding new items        
         episodes = [episode for episode in result]
         max = 100

@@ -122,37 +122,59 @@ class EpisodeListCtrl(wx.ListCtrl):
         """
         Create popup menu to perform some options
         """
-        #if self.GetFirstSelected() != wx.NOT_FOUND:        
-            #menu = wx.Menu()
-    
-            #if viewmgr._series_sel._view_type != series_filter:
-                #m5 = menu.Append(wx.NewId(), "&Add to Queue View")
-                #menu.AppendSeparator()
-    
-                #m1 = menu.Append(wx.NewId(), "&Mark Episode Processed")
-                #m2 = menu.Append(wx.NewId(), "&Mark Episode Unprocessed")
-                #menu.AppendSeparator()
-                
-                #m3 = menu.Append(wx.NewId(), "&Clear Updated Status")
-                #m4 = menu.Append(wx.NewId(), "&Set Updated Status")
-
-                #self.Bind(wx.EVT_MENU, self._onCheckItem, m1)
-                #self.Bind(wx.EVT_MENU, self._onUncheckItem, m2)
-                #self.Bind(wx.EVT_MENU, self._onAddToQueueView, m5)
-                #self.Bind(wx.EVT_MENU, self._onClearUpdatedStatus, m3)
-                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m4)
-            #else:
-                #m5 = menu.Append(wx.NewId(), "&Clear from Queue View")                
-                #menu.AppendSeparator()
-                #m6 = menu.Append(wx.NewId(), "&Revert to Updated")
-
-                #self.Bind(wx.EVT_MENU, self._onRemoveQueueView, m5)
-                #self.Bind(wx.EVT_MENU, self._onSetUpdatedStatus, m6)
-    
-            #self.PopupMenu(menu)
-            #menu.Destroy()    
-        pass
+        if self.GetFirstSelected() != wx.NOT_FOUND:        
+            menu = wx.Menu()
             
+            st_changed = False
+            st_to_download = False
+            st_downloading = False
+            st_series = False
+            
+            if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW or \
+               viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON:
+                self.Bind(wx.EVT_MENU, self._onSetToDownload, 
+                          menu.Append(wx.NewId(),"Add to Download Queue"))
+                st_changed  = True
+
+            if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW:
+                self.Bind(wx.EVT_MENU, self._onSetReady, 
+                          menu.Append(wx.NewId(),"Remove from View"))
+                
+            if viewmgr._series_sel._view_type == series_filter.VIEW_TO_DOWNLOAD:
+                self.Bind(wx.EVT_MENU, self._onSetDownloading, 
+                          menu.Append(wx.NewId(),"Add to Downloading"))
+                st_to_download = True
+
+            if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADING:
+                self.Bind(wx.EVT_MENU, self._onSetReady, 
+                          menu.Append(wx.NewId(),"Remove from Download"))
+                st_downloading = True
+                
+            if viewmgr._series_sel._view_type == series_filter.VIEW_SERIES:
+                self.Bind(wx.EVT_MENU, self._onSetReady, 
+                          menu.Append(wx.NewId(),"Set as Ready"))
+                self.Bind(wx.EVT_MENU, self._onSetProcessed, 
+                          menu.Append(wx.NewId(),"Set as Processed"))
+                st_series = True
+                
+            menu.AppendSeparator()
+            
+            if not st_changed:
+                self.Bind(wx.EVT_MENU, self._onSetToDownload, 
+                          menu.Append(wx.NewId(), "&Mark as To Download"))
+            if not st_to_download:
+                self.Bind(wx.EVT_MENU, self._onSetDownloading, 
+                          menu.Append(wx.NewId(), "&Mark as Downloading"))
+            if not st_downloading and not st_series:
+                self.Bind(wx.EVT_MENU, self._onSetReady, 
+                          menu.Append(wx.NewId(), "&Mark as Ready"))
+                self.Bind(wx.EVT_MENU, self._onSetProcessed, 
+                          menu.Append(wx.NewId(), "&Mark as Processed"))
+            
+            self.PopupMenu(menu)
+            menu.Destroy()   
+                    
+                
     def __getSelectedEpisodes(self):
         episodes = list()
         idx = self.GetFirstSelected()
@@ -164,65 +186,42 @@ class EpisodeListCtrl(wx.ListCtrl):
         return episodes
             
             
-    def _onAddToQueueView(self, event):
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.last_in = 0
-        #    episode.queued = 1
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
-        pass
+    def _onSetToDownload(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = series_list.EP_TO_DOWNLOAD
+            episode.changed = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
 
-    def _onRemoveQueueView(self, event):
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.last_in = 0
-        #    episode.queued = 0
-        #    episode.seen = 1
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
-        pass
             
-    def _onClearUpdatedStatus(self, event):
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.last_in = 0
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
+    def _onSetDownloading(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = series_list.EP_DOWNLOADING
+            episode.changed = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+
+            
+    def _onSetReady(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = series_list.EP_READY
+            episode.changed = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
         pass
 
-    def _onSetUpdatedStatus(self, event):
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.last_in = 1
-        #    episode.queued = 0
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
-        pass
     
-    def _onCheckItem(self, event):
-        """
-        Check all the selected items
-        """
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.seen = 1
-        #    episode.last_in = 0
-        #    episode.queued = 0
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
+    def _onSetProcessed(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = series_list.EP_PROCESSED
+            episode.changed = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
         pass
-
-    def _onUncheckItem(self, event):
-        """
-        Check all the selected items
-        """
-        #episodes = self.__getSelectedEpisodes()
-        #for episode in episodes:
-        #    episode.seen = 0
-        #    db.store.commit()
-        #    viewmgr.episode_updated(episode)
-        pass   
             
     
     def _add(self, msg):

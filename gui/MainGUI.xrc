@@ -44,7 +44,7 @@
                 </object>
             </object>
             <object class="sizeritem">
-                <flag>wxALIGN_LEFT</flag>
+                <flag>wxGROW</flag>
                 <border>5</border>
                 <object class="wxBoxSizer">
                     <orient>wxHORIZONTAL</orient>
@@ -54,6 +54,13 @@
                         <object class="wxCheckBox" name="ID_SHOW_UNSEEN">
                             <label>Hide all processed items </label>
                             <checked>0</checked>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <option>1</option>
+                        <object class="wxChoice" name="ID_EPISODE_FILTER">
                         </object>
                     </object>
                 </object>
@@ -505,7 +512,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM</flag>
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
                             <label>Ready Episode</label>
@@ -520,7 +527,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                         </object>
                     </object>
                     <object class="sizeritem">
-                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM</flag>
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
                             <label>Processed Episode</label>

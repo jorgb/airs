@@ -25,28 +25,34 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
-        self._view_controls = list()
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
 
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
-        self._view_controls.append(self._show_unseen)
 
-        #self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
         self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
 
         self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
         self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
 
+        self._episodeFilter = xrc.XRCCTRL(self, "ID_EPISODE_FILTER")
+        
+        self._episodeFilter.Append("View episodes from last week", clientData = 1)
+        self._episodeFilter.Append("View episodes from last two weeks", clientData = 2)
+        self._episodeFilter.Append("View episodes from last month", clientData = 4)
+        self._episodeFilter.Append("View episodes from last two months", clientData = 8)
+        
+        idx = appcfg.options[appcfg.CFG_EPISODE_DELTA]
+        self._episodeFilter.SetSelection(idx)
+        viewmgr._series_sel._weeks_delta = self._episodeFilter.GetClientData(idx)
+
         # put the mixin control in place and initialize the
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_EPISODE_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
-        self._view_controls.append(self._series_selection)
 
         self._series_list = EpisodeListCtrl(self._list_panel)
-        self._view_controls.append(self._series_list)
         
         # create main view (for now)
         sizer = wx.BoxSizer()
@@ -60,6 +66,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self._onUpdateAll, self._update_all)
         self.Bind(wx.EVT_BUTTON, self._onUpdateOne, self._update_one)
         self.Bind(wx.EVT_CHOICE, self._onSelectSeries, self._series_selection)
+        self.Bind(wx.EVT_CHOICE, self._onEpisodeFilter, self._episodeFilter)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         #self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
@@ -75,17 +82,29 @@ class MainPanel(wx.Panel):
         self._initNotifyArea()
         
 
+    def _onEpisodeFilter(self, event):
+        """
+        Toggle the filter for the date span 
+        """
+        idx = self._episodeFilter.GetSelection()
+        appcfg.options[appcfg.CFG_EPISODE_DELTA] = idx
+        
+        viewmgr._series_sel._weeks_delta = self._episodeFilter.GetClientData(idx)
+        viewmgr._series_sel.syncEpisodes()
+        
+        
     def _onGuiUpdated(self, event):
         """
         Called after every GUI update
         """
-
-        for ctrl in self._view_controls:
-            ctrl.Enable(viewmgr._series_sel._view_type != -1)
+        
+        view_enabled = viewmgr._series_sel._view_type != -1
 
         self._update_all.Enable(not viewmgr.is_busy())
-        self._update_one.Enable(viewmgr.series_active())
-            
+        self._update_one.Enable(view_enabled and viewmgr.series_active())
+        self._show_unseen.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
+        self._episodeFilter.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON)
+        self._series_selection.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
             
             
     def _initNotifyArea(self):
@@ -189,11 +208,6 @@ class MainPanel(wx.Panel):
         Everything is initialized, set the GUI to default
         """
         
-        # show only updated
-        sel = self._series_selection
-        sel.Append("[Updated Episodes]", -1)
-        self._min_idx = sel.Append("[Queued Episodes]", -2)
-        
         # populate the criteria filter
         #uv = self._updated_view
         #lst = [ ("Show all updated episodes (also incompletes)", series_filter.SHOW_ALL), 
@@ -258,7 +272,7 @@ class MainPanel(wx.Panel):
             curr_id = sel.GetClientData(sel.GetSelection()) 
         
         # first remove
-        for i in xrange(self._min_idx, sel.GetCount()):
+        for i in xrange(0, sel.GetCount()):
             if sel.GetClientData(i) == series.id:
                 sel.Delete(i)
                 break
@@ -277,7 +291,7 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         series = msg.data
         
-        for i in xrange(self._min_idx, sel.GetCount()):
+        for i in xrange(0, sel.GetCount()):
             if sel.GetClientData(i) == series.id:
                 sel.SetString(i, series.name)
                 sel.SetSelection(i)
@@ -291,7 +305,7 @@ class MainPanel(wx.Panel):
         sel = self._series_selection
         series = msg.data
         idx = 0
-        for i in xrange(self._min_idx, sel.GetCount()):
+        for i in xrange(0, sel.GetCount()):
             if sel.GetString(i) < series.name :
                 idx += 1
         sel.Insert(series.name, idx, series.id)
