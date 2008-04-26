@@ -6,6 +6,10 @@
 
 import wx, sys
 from data import signals, viewmgr, db, series_list, series_filter
+
+from images import whats_new, to_download, \
+                   downloading, icon_processed, icon_ready
+
 from wx.lib.pubsub import Publisher
 
 
@@ -82,13 +86,22 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._updating = False
         self.viewID = ''    # kind of view
 
-        self.InsertColumn(0, "Nr.", width = 50)
+        self.InsertColumn(0, "Nr.", width = 70)
         self.InsertColumn(1, "Season", width = 70)
         self.InsertColumn(2, "Series", width = 100)        
         self.InsertColumn(3, "Title", width = 220) 
-        self.InsertColumn(4, "Stat", width = 40) 
-        self.InsertColumn(5, "Date", width = 100) 
-
+        self.InsertColumn(4, "Date", width = 100) 
+        
+        self._icons = wx.ImageList(16, 16)
+        
+        self._stat_to_icon = dict()
+        self._stat_to_icon[series_list.EP_CHANGED] = self._icons.Add(whats_new.getBitmap())
+        self._stat_to_icon[series_list.EP_DOWNLOADING] = self._icons.Add(downloading.getBitmap())
+        self._stat_to_icon[series_list.EP_PROCESSED] = self._icons.Add(icon_processed.getBitmap())
+        self._stat_to_icon[series_list.EP_TO_DOWNLOAD] = self._icons.Add(to_download.getBitmap())
+        self._stat_to_icon[series_list.EP_READY] = self._icons.Add(icon_ready.getBitmap())
+        self.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
+        
         Publisher().subscribe(self._add, signals.EPISODE_ADDED)
         Publisher().subscribe(self._delete, signals.EPISODE_DELETED)
         Publisher().subscribe(self._update, signals.EPISODE_UPDATED)
@@ -262,11 +275,12 @@ class EpisodeListCtrl(wx.ListCtrl):
 
         str = ""
         if ep.changed != 0:
-            str = "U"
-        if ep.status == series_list.EP_TO_DOWNLOAD:
-            str += "Q"
-        self.SetStringItem(index, 4, str)
-        self.SetStringItem(index, 5, ep.aired)
+            imgidx = self._stat_to_icon[series_list.EP_CHANGED]
+        else:
+            imgidx = self._stat_to_icon[ep.status]
+            
+        self.SetItemImage(index, imgidx, imgidx)
+        self.SetStringItem(index, 4, ep.getStrDate())
                
             
     def _update(self, msg):

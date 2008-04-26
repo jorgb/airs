@@ -91,7 +91,13 @@ class Episode(object):
             self.last_update = unicode("%04i%02i%02" % (d.year, d.month, d.day))
         else:
             self.last_update = unicode('')
-            
+          
+    def getStrDate(self):
+        if len(self.aired) > 7:
+            s = self.aired
+            return "%s-%s-%s" % (s[0:4], s[4:6], s[6:8])
+        return ''
+    
                     
 class SeriesList(object):
     """
