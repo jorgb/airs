@@ -35,7 +35,7 @@ class SeriesSelectionList(object):
         # all episodes belonging to a different series are removed
         self._selected_series_id = -1
         self._update_mode = SHOW_ALL
-        self._view_type = VIEW_WHATS_ON
+        self._view_type = -1
         
         self._show_only_unseen = False
         self._today = datetime.date.today().strftime("%Y%m%d")

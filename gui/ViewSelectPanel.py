@@ -2,8 +2,8 @@ import os, wx, sys
 import wx.xrc as xrc
 from wx.lib.pubsub import Publisher
 import xmlres
-from data import appcfg
-from data import series_filter
+from data import appcfg, viewmgr
+from data import series_filter, signals
 
 from images import whats_new, whats_on, to_download, \
                    downloading, all_series, progess_log
@@ -20,10 +20,50 @@ class ViewSelectPanel(wx.Panel):
         
         self._view_select = xrc.XRCCTRL(self, "ID_VIEW_SELECT")
 
-        self._createViewSelect()
+        # temp var for delayed selection of view
+        self._the_view = -1
+                
+        self._initViewSelect()
+        
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._onViewSelected, self._view_select)
+        Publisher.subscribe(self._onViewChanged, signals.SET_VIEW)
+        
+        
+    def _onViewChanged(self, msg):
+        """
+        Change the view
+        """
+        view = msg.data
+        if view == -1:
+            idx = self._view_select.GetFirstSelected()
+            if idx != wx.NOT_FOUND:
+                self._view_select.Select(idx, on = 0)
+        else:
+            idx = self._view_select.FindItemData(start = 0, data = view)
+            if idx != wx.NOT_FOUND:
+                self._view_select.Select(idx, on = 1)
 
+        
+    def _afterViewSelect(self):
+        """
+        After call to finish the selection event first
+        """
+        if self._the_view != -1:
+            viewmgr.set_view(self._the_view)
+            self._the_view = -1
+        
+        
+    def _onViewSelected(self, event):
+        """
+        Set the view to the proper selected item
+        """
+        idx = self._view_select.GetFirstSelected()
+        if idx != wx.NOT_FOUND:
+            self._the_view = self._view_select.GetItemData(idx)
+            wx.CallAfter(self._afterViewSelect)
+               
 
-    def _createViewSelect(self):
+    def _initViewSelect(self):
         """
         Creates the view selector window
         """

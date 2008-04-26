@@ -25,11 +25,16 @@ class MainPanel(wx.Panel):
         res.LoadOnPanel(pre, parent, "ID_MAIN_PANEL")
         self.PostCreate(pre)
 
+        self._view_controls = list()
         self._update_all = xrc.XRCCTRL(self, "ID_UPDATE_ALL")
         self._update_one = xrc.XRCCTRL(self, "ID_UPDATE_ONE")
+
         self._show_unseen = xrc.XRCCTRL(self, "ID_SHOW_UNSEEN")
+        self._view_controls.append(self._show_unseen)
+
         #self._updated_view = xrc.XRCCTRL(self, "ID_UPDATED_VIEW")
         self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
+
         self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
         self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
         self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
@@ -38,7 +43,10 @@ class MainPanel(wx.Panel):
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_EPISODE_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
+        self._view_controls.append(self._series_selection)
+
         self._series_list = EpisodeListCtrl(self._list_panel)
+        self._view_controls.append(self._series_list)
         
         # create main view (for now)
         sizer = wx.BoxSizer()
@@ -55,6 +63,7 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         #self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
+        self.Bind(wx.EVT_UPDATE_UI, self._onGuiUpdated)
         
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -66,6 +75,19 @@ class MainPanel(wx.Panel):
         self._initNotifyArea()
         
 
+    def _onGuiUpdated(self, event):
+        """
+        Called after every GUI update
+        """
+
+        for ctrl in self._view_controls:
+            ctrl.Enable(viewmgr._series_sel._view_type != -1)
+
+        self._update_all.Enable(not viewmgr.is_busy())
+        self._update_one.Enable(viewmgr.series_active())
+            
+            
+            
     def _initNotifyArea(self):
         """
         Clear notification area
@@ -128,10 +150,6 @@ class MainPanel(wx.Panel):
         other menu elements
         """
     
-        # update some controls
-        self._update_all.Enable(not viewmgr.is_busy())
-        self._update_one.Enable(viewmgr.series_active())
-
         # send messages from thread queue to log window
         q = viewmgr.retriever.msg_queue
         msgs = 30

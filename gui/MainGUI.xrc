@@ -411,7 +411,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                 <option>1</option>
                 <object class="wxListCtrl" name="ID_VIEW_SELECT">
                     <size>140,100</size>
-                    <style>wxLC_SMALL_ICON</style>
+                    <style>wxLC_SMALL_ICON|wxLC_SINGLE_SEL</style>
                 </object>
             </object>
         </object>
