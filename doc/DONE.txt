@@ -1,3 +1,16 @@
 Done items for next release
 
-* Fixed unicode problem with SQLite database filename conversion
+ * Revamped the GUI drastically
+ * Updated episodes on date == today are green colored
+ * Episodes in the future are red and incomplete ones are grey colored  
+ * Added more clear views for the episodes
+ * Added a delta list to see aired episodes in a time span of weeks / months
+ * Status icons used instead of checkbox view  
+ * Added a search option to search in episodes or the whole database
+ * Ctrl-A selects all episodes
+ * Legend window added
+ * Statistics window added
+ * Better indication how many episodes are updated   
+ * Option to clear updated and new episodes in one go    
+ * Fixed unicode problem with SQLite database filename conversion
+ * Fixed icon for task switch window 
