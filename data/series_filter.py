@@ -27,6 +27,7 @@ VIEW_WHATS_ON    = 1
 VIEW_TO_DOWNLOAD = 2
 VIEW_DOWNLOADING = 3
 VIEW_SERIES      = 4
+VIEW_QUEUES      = 5
 
 class SeriesSelectionList(object):
     def __init__(self):
@@ -136,12 +137,14 @@ class SeriesSelectionList(object):
                                               ep.status != series_list.EP_TO_DOWNLOAD and \
                                               ep.status != series_list.EP_DOWNLOADING ]
             
+        elif self._view_type == VIEW_QUEUES:
+            if self._filter_text.strip() != '':
+                result = db.store.find(series_list.Episode)
+            else:
+                result = list()
             
         else:
             # restore the episode list belonging to this series_id
-            # TODO: Add filter criteria that narrows the selection being
-            # returned (e.g. if there are seen items and the filter is 
-            # set to hide these items)
             if self._show_only_unseen:
                 result = db.store.find(series_list.Episode, 
                                        series_list.Episode.series_id == self._selected_series_id,
@@ -153,17 +156,25 @@ class SeriesSelectionList(object):
             
         # resync for adding new items        
         t = self._filter_text.lower()
-        if t:
+        all_match = False
+        subs = [sub for sub in t.split(' ') if sub != '']
+        if subs:
             series_lookup = dict()
-            episodes = list()
+            episodes = list()            
+            
             for episode in result:
+                # TODO: This must be done in the main restore loop, and check
+                # if no other code restores the series for no reason
                 if episode.series_id not in series_lookup:
                     series_lookup[episode.series_id] = db.store.find(series_list.Series,
                                                                      series_list.Series.id == episode.series_id).one()
-                
-                if episode.title.lower().find(t) != -1 or \
-                   series_lookup[episode.series_id].name.lower().find(t) != -1 or \
-                   episode.season.lower().find(t) != -1:
+                all_match = True
+                for sub in subs:                
+                    if episode.title.lower().find(sub) == -1 and \
+                       series_lookup[episode.series_id].name.lower().find(sub) == -1 and \
+                       episode.season.lower().find(sub) == -1:
+                        all_match = False
+                if all_match:
                     episodes.append(episode)
         else:    
             episodes = [episode for episode in result]
@@ -198,6 +209,11 @@ class SeriesSelectionList(object):
             if episode.status != series_list.EP_READY and episode.status != series_list.EP_NEW:
                 return False
            
+        #if self._view_type == VIEW_QUEUES:
+        #    if episode.status == series_list.EP_READY or \
+        #       episode.status == series_list.EP_PROCESSED:
+        #        return False
+            
         if self._view_type == VIEW_TO_DOWNLOAD and \
            episode.status != series_list.EP_TO_DOWNLOAD:
             return False

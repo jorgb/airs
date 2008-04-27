@@ -132,20 +132,6 @@ def app_settings_changed():
     Publisher().sendMessage(signals.APP_SETTINGS_CHANGED)
     
     
-def set_updated_selection():
-    """
-    Force an update with the updated episodes as view
-    """
-    _series_sel.setSelection(-1)
-    
-
-def set_queue_selection():
-    """
-    Force an update with the updated episodes as view
-    """
-    _series_sel.setSelection(-2)
-
-    
 def set_selection(series):
     """
     Select the series that is given here

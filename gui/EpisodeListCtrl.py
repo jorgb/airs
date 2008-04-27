@@ -176,7 +176,8 @@ class EpisodeListCtrl(wx.ListCtrl):
                           menu.Append(wx.NewId(),"Set as Processed"))
                 st_series = True
                 
-            menu.AppendSeparator()
+            if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
+                menu.AppendSeparator()
             
             if not st_changed:
                 self.Bind(wx.EVT_MENU, self._onSetToDownload, 

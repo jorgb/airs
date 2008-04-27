@@ -6,7 +6,8 @@ from data import appcfg, viewmgr, db
 from data import series_filter, signals, series_list
 
 from images import whats_new, whats_on, to_download, \
-                   downloading, all_series, progess_log
+                   downloading, all_series, \
+                   where_queue
 
 class ViewSelectPanel(wx.Panel):
 
@@ -42,7 +43,7 @@ class ViewSelectPanel(wx.Panel):
                 if idx != wx.NOT_FOUND:
                     self._view_select.Select(idx, on = 0)
             else:
-                idx = self._view_select.FindItemData(start = 0, data = view)
+                idx = self._view_select.FindItemData(start = -1, data = view)
                 if idx != wx.NOT_FOUND:
                     self._view_select.Select(idx, on = 1)
 
@@ -83,14 +84,17 @@ class ViewSelectPanel(wx.Panel):
         self._icons.Add(to_download.getBitmap())     #2
         self._icons.Add(downloading.getBitmap())     #3
         self._icons.Add(all_series.getBitmap())      #4
-        self._icons.Add(progess_log.getBitmap())     #5
+        self._icons.Add(where_queue.getBitmap())     #5
         sel.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
 
-        lst = [ ("What's Changed", 0, series_filter.VIEW_WHATS_NEW),
-                ("Whats's On TV", 1, series_filter.VIEW_WHATS_ON),
-                ("To Download", 2, series_filter.VIEW_TO_DOWNLOAD),
-                ("Downloading...", 3, series_filter.VIEW_DOWNLOADING),
-                ("All Series", 4, series_filter.VIEW_SERIES) ]
+        lst = [ ("All Series", 4, series_filter.VIEW_SERIES),
+                ("What's Changed", 0, series_filter.VIEW_WHATS_NEW),
+                ("What's Aired", 1, series_filter.VIEW_WHATS_ON),
+                ("To Download ...", 2, series_filter.VIEW_TO_DOWNLOAD),
+                ("Downloading ...", 3, series_filter.VIEW_DOWNLOADING),
+                ("Find In Queues ...", 5, series_filter.VIEW_QUEUES)
+                            
+            ]
                 
         for l in lst:
             index = sel.InsertStringItem(sys.maxint, l[0])

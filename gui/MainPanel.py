@@ -236,8 +236,8 @@ class MainPanel(wx.Panel):
         """ 
         Select a series, or all
         """
-        busy = wx.BusyInfo("This can take a while, please wait ...", self)
         self._series_list.Freeze()
+        busy = wx.BusyInfo("This can take a while, please wait ...", self)
         
         sel = self._series_selection
         series_id = sel.GetClientData(sel.GetSelection())
@@ -245,8 +245,8 @@ class MainPanel(wx.Panel):
             series = db.store.get(series_list.Series, series_id)
             viewmgr.set_selection(series)
        
-        self._series_list.Thaw()
         busy.Destroy()
+        self._series_list.Thaw()
 
         
     def _onDeleteSeries(self, msg):
