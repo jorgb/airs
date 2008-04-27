@@ -107,6 +107,29 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuClearCache)    
         self._menuBar.Append(mnu, "&Series")
 
+
+        # Episode menu
+        mnu = wx.Menu()
+        self._menuSelectAll = wx.MenuItem(mnu, wx.NewId(), "Select All\tCtrl+A", 
+                                          "Select all episodes", wx.ITEM_NORMAL)
+        mnu.AppendItem(self._menuSelectAll)
+
+        #self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", 
+        #                             "Edit Series properties", wx.ITEM_NORMAL)
+        #self._menuEdit.SetBitmap(icon_edit.getBitmap())
+        #mnu.AppendItem(self._menuEdit)
+
+        #self._menuDelete = wx.MenuItem(mnu, wx.NewId(), "&Delete\tCtrl+D", 
+        #                               "Delete this Series", wx.ITEM_NORMAL)
+        #self._menuDelete.SetBitmap(icon_delete.getBitmap())
+        #mnu.AppendItem(self._menuDelete)    
+
+        #mnu.AppendSeparator()
+        #self._menuClearCache = wx.MenuItem(mnu, wx.NewId(), "&Clear Cache", 
+        #                                   "Clear cache of one or all series", wx.ITEM_NORMAL)
+        #mnu.AppendItem(self._menuClearCache)    
+        self._menuBar.Append(mnu, "&Episode")
+        
         # window layout menu
         mnu = wx.Menu()                          
         self._menuRestoreLayout = wx.MenuItem(mnu, wx.NewId(), "&Restore Default Layout", 
@@ -161,6 +184,7 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
         self.Bind(wx.EVT_MENU, self._onGuiDelete, self._menuDelete)
         self.Bind(wx.EVT_MENU, self._onClearCache, self._menuClearCache)
+        self.Bind(wx.EVT_MENU, self._onSelectAll, self._menuSelectAll)
     
         
     def _createWindows(self):
@@ -256,7 +280,11 @@ class AirsFrame(wx.Frame):
                     # delete 
                     viewmgr.delete_series(series)
     
-
+                    
+    def _onSelectAll(self, event):
+        viewmgr.select_all_episodes()
+                    
+                    
     def _onClearCache(self, event):
         """
         Clear cache of one or all items

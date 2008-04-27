@@ -107,19 +107,24 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._delete, signals.EPISODE_DELETED)
         Publisher().subscribe(self._update, signals.EPISODE_UPDATED)
         Publisher().subscribe(self._clear, signals.EPISODES_CLEARED)
-        
-        #self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
+        Publisher().subscribe(self._onSelectAll, signals.SELECT_ALL_EPISODES)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
         self._today = datetime.date.today().strftime("%Y%m%d")
 
+    
+    def _onSelectAll(self, msg):
+        for i in range(0, self.GetItemCount()):
+            self.Select(i, on = 1)
+        self.SetFocus()
+        
+        
     def _clear(self, msg):
         """
         Proxy method to clear list
         """
         self.DeleteAllItems()
         self._today = datetime.date.today().strftime("%Y%m%d")
-        
         
     def _onMenuPopup(self, event):
         """

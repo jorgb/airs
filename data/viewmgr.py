@@ -65,6 +65,10 @@ def app_close():
     return res.allowed()
     
 
+def select_all_episodes():
+    Publisher().sendMessage(signals.SELECT_ALL_EPISODES)
+
+
 def clear_new_episodes():
     result = db.store.find(series_list.Episode, series_list.Episode.status == series_list.EP_NEW)
     for ep in result:
