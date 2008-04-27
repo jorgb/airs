@@ -181,6 +181,9 @@ class SeriesSelectionList(object):
         if we can keep or add it, false to delete it
         """        
         
+        if self._view_type == -1:
+            return False
+        
         # if we are in update mode, perform other logic
         if self._view_type == VIEW_WHATS_NEW:
             if episode.changed != 0 or episode.status == series_list.EP_NEW:

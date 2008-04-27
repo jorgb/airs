@@ -397,6 +397,29 @@ http://www.tv.com/supernatural/show/30144/summary.html
                     <style>wxLC_SMALL_ICON|wxLC_SINGLE_SEL</style>
                 </object>
             </object>
+        </object>
+    </object>
+    <object class="wxPanel" name="ID_PROGRESSLOGPANEL" subclass="ProgressLogPanel">
+        <title>Progress Log</title>
+        <centered>1</centered>
+        <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>5</border>
+                <option>1</option>
+                <object class="wxTextCtrl" name="ID_LOG_WINDOW">
+                    <style>wxTE_MULTILINE|wxTE_READONLY</style>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object class="wxPanel" name="ID_STATISTICSPANEL" subclass="StatisticsPanel">
+        <size>400,300</size>
+        <title>StatisticsPanel</title>
+        <centered>1</centered>
+        <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
             <object class="sizeritem">
                 <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
                 <border>5</border>
@@ -576,21 +599,6 @@ http://www.tv.com/supernatural/show/30144/summary.html
                             <label>Total Episodes</label>
                         </object>
                     </object>
-                </object>
-            </object>
-        </object>
-    </object>
-    <object class="wxPanel" name="ID_PROGRESSLOGPANEL" subclass="ProgressLogPanel">
-        <title>Progress Log</title>
-        <centered>1</centered>
-        <object class="wxBoxSizer">
-            <orient>wxVERTICAL</orient>
-            <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
-                <border>5</border>
-                <option>1</option>
-                <object class="wxTextCtrl" name="ID_LOG_WINDOW">
-                    <style>wxTE_MULTILINE|wxTE_READONLY</style>
                 </object>
             </object>
         </object>

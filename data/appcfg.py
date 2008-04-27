@@ -42,8 +42,8 @@ CFG_LAYOUT_COL_TITLE  = 'window/columns/title'
 CFG_LAYOUT_COL_SERIES = 'window/columns/series'
 CFG_LAYOUT_COL_DATE   = 'window/columns/date'
 
-configs = [ (CFG_LAYOUT_LAST_W,         'i', 700  ),
-            (CFG_LAYOUT_LAST_H,         'i', 600  ),
+configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
+            (CFG_LAYOUT_LAST_H,         'i', 730  ),
             (CFG_LAYOUT_LAST,           's', ''   ),
             (CFG_LAYOUT_DEFAULT,        's', ''   ),
             (CFG_LAYOUT_LAST_X,         'i', -1   ),

@@ -246,7 +246,9 @@ def probe_series():
             if result.season == '' and episode.season != '':
                 result.season = unicode(episode.season)
                 updated = True
-            if result.aired == "" and episode.aired != "":
+            # resolve policy; when aired date is too far in the future, we 
+            # set it to the lowest possible date
+            if result.aired == "" and episode.aired != "" or result.aired > episode.aired:
                 result.aired = episode.aired
                 updated = True
                 
@@ -254,7 +256,7 @@ def probe_series():
                 updated += 1
                 db_changed = True
                 result.changed = 1
-                result.setLastUpdated()
+                result.setLastUpdate()
                 _series_sel.filterEpisode(result, updated = True)
 
     # all changes are committed here

@@ -17,6 +17,7 @@ from data import series_list, db, series_filter
 
 # gui elements
 import ViewSelectPanel
+import StatisticsPanel
 import ProgressLogPanel
 import MainPanel
 import SeriesDlg
@@ -148,6 +149,11 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuToggleBottom)
         self._toggleWindowLookup[self._menuToggleBottom.GetId()] = "progresslogpanel"
         
+        self._menuToggleStat = wx.MenuItem(mnu, wx.NewId(), "Toggle Statistics Window", 
+                                           "Hide or show Progress Statistics window", wx.ITEM_CHECK)
+        mnu.AppendItem(self._menuToggleStat)
+        self._toggleWindowLookup[self._menuToggleStat.GetId()] = "statisticspanel"
+        
         self._menuBar.Append(mnu, "&Window")
         
         # help menu
@@ -179,6 +185,7 @@ class AirsFrame(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleBottom)
         self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleLeft)
+        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleStat)
         
         self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
         self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
@@ -198,14 +205,19 @@ class AirsFrame(wx.Frame):
         self._aui.SetManagedWindow(self)
 
         
-        # construct the left panel
+        # construct the left top panel
         self._aui.AddPane(ViewSelectPanel.ViewSelectPanel(parent = self), wx.aui.AuiPaneInfo().
-                          Name("viewselectpanel").Caption("View Selector").MinSize(wx.Size(150,200)).
+                          Name("viewselectpanel").Caption("View Selector").MinSize(wx.Size(200,250)).
                           BestSize(wx.Size(150, 200)).Left().MaximizeButton(True))
         
+        # construct the left bottom panel
+        self._aui.AddPane(StatisticsPanel.StatisticsPanel(parent = self), wx.aui.AuiPaneInfo().
+                          Name("statisticspanel").Caption("Statistics Panel").MinSize(wx.Size(200,250)).
+                          BestSize(wx.Size(150, 200)).Left().MaximizeButton(True))
+
         # construct the bottom panel
         self._aui.AddPane(ProgressLogPanel.ProgressLogPanel(parent = self), wx.aui.AuiPaneInfo().
-                          Name("progresslogpanel").Caption("Progress Log").MinSize(wx.Size(100,50)).
+                          Name("progresslogpanel").Caption("Progress Log").MinSize(wx.Size(100,80)).
                           Bottom().MaximizeButton(True))
         
         # construct the middle part
@@ -328,8 +340,7 @@ class AirsFrame(wx.Frame):
             if pane:
                 pane.Show(not pane.IsShown())
         self._aui.Update()
-
-
+                
 
     # ==================== LAYOUT AND UI UPDATE METHODS ========================
     
