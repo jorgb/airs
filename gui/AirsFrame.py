@@ -49,8 +49,8 @@ class AirsFrame(wx.Frame):
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
-        self.SetIcon(wx.IconFromBitmap(icon_main.getBitmap()))
-
+        self.SetIcon(wx.Icon(os.path.join(appcfg.appdir, "airs.ico"), wx.BITMAP_TYPE_ICO))        
+        
         # put windows like they were the last time
         self._restoreWindowLayout()
 
