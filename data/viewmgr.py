@@ -71,7 +71,8 @@ def select_all_episodes():
 
 def clear_new_episodes():
     result = db.store.find(series_list.Episode, series_list.Episode.status == series_list.EP_NEW)
-    for ep in result:
+    episodes = [ ep for ep in result ] 
+    for ep in episodes:
         ep.status = series_list.EP_READY
         ep.changed = 0
         episode_updated(ep)
@@ -80,7 +81,8 @@ def clear_new_episodes():
 
 def clear_updated_episodes():
     result = db.store.find(series_list.Episode, series_list.Episode.changed != 0)
-    for ep in result:
+    episodes = [ ep for ep in result ] 
+    for ep in episodes:
         ep.changed = 0
         episode_updated(ep)
     db.store.commit()

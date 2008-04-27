@@ -87,11 +87,12 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._updating = False
         self.viewID = ''    # kind of view
 
-        self.InsertColumn(0, "Nr.", width = 70)
-        self.InsertColumn(1, "Season", width = 70)
-        self.InsertColumn(2, "Series", width = 100)        
-        self.InsertColumn(3, "Title", width = 220) 
-        self.InsertColumn(4, "Date", width = 100) 
+        a = appcfg
+        self.InsertColumn(0, "Nr.", width = a.options[a.CFG_LAYOUT_COL_NR])
+        self.InsertColumn(1, "Season", width = a.options[a.CFG_LAYOUT_COL_SEASON])
+        self.InsertColumn(2, "Series", width = a.options[a.CFG_LAYOUT_COL_SERIES])        
+        self.InsertColumn(3, "Title", width = a.options[a.CFG_LAYOUT_COL_TITLE]) 
+        self.InsertColumn(4, "Date", width = a.options[a.CFG_LAYOUT_COL_DATE]) 
         
         self._icons = wx.ImageList(16, 16)
         
@@ -108,11 +109,21 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._update, signals.EPISODE_UPDATED)
         Publisher().subscribe(self._clear, signals.EPISODES_CLEARED)
         Publisher().subscribe(self._onSelectAll, signals.SELECT_ALL_EPISODES)
+        Publisher().subscribe(self._onAppClose, signals.APP_CLOSE)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
         self._today = datetime.date.today().strftime("%Y%m%d")
 
     
+    def _onAppClose(self, event):
+        a = appcfg
+        a.options[a.CFG_LAYOUT_COL_NR] = self.GetColumnWidth(0)
+        a.options[a.CFG_LAYOUT_COL_SEASON] = self.GetColumnWidth(1)
+        a.options[a.CFG_LAYOUT_COL_SERIES] = self.GetColumnWidth(2)
+        a.options[a.CFG_LAYOUT_COL_TITLE] = self.GetColumnWidth(3)
+        a.options[a.CFG_LAYOUT_COL_DATE] = self.GetColumnWidth(4)
+        
+        
     def _onSelectAll(self, msg):
         for i in range(0, self.GetItemCount()):
             self.Select(i, on = 1)

@@ -290,9 +290,9 @@ class AirsFrame(wx.Frame):
         Clear cache of one or all items
         """
         if viewmgr.series_active():
-            if wx.MessageBox("Clearing the cache means that the downloaded series the selected\n" + \
-                             "series will be lost. The next update, the series will be refreshed again.\n" + \
-                             "Be aware that earlier downloaded items not found on the webpage, are lost forever.\n" +
+            if wx.MessageBox("Clearing the cache means that from this series, the downloaded episodes will\n" + \
+                             "be deleted. On the next update, the series will be refreshed again.\n" + \
+                             "Be aware that earlier downloaded items not found on the webpage(s), are lost forever.\n" +
                              "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
                 viewmgr.clear_current_cache()
     
@@ -310,7 +310,7 @@ class AirsFrame(wx.Frame):
         Last moment to save anything, let's do it here
         """
         self._saveWindowLayout()
-
+        viewmgr.app_close()
         viewmgr.app_destroy()
         event.Skip()
 
