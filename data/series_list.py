@@ -5,7 +5,8 @@
 #==============================================================================
 
 from storm.locals import *
-from datetime import date
+from storm.locals import SQL
+import datetime
 
 EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
@@ -42,14 +43,8 @@ class Series(object):
     postponed = Int()
     last_update = Unicode()
     update_period = Int()       # in how many days later
+
     
-    def __storm_loaded__(self):
-        self._last_update = _convertDate(self.last_update)
-        
-    def __init__(self):
-        self._last_update = None
-        
-        
 class Episode(object):
     """
     Serie episode item
@@ -83,14 +78,14 @@ class Episode(object):
         else:
             self.aired = unicode('')
     
-    def setLastUpdate(self, d):
+    def setLastUpdate(self, d = None):
         """
         Sets date
         """
         if d:
             self.last_update = unicode("%04i%02i%02" % (d.year, d.month, d.day))
         else:
-            self.last_update = unicode('')
+            self.last_update = unicode(datetime.date.today().strftime("%Y%m%d"))
           
     def getStrDate(self):
         if len(self.aired) > 7:

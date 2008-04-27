@@ -65,6 +65,23 @@ def app_close():
     return res.allowed()
     
 
+def clear_new_episodes():
+    result = db.store.find(series_list.Episode, series_list.Episode.status == series_list.EP_NEW)
+    for ep in result:
+        ep.status = series_list.EP_READY
+        ep.changed = 0
+        episode_updated(ep)
+    db.store.commit()
+
+
+def clear_updated_episodes():
+    result = db.store.find(series_list.Episode, series_list.Episode.changed != 0)
+    for ep in result:
+        ep.changed = 0
+        episode_updated(ep)
+    db.store.commit()
+    
+    
 def set_view(viewtype):
     """
     Sets a certain view. This is to sync the data belonging to that view
@@ -208,6 +225,7 @@ def probe_series():
                 added += 1
                 episode.changed = 1
                 episode.status = series_list.EP_NEW
+                episode.setLastUpdate()
                 db.store.add(episode)
                 db_changed = True
                 db.store.flush()
@@ -230,6 +248,7 @@ def probe_series():
                 updated += 1
                 db_changed = True
                 result.changed = 1
+                result.setLastUpdated()
                 _series_sel.filterEpisode(result, updated = True)
 
     # all changes are committed here

@@ -5,12 +5,13 @@
 #==============================================================================
 
 import wx, sys
-from data import signals, viewmgr, db, series_list, series_filter
+from data import signals, viewmgr, db, series_list, series_filter, appcfg
 
 from images import whats_new, to_download, \
                    downloading, icon_processed, icon_ready, icon_new
 
 from wx.lib.pubsub import Publisher
+import datetime
 
 
 def _sort_updated(a, b):
@@ -110,12 +111,14 @@ class EpisodeListCtrl(wx.ListCtrl):
         #self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnItemActivated)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
+        self._today = datetime.date.today().strftime("%Y%m%d")
 
     def _clear(self, msg):
         """
         Proxy method to clear list
         """
         self.DeleteAllItems()
+        self._today = datetime.date.today().strftime("%Y%m%d")
         
         
     def _onMenuPopup(self, event):
@@ -277,8 +280,20 @@ class EpisodeListCtrl(wx.ListCtrl):
             
         self.SetItemImage(index, imgidx, imgidx)
         self.SetStringItem(index, 4, ep.getStrDate())
-               
-            
+        
+        upd = ep.last_update
+        item = self.GetItem(index)
+        if ep.last_update == self._today:
+            item.SetTextColour(appcfg.highlightColor)
+        elif ep.aired > self._today:
+            item.SetTextColour(wx.RED)
+        elif ep.aired == '':
+            item.SetTextColour(wx.Colour(130, 130, 130))            
+        else:
+            item.SetTextColour(wx.BLACK)
+        self.SetItem(item)
+        
+
     def _update(self, msg):
         """
         Inserts the episode in the list

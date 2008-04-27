@@ -389,7 +389,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxGROW|wxBOTTOM</flag>
+                <flag>wxGROW|wxALL</flag>
                 <border>5</border>
                 <option>1</option>
                 <object class="wxListCtrl" name="ID_VIEW_SELECT">
@@ -492,6 +492,88 @@ http://www.tv.com/supernatural/show/30144/summary.html
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
                             <label>Processed Episode</label>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="wxID_STATIC">
+                    <font>
+                        <size>8</size>
+                        <family>swiss</family>
+                        <weight>bold</weight>
+                        <face>Tahoma</face>
+                    </font>
+                    <label>Statistics:</label>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>5</border>
+                <object class="wxFlexGridSizer">
+                    <cols>3</cols>
+                    <rows>4</rows>
+                    <vgap>0</vgap>
+                    <hgap>0</hgap>
+                    <growablecols>2</growablecols>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="ID_COUNT_NEW">
+                            <label>-</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="ID_NEW_TEXT">
+                            <label>New Episodes</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_CLEAR_NEW">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/clear_updated.png</bitmap>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="ID_COUNT_UPDATED">
+                            <label>-</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="ID_UPDATED_TEXT">
+                            <label>Updated Episodes</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_CLEAR_UPDATED">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/clear_updated.png</bitmap>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="ID_COUNT_TOTAL">
+                            <label>-</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Total Episodes</label>
                         </object>
                     </object>
                 </object>

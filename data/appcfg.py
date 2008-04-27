@@ -63,6 +63,8 @@ For full text, see LICENSE.txt
 # placeholder for application directory (where script is started from)
 appdir = ''
 
+highlightColor = wx.Colour(50, 177, 5)
+
 #-------------------------------------------------------------------------------
 __cfg = None
 options = {}
