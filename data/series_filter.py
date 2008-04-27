@@ -14,6 +14,7 @@ import datetime
 import signals
 import series_list
 import db
+import appcfg
 
 # this filter has effect only in the UPDATED view
 
@@ -167,7 +168,7 @@ class SeriesSelectionList(object):
         else:    
             episodes = [episode for episode in result]
         
-        max = 100
+        max = appcfg.max_records
         for episode in episodes:
             self.filterEpisode(episode)
             max -= 1

@@ -80,8 +80,20 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onAddSeries, signals.SERIES_ADDED)
         Publisher().subscribe(self._onSerieSelected, signals.SERIES_SELECT)
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
+        Publisher().subscribe(self._onViewChanged, signals.SET_VIEW)
+                              
         
+    def _onViewChanged(self, msg):
+        view = msg.data
+        if view != series_filter.VIEW_SERIES:
+            self._series_selection.SetSelection(-1)
+        else:
+            for i in xrange(0, self._series_selection.GetCount()):
+                if self._series_selection.GetClientData(i) == viewmgr._series_sel._selected_series_id:
+                    self._series_selection.SetSelection(i)
+                    break
         
+    
     def _onFilterText(self, event):
         viewmgr._series_sel._filter_text = self._filter_text.GetValue()
          
@@ -119,7 +131,7 @@ class MainPanel(wx.Panel):
         self._update_one.Enable(view_enabled and viewmgr.series_active())
         self._show_unseen.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
         self._episodeFilter.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON)
-        self._series_selection.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
+        #self._series_selection.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
         self._find_text.Enable(view_enabled)
         self._clear_filter.Enable(view_enabled)
         self._filter_text.Enable(view_enabled)

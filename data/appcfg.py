@@ -75,6 +75,7 @@ For full text, see LICENSE.txt
 appdir = ''
 
 highlightColor = wx.Colour(50, 177, 5)
+max_records    = 300
 
 #-------------------------------------------------------------------------------
 __cfg = None

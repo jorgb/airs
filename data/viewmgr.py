@@ -94,8 +94,9 @@ def set_view(viewtype):
     and trigger a new update
     """
     _series_sel.setView(viewtype)
+    Publisher().sendMessage(signals.SET_VIEW, viewtype)
 
-
+    
 def series_active():
     """
     Returns true if the view is VIEW_SERIES and there is a series selected

@@ -22,7 +22,9 @@ class ViewSelectPanel(wx.Panel):
         
         # temp var for delayed selection of view
         self._the_view = -1
-                
+
+        self._our_problem = False
+        
         self._initViewSelect()
               
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._onViewSelected, self._view_select)
@@ -33,15 +35,16 @@ class ViewSelectPanel(wx.Panel):
         """
         Change the view
         """
-        view = msg.data
-        if view == -1:
-            idx = self._view_select.GetFirstSelected()
-            if idx != wx.NOT_FOUND:
-                self._view_select.Select(idx, on = 0)
-        else:
-            idx = self._view_select.FindItemData(start = 0, data = view)
-            if idx != wx.NOT_FOUND:
-                self._view_select.Select(idx, on = 1)
+        if not self._our_problem:
+            view = msg.data
+            if view == -1:
+                idx = self._view_select.GetFirstSelected()
+                if idx != wx.NOT_FOUND:
+                    self._view_select.Select(idx, on = 0)
+            else:
+                idx = self._view_select.FindItemData(start = 0, data = view)
+                if idx != wx.NOT_FOUND:
+                    self._view_select.Select(idx, on = 1)
 
         
     def _afterViewSelect(self):
@@ -49,8 +52,12 @@ class ViewSelectPanel(wx.Panel):
         After call to finish the selection event first
         """
         if self._the_view != -1:
+            self._our_problem = True            
+            if self._the_view != series_filter.VIEW_SERIES:
+                viewmgr._series_sel._selected_series_id = -1
             viewmgr.set_view(self._the_view)
             self._the_view = -1
+            self._our_problem = False
         
         
     def _onViewSelected(self, event):
