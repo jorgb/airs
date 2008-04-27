@@ -37,6 +37,7 @@ class SeriesSelectionList(object):
         self._update_mode = SHOW_ALL
         self._view_type = -1
         self._weeks_delta = 1
+        self._filter_text = ''
         
         self._show_only_unseen = False
         self._today = datetime.date.today().strftime("%Y%m%d")
@@ -111,7 +112,8 @@ class SeriesSelectionList(object):
         if self._view_type == VIEW_WHATS_NEW:
             # we restore all episodes that are last updated
             result = db.store.find(series_list.Episode, 
-                                   series_list.Episode.changed != 0)
+                                   series_list.Episode.changed != 0 or \
+                                   series_list.Episode.status == series_list.EP_NEW)
         elif self._view_type == VIEW_TO_DOWNLOAD:
             # we restore all episodes that are queued
             result = db.store.find(series_list.Episode, 
@@ -147,9 +149,24 @@ class SeriesSelectionList(object):
                 result = db.store.find(series_list.Episode, 
                                        series_list.Episode.series_id == self._selected_series_id)
                 
-                
+            
         # resync for adding new items        
-        episodes = [episode for episode in result]
+        t = self._filter_text.lower()
+        if t:
+            series_lookup = dict()
+            episodes = list()
+            for episode in result:
+                if episode.series_id not in series_lookup:
+                    series_lookup[episode.series_id] = db.store.find(series_list.Series,
+                                                                     series_list.Series.id == episode.series_id).one()
+                
+                if episode.title.lower().find(t) != -1 or \
+                   series_lookup[episode.series_id].name.lower().find(t) != -1 or \
+                   episode.season.lower().find(t) != -1:
+                    episodes.append(episode)
+        else:    
+            episodes = [episode for episode in result]
+        
         max = 100
         for episode in episodes:
             self.filterEpisode(episode)
@@ -165,12 +182,17 @@ class SeriesSelectionList(object):
         """        
         
         # if we are in update mode, perform other logic
-        if self._view_type == VIEW_WHATS_NEW and episode.changed != 0:
-            return True
+        if self._view_type == VIEW_WHATS_NEW:
+            if episode.changed != 0 or episode.status == series_list.EP_NEW:
+                return True
+            else:
+                return False
             
-        if self._view_type == VIEW_WHATS_ON and \
-           (episode.aired == "" or episode.aired > self._today):
-            return False
+        if self._view_type == VIEW_WHATS_ON:
+            if episode.aired == "" or episode.aired > self._today:
+                return False
+            if episode.status != series_list.EP_READY and episode.status != series_list.EP_NEW:
+                return False
            
         if self._view_type == VIEW_TO_DOWNLOAD and \
            episode.status != series_list.EP_TO_DOWNLOAD:

@@ -8,7 +8,7 @@ import wx, sys
 from data import signals, viewmgr, db, series_list, series_filter
 
 from images import whats_new, to_download, \
-                   downloading, icon_processed, icon_ready
+                   downloading, icon_processed, icon_ready, icon_new
 
 from wx.lib.pubsub import Publisher
 
@@ -95,7 +95,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._icons = wx.ImageList(16, 16)
         
         self._stat_to_icon = dict()
-        self._stat_to_icon[series_list.EP_CHANGED] = self._icons.Add(whats_new.getBitmap())
+        self._stat_to_icon[series_list.EP_NEW] = self._icons.Add(icon_new.getBitmap())
         self._stat_to_icon[series_list.EP_DOWNLOADING] = self._icons.Add(downloading.getBitmap())
         self._stat_to_icon[series_list.EP_PROCESSED] = self._icons.Add(icon_processed.getBitmap())
         self._stat_to_icon[series_list.EP_TO_DOWNLOAD] = self._icons.Add(to_download.getBitmap())
@@ -273,10 +273,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.SetStringItem(index, 3, ep.title)
 
         str = ""
-        if ep.changed != 0:
-            imgidx = self._stat_to_icon[series_list.EP_CHANGED]
-        else:
-            imgidx = self._stat_to_icon[ep.status]
+        imgidx = self._stat_to_icon[ep.status]
             
         self.SetItemImage(index, imgidx, imgidx)
         self.SetStringItem(index, 4, ep.getStrDate())

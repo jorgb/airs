@@ -7,7 +7,7 @@
 from storm.locals import *
 from datetime import date
 
-EP_CHANGED     = 0
+EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
 EP_DOWNLOADING = 2
 EP_READY       = 3

@@ -207,6 +207,7 @@ def probe_series():
             if can_add:
                 added += 1
                 episode.changed = 1
+                episode.status = series_list.EP_NEW
                 db.store.add(episode)
                 db_changed = True
                 db.store.flush()

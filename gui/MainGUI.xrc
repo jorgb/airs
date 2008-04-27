@@ -63,6 +63,36 @@
                         <object class="wxChoice" name="ID_EPISODE_FILTER">
                         </object>
                     </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Text Filter</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxTextCtrl" name="ID_TEXT_FILTER">
+                            <style>wxTE_PROCESS_ENTER</style>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_REFRESH_FIND">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/find_icon.png</bitmap>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_CLEAR_FIND">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/clear_updated.png</bitmap>
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">
@@ -92,75 +122,6 @@
                             <style>wxGA_HORIZONTAL</style>
                             <value>0</value>
                             <range>100</range>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxPanel" name="ID_NOTIFICATION_AREA">
-                    <style>wxSIMPLE_BORDER|wxTAB_TRAVERSAL</style>
-                    <object class="wxBoxSizer">
-                        <orient>wxHORIZONTAL</orient>
-                        <object class="sizeritem">
-                            <flag>wxGROW</flag>
-                            <border>5</border>
-                            <option>1</option>
-                            <object class="wxBoxSizer">
-                                <orient>wxHORIZONTAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
-                                    <border>5</border>
-                                    <object class="wxStaticBitmap" name="wxID_STATIC">
-                                        <size>16,16</size>
-                                        <bitmap>images/information.png</bitmap>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
-                                    <border>5</border>
-                                    <object class="wxStaticText" name="ID_NOTIFY_TEXT">
-                                        <label>No information yet</label>
-                                    </object>
-                                </object>
-                                <object class="spacer">
-                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <option>1</option>
-                                    <size>5,5</size>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                                    <border>5</border>
-                                    <object class="wxBitmapButton" name="ID_CLEAR_NOTIFICATION">
-                                        <style>wxBU_AUTODRAW</style>
-                                        <bitmap>images/dismiss.png</bitmap>
-                                    </object>
-                                </object>
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_VERTICAL</flag>
-                            <border>5</border>
-                            <object class="wxBoxSizer">
-                                <orient>wxHORIZONTAL</orient>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <object class="wxStaticText" name="wxID_STATIC">
-                                        <label>Clear all updated / new episodes</label>
-                                    </object>
-                                </object>
-                                <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxBOTTOM</flag>
-                                    <border>5</border>
-                                    <object class="wxBitmapButton" name="ID_BITMAPBUTTON1">
-                                        <style>wxBU_AUTODRAW</style>
-                                        <bitmap>images/clear_updated.png</bitmap>
-                                    </object>
-                                </object>
-                            </object>
                         </object>
                     </object>
                 </object>

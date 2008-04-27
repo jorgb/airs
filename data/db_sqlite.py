@@ -101,7 +101,7 @@ def upgr_pre_v3(conn):
         elif r[4] != 0:
             st = series_list.EP_PROCESSED
         elif r[6] != 0:
-            st = series_list.EP_CHANGED
+            st = series_list.EP_READY
             upd = td
             changed = 1
             

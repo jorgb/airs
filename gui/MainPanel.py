@@ -32,10 +32,6 @@ class MainPanel(wx.Panel):
 
         self._queue = xrc.XRCCTRL(self, "ID_QUEUE")
 
-        self._notifyarea = xrc.XRCCTRL(self, "ID_NOTIFICATION_AREA")
-        self._notifytext = xrc.XRCCTRL(self, "ID_NOTIFY_TEXT")
-        self._clearNotify = xrc.XRCCTRL(self, "ID_CLEAR_NOTIFICATION")
-
         self._episodeFilter = xrc.XRCCTRL(self, "ID_EPISODE_FILTER")
         
         self._episodeFilter.Append("View episodes from last week", clientData = 1)
@@ -51,8 +47,11 @@ class MainPanel(wx.Panel):
         # columns and styles
         self._list_panel = xrc.XRCCTRL(self, "ID_EPISODE_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
-
         self._series_list = EpisodeListCtrl(self._list_panel)
+        
+        self._find_text = xrc.XRCCTRL(self, "ID_REFRESH_FIND")
+        self._clear_filter = xrc.XRCCTRL(self, "ID_CLEAR_FIND")
+        self._filter_text = xrc.XRCCTRL(self, "ID_TEXT_FILTER")
         
         # create main view (for now)
         sizer = wx.BoxSizer()
@@ -69,8 +68,11 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHOICE, self._onEpisodeFilter, self._episodeFilter)
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         #self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
-        self.Bind(wx.EVT_BUTTON, self._onClearNotify, self._clearNotify)
         self.Bind(wx.EVT_UPDATE_UI, self._onGuiUpdated)
+        self.Bind(wx.EVT_TEXT, self._onFilterText, self._filter_text)
+        self.Bind(wx.EVT_BUTTON, self._onRefreshFilter, self._find_text)
+        self.Bind(wx.EVT_BUTTON, self._onClearFilter, self._clear_filter)
+        self.Bind(wx.EVT_TEXT_ENTER, self._onRefreshFilter, self._filter_text)
         
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -79,9 +81,22 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSerieSelected, signals.SERIES_SELECT)
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         
-        self._initNotifyArea()
+        
+    def _onFilterText(self, event):
+        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
+         
+        
+    def _onRefreshFilter(self, event):
+        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
+        viewmgr._series_sel.syncEpisodes()
         
 
+    def _onClearFilter(self, event):
+        viewmgr._series_sel._filter_text = ''
+        self._filter_text.SetValue('')
+        viewmgr._series_sel.syncEpisodes()
+        
+        
     def _onEpisodeFilter(self, event):
         """
         Toggle the filter for the date span 
@@ -105,48 +120,10 @@ class MainPanel(wx.Panel):
         self._show_unseen.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
         self._episodeFilter.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON)
         self._series_selection.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
-            
-            
-    def _initNotifyArea(self):
-        """
-        Clear notification area
-        """
-        self._notifyarea.SetBackgroundColour(wx.NullColor)
-        self._notifyarea.Refresh()  
-        self._notifytext.SetLabel("No changes ...")
-        self._updcount = 0
-        self._newcount = 0        
+        self._find_text.Enable(view_enabled)
+        self._clear_filter.Enable(view_enabled)
+        self._filter_text.Enable(view_enabled)
         
-        
-    def _onClearNotify(self, event):
-        """
-        Clear message
-        """
-        self._initNotifyArea()
-                
-        
-    def _onNewUpdatedEpisodes(self):
-        """
-        Display a message when we are ready to do so
-        """
-        
-        #if self._newcount > 0 or self._updcount > 0:
-        #    self._notifyarea.SetBackgroundColour(wx.Colour(150, 255, 145))
-        #else:
-        #    self._notifyarea.SetBackgroundColour(wx.NullColor())
-        #self._notifyarea.Refresh()
-        
-        #str = ''
-        #if self._newcount > 0 and self._updcount == 0:
-        #    str = "You have %i new episodes!" % self._newcount
-        #elif self._updcount > 0 and self._newcount == 0:
-        #    str = "You have %i updated episodes!" % self._updcount
-        #elif self._updcount > 0 and self._newcount > 0:
-        #    str = "You have %i new and %i updated episodes!" % (self._newcount, self._updcount)
-        #if str:
-        #    self._notifytext.SetLabel(str)
-        pass
-           
 
     def _onUpdateAll(self, event):
         """
