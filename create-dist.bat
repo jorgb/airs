@@ -15,5 +15,5 @@ move Airs-Src.exe D:\personal\databases\moin-wiki\mywiki\data\pages\MyProjects(2
 cd ..
 
 del airs.tar.gz
-C:\Python25\Scripts\bzr.bat export airs.tar.gz
+call C:\Python25\Scripts\bzr.bat export airs.tar.gz
 move airs.tar.gz D:\personal\databases\moin-wiki\mywiki\data\pages\MyProjects(2f)Airs(2f)Downloads(2f)Latest\attachments\
