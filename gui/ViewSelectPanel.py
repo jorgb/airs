@@ -69,6 +69,9 @@ class ViewSelectPanel(wx.Panel):
         """
         Change the view
         """
+        viewmgr._series_sel._filter_text = ''
+        self._filter_text.SetValue('')            
+
         if not self._our_problem:
             view = msg.data
             if view == -1:
