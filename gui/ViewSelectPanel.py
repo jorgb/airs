@@ -21,6 +21,10 @@ class ViewSelectPanel(wx.Panel):
         
         self._view_select = xrc.XRCCTRL(self, "ID_VIEW_SELECT")
         
+        self._find_text = xrc.XRCCTRL(self, "ID_REFRESH_FIND")
+        self._clear_filter = xrc.XRCCTRL(self, "ID_CLEAR_FIND")
+        self._filter_text = xrc.XRCCTRL(self, "ID_TEXT_FILTER")
+                
         # temp var for delayed selection of view
         self._the_view = -1
 
@@ -29,8 +33,37 @@ class ViewSelectPanel(wx.Panel):
         self._initViewSelect()
               
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._onViewSelected, self._view_select)
+        self.Bind(wx.EVT_TEXT, self._onFilterText, self._filter_text)
+        self.Bind(wx.EVT_BUTTON, self._onRefreshFilter, self._find_text)
+        self.Bind(wx.EVT_BUTTON, self._onClearFilter, self._clear_filter)
+        self.Bind(wx.EVT_TEXT_ENTER, self._onRefreshFilter, self._filter_text)
+        self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
         Publisher.subscribe(self._onViewChanged, signals.SET_VIEW)
-      
+        
+        
+    def _onUpdateUI(self, event):
+        view_enabled = viewmgr._series_sel._view_type != -1        
+        self._find_text.Enable(view_enabled)
+        self._clear_filter.Enable(view_enabled)
+        self._filter_text.Enable(view_enabled)        
+        
+        
+    def _onFilterText(self, event):
+        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
+         
+        
+    def _onRefreshFilter(self, event):
+        busy = wx.BusyInfo("Please wait while searching ...", wx.GetApp()._frame)
+        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
+        viewmgr._series_sel.syncEpisodes()
+        busy.Destroy()
+        
+
+    def _onClearFilter(self, event):
+        viewmgr._series_sel._filter_text = ''
+        self._filter_text.SetValue('')
+        viewmgr._series_sel.syncEpisodes()
+        
         
     def _onViewChanged(self, msg):
         """
@@ -92,7 +125,7 @@ class ViewSelectPanel(wx.Panel):
                 ("What's Aired", 1, series_filter.VIEW_WHATS_ON),
                 ("To Download ...", 2, series_filter.VIEW_TO_DOWNLOAD),
                 ("Downloading ...", 3, series_filter.VIEW_DOWNLOADING),
-                ("Find In Queues ...", 5, series_filter.VIEW_QUEUES)
+                ("Find Episode(s) ...", 5, series_filter.VIEW_QUEUES)
                             
             ]
                 

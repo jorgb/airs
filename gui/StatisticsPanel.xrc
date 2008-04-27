@@ -33,14 +33,14 @@
                         <border>5</border>
                         <object class="wxStaticBitmap" name="wxID_STATIC">
                             <size>16,16</size>
-                            <bitmap>images/whats_new.png</bitmap>
+                            <bitmap>images/icon_new.png</bitmap>
                         </object>
                     </object>
                     <object class="sizeritem">
                         <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Changed / New Episode</label>
+                            <label>New Episode</label>
                         </object>
                     </object>
                     <object class="sizeritem">

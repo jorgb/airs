@@ -63,36 +63,6 @@
                         <object class="wxChoice" name="ID_EPISODE_FILTER">
                         </object>
                     </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Text Filter</label>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxTextCtrl" name="ID_TEXT_FILTER">
-                            <style>wxTE_PROCESS_ENTER</style>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxBitmapButton" name="ID_REFRESH_FIND">
-                            <style>wxBU_AUTODRAW</style>
-                            <bitmap>images/find_icon.png</bitmap>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxBitmapButton" name="ID_CLEAR_FIND">
-                            <style>wxBU_AUTODRAW</style>
-                            <bitmap>images/clear_updated.png</bitmap>
-                        </object>
-                    </object>
                 </object>
             </object>
             <object class="sizeritem">
@@ -389,12 +359,71 @@ http://www.tv.com/supernatural/show/30144/summary.html
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
+                <flag>wxGROW|wxLEFT|wxRIGHT|wxTOP</flag>
                 <border>5</border>
                 <option>1</option>
                 <object class="wxListCtrl" name="ID_VIEW_SELECT">
                     <size>140,100</size>
                     <style>wxLC_SMALL_ICON|wxLC_SINGLE_SEL</style>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>5</border>
+                <object class="wxStaticLine" name="wxID_STATIC">
+                    <style>wxLI_HORIZONTAL</style>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="wxID_STATIC">
+                    <font>
+                        <size>8</size>
+                        <family>swiss</family>
+                        <weight>bold</weight>
+                        <face>Tahoma</face>
+                    </font>
+                    <label>Text search filter</label>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW</flag>
+                <border>5</border>
+                <object class="wxBoxSizer">
+                    <orient>wxHORIZONTAL</orient>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_TOP|wxLEFT|wxRIGHT|wxTOP</flag>
+                        <border>5</border>
+                        <option>1</option>
+                        <object class="wxTextCtrl" name="ID_TEXT_FILTER">
+                            <style>wxTE_PROCESS_ENTER</style>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_REFRESH_FIND">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/find_icon.png</bitmap>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP</flag>
+                        <border>5</border>
+                        <object class="wxBitmapButton" name="ID_CLEAR_FIND">
+                            <style>wxBU_AUTODRAW</style>
+                            <bitmap>images/clear_updated.png</bitmap>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                <border>5</border>
+                <object class="wxStaticText" name="wxID_STATIC">
+                    <label>   Find in title, season, series
+   Use space to seperate substrings</label>
                 </object>
             </object>
         </object>
@@ -447,14 +476,14 @@ http://www.tv.com/supernatural/show/30144/summary.html
                         <border>5</border>
                         <object class="wxStaticBitmap" name="wxID_STATIC">
                             <size>16,16</size>
-                            <bitmap>images/whats_new.png</bitmap>
+                            <bitmap>images/icon_new.png</bitmap>
                         </object>
                     </object>
                     <object class="sizeritem">
                         <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Changed / New Episode</label>
+                            <label>New Episode</label>
                         </object>
                     </object>
                     <object class="sizeritem">

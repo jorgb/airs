@@ -48,11 +48,7 @@ class MainPanel(wx.Panel):
         self._list_panel = xrc.XRCCTRL(self, "ID_EPISODE_VIEW")
         self._series_selection = xrc.XRCCTRL(self, "ID_SERIES_LIST")
         self._series_list = EpisodeListCtrl(self._list_panel)
-        
-        self._find_text = xrc.XRCCTRL(self, "ID_REFRESH_FIND")
-        self._clear_filter = xrc.XRCCTRL(self, "ID_CLEAR_FIND")
-        self._filter_text = xrc.XRCCTRL(self, "ID_TEXT_FILTER")
-        
+
         # create main view (for now)
         sizer = wx.BoxSizer()
         sizer.Add(self._series_list, 1, wx.EXPAND)
@@ -69,10 +65,6 @@ class MainPanel(wx.Panel):
         self.Bind(wx.EVT_CHECKBOX, self._onShowOnlyUnseen, self._show_unseen)
         #self.Bind(wx.EVT_CHOICE, self._onUpdatedViewSelect, self._updated_view)
         self.Bind(wx.EVT_UPDATE_UI, self._onGuiUpdated)
-        self.Bind(wx.EVT_TEXT, self._onFilterText, self._filter_text)
-        self.Bind(wx.EVT_BUTTON, self._onRefreshFilter, self._find_text)
-        self.Bind(wx.EVT_BUTTON, self._onClearFilter, self._clear_filter)
-        self.Bind(wx.EVT_TEXT_ENTER, self._onRefreshFilter, self._filter_text)
         
         Publisher().subscribe(self._onSignalRestoreSeries, signals.DATA_SERIES_RESTORED)
         Publisher().subscribe(self._onAppInitialized, signals.APP_INITIALIZED)
@@ -93,22 +85,7 @@ class MainPanel(wx.Panel):
                     self._series_selection.SetSelection(i)
                     break
         
-    
-    def _onFilterText(self, event):
-        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
-         
-        
-    def _onRefreshFilter(self, event):
-        viewmgr._series_sel._filter_text = self._filter_text.GetValue()
-        viewmgr._series_sel.syncEpisodes()
-        
-
-    def _onClearFilter(self, event):
-        viewmgr._series_sel._filter_text = ''
-        self._filter_text.SetValue('')
-        viewmgr._series_sel.syncEpisodes()
-        
-        
+            
     def _onEpisodeFilter(self, event):
         """
         Toggle the filter for the date span 
@@ -132,9 +109,6 @@ class MainPanel(wx.Panel):
         self._show_unseen.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
         self._episodeFilter.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON)
         #self._series_selection.Enable(viewmgr._series_sel._view_type == series_filter.VIEW_SERIES)
-        self._find_text.Enable(view_enabled)
-        self._clear_filter.Enable(view_enabled)
-        self._filter_text.Enable(view_enabled)
         
 
     def _onUpdateAll(self, event):
@@ -237,7 +211,7 @@ class MainPanel(wx.Panel):
         Select a series, or all
         """
         self._series_list.Freeze()
-        busy = wx.BusyInfo("This can take a while, please wait ...", self)
+        busy = wx.BusyInfo("This can take a while, please wait ...", wx.GetApp()._frame)
         
         sel = self._series_selection
         series_id = sel.GetClientData(sel.GetSelection())

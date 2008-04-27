@@ -40,9 +40,9 @@ class AirsApp(wx.App):
             else:
                 return 0
 
-        MainFrame = AirsFrame(None, -1, appcfg.APP_TITLE)
-        self.SetTopWindow(MainFrame)
-        MainFrame.Show()
+        self._frame = AirsFrame(None, -1, appcfg.APP_TITLE)
+        self.SetTopWindow(self._frame)
+        self._frame.Show()
         return 1
 
 
