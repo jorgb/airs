@@ -87,10 +87,15 @@ class ViewSelectPanel(wx.Panel):
         """
         if self._the_view != -1:
             self._our_problem = True            
+
+            viewmgr._series_sel._filter_text = ''
+            self._filter_text.SetValue('')            
+
             if self._the_view != series_filter.VIEW_SERIES:
                 viewmgr._series_sel._selected_series_id = -1
             viewmgr.set_view(self._the_view)
             self._the_view = -1
+
             self._our_problem = False
         
         

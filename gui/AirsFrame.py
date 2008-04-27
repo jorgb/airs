@@ -355,10 +355,12 @@ class AirsFrame(wx.Frame):
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
             self._menuBar.Check(menu_id, pane.IsShown())
 
-        # TODO: Add your enable / disable control code here
-        pass
-
-    
+        enabled = viewmgr._series_sel._selected_series_id != -1
+        self._menuEdit.Enable(enabled)
+        self._menuDelete.Enable(enabled)
+        self._menuClearCache.Enable(enabled)
+        
+        
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
