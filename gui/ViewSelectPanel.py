@@ -117,7 +117,7 @@ class ViewSelectPanel(wx.Panel):
         Creates the view selector window
         """
         sel = self._view_select
-        sel.InsertColumn(0, "View Type", width = 130)
+        sel.InsertColumn(0, "View Type", width = 150)
 
         self._icons = wx.ImageList(16, 16)
         self._icons.Add(whats_new.getBitmap())       #0

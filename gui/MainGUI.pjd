@@ -3047,9 +3047,9 @@ http://www.tv.com/supernatural/show/30144/summary.html
               <string name="proxy-Data class header filename">""</string>
               <string name="proxy-Data class manager window">""</string>
               <bool name="proxy-wxLC_LIST ">0</bool>
-              <bool name="proxy-wxLC_REPORT">0</bool>
+              <bool name="proxy-wxLC_REPORT">1</bool>
               <bool name="proxy-wxLC_ICON">0</bool>
-              <bool name="proxy-wxLC_SMALL_ICON">1</bool>
+              <bool name="proxy-wxLC_SMALL_ICON">0</bool>
               <bool name="proxy-wxLC_VIRTUAL">0</bool>
               <bool name="proxy-wxLC_ALIGN_TOP">0</bool>
               <bool name="proxy-wxLC_ALIGN_LEFT">0</bool>
@@ -3627,6 +3627,14 @@ http://www.tv.com/supernatural/show/30144/summary.html
             <string name="proxy-type">"wbBoxSizerProxy"</string>
             <string name="proxy-Orientation">"Vertical"</string>
             <string name="proxy-Member variable name">""</string>
+            <string name="proxy-AlignH">"Centre"</string>
+            <string name="proxy-AlignV">"Centre"</string>
+            <long name="proxy-Stretch factor">0</long>
+            <long name="proxy-Border">5</long>
+            <bool name="proxy-wxLEFT">1</bool>
+            <bool name="proxy-wxRIGHT">1</bool>
+            <bool name="proxy-wxTOP">1</bool>
+            <bool name="proxy-wxBOTTOM">1</bool>
             <bool name="proxy-wxSHAPED">0</bool>
             <bool name="proxy-wxADJUST_MINSIZE">0</bool>
             <bool name="proxy-wxFIXED_MINSIZE">0</bool>
@@ -4606,7 +4614,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
               <string name="proxy-Implementation filename">""</string>
               <string name="proxy-Header filename">""</string>
               <string name="proxy-Member variable name">""</string>
-              <string name="proxy-Label">"Statistics:"</string>
+              <string name="proxy-Label">"Episode statistics:"</string>
               <long name="proxy-Wrapping width">-1</long>
               <string name="proxy-Help text">""</string>
               <string name="proxy-Tooltip text">""</string>
@@ -4776,7 +4784,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                 <string name="proxy-Implementation filename">""</string>
                 <string name="proxy-Header filename">""</string>
                 <string name="proxy-Member variable name">""</string>
-                <string name="proxy-Label">"New Episodes"</string>
+                <string name="proxy-Label">"New"</string>
                 <long name="proxy-Wrapping width">-1</long>
                 <string name="proxy-Help text">""</string>
                 <string name="proxy-Tooltip text">""</string>
@@ -4986,7 +4994,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                 <string name="proxy-Implementation filename">""</string>
                 <string name="proxy-Header filename">""</string>
                 <string name="proxy-Member variable name">""</string>
-                <string name="proxy-Label">"Updated Episodes"</string>
+                <string name="proxy-Label">"Updated"</string>
                 <long name="proxy-Wrapping width">-1</long>
                 <string name="proxy-Help text">""</string>
                 <string name="proxy-Tooltip text">""</string>
@@ -5196,7 +5204,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                 <string name="proxy-Implementation filename">""</string>
                 <string name="proxy-Header filename">""</string>
                 <string name="proxy-Member variable name">""</string>
-                <string name="proxy-Label">"Total Episodes"</string>
+                <string name="proxy-Label">"Total"</string>
                 <long name="proxy-Wrapping width">-1</long>
                 <string name="proxy-Help text">""</string>
                 <string name="proxy-Tooltip text">""</string>
