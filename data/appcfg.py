@@ -12,10 +12,10 @@ APP_TITLE           = "Airs:: Automatic Series Monitor"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
-APP_VERSION         = "1.0"
+APP_VERSION         = "1.1b"
 
 # the name of the default database
-DB_NAME             = 'airs.db'
+DB_NAME             = 'series.db'
 
 # The application name on disk, same as the main startup file used for writing
 # your settings to disk, the registry key, etc

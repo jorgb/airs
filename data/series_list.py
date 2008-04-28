@@ -56,7 +56,17 @@ class Series(object):
         else:
             self.last_update = unicode(datetime.date.today().strftime("%Y%m%d"))    
     
+    def getLastUpdate(self):
+        s = self.last_update
+        if s and len(s) > 7:
+            try:
+                d = datetime.date(day = int(s[6:8]), month = int(s[4:6]), year = int(s[0:4]))
+                return d
+            except ValueError:
+                pass
+        return None
             
+
 class Episode(object):
     """
     Serie episode item

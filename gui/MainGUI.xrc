@@ -237,6 +237,43 @@ Enter your options here
                             </object>
                         </object>
                     </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <hidden>1</hidden>
+                                    <label>Last updated: </label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <font>
+                                        <size>8</size>
+                                        <family>swiss</family>
+                                        <weight>bold</weight>
+                                        <face>Tahoma</face>
+                                    </font>
+                                    <hidden>1</hidden>
+                                    <label>2008-08-08</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
+                                <border>5</border>
+                                <object class="wxButton" name="ID_BUTTON1">
+                                    <hidden>1</hidden>
+                                    <label>&amp;Reset To Today</label>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">

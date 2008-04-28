@@ -28,23 +28,13 @@ class EpGuidesSeriesDownloadCmd(object):
                                 "[ \t]+\d+)")
         self._re2 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
                                 "(.*)")
+         
         
-        
-    def __compose_result(self, episodes, message):
-        """
-        Compose the result on a uniform place
-        """
-        return (episodes, message)
-        
-    
     def retrieve(self):
-        """ Retieves and decodes. Returns the following:
-        
-            (None, error_str)   - In case of error string
-            (serie, status_str) - In case of succesful extract
-            
-            serie -> [ (episode_nr, episode_string, ... {future} ),
-                       .... ]
+        """ Retieves and decodes. Fills in the self._series which is returned
+            later. In case of errors, set series.errors = True and set the error_str
+            property. Also APPEND episodes to the series.episodes list, no not
+            overwrite this list. It doesn't matter if there are episodes already there
         """
 
         self.__log.put("Opening URL : '%s'" % self._url)
@@ -54,11 +44,13 @@ class EpGuidesSeriesDownloadCmd(object):
             f = urllib2.urlopen(self._url)
             html = f.read()
         except urllib2.URLError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
-                                               (self._url, self._series.name, msg))
+            self._series.setError("Error accessing site '%s' for series '%s' : %s" % \
+                                  (self._url, self._series.name, msg))
+            return
         except ValueError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for series '%s' : %s" % \
-                                               (self._url, self._series.name, msg))
+            self._series.setError("Error accessing site '%s' for series '%s' : %s" % \
+                                  (self._url, self._series.name, msg))
+            return
             
         self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         
@@ -72,13 +64,14 @@ class EpGuidesSeriesDownloadCmd(object):
             # attempt a bypass
             res = soup.find("pre")
             if not res:
-                return self.__compose_result(None, "Can't find marker <div id='eplist'> or old marker <pre>")
+                self._series.setError("Can't find marker <div id='eplist'> or old marker <pre>")
+                return
             else:
                 bypass = True
         else:
             res = res.find("pre")        
             if not res:
-                return self.__compose_result(None, "Can't find marker <pre>")
+                self._series.setError("Can't find marker <pre>")
         
         # <a target="_blank" href="???">{series title}</a>
         # chop up all series and also preserve the text in front of it
@@ -102,7 +95,6 @@ class EpGuidesSeriesDownloadCmd(object):
                 episode_list.append( (text_before, text_title) )
          
         # now parse the things and see how far we get       
-        ep_list = list()
         for ep_text, ep_title in episode_list:
             m = self._re1.match(ep_text)
             if not m:
@@ -145,15 +137,11 @@ class EpGuidesSeriesDownloadCmd(object):
                 
                 # add episode
                 episode.series_id = self._series.id                                                
-                ep_list.append(episode)
+                self._series.episodes.append(episode)
 
         self.__log.put("Parsing complete!")
-
-        if not ep_list:
-            return self.__compose_result(None, "No valid series found!")
-        else:
-            return self.__compose_result(ep_list, "")
-
+        return
+    
 
 def _parseTvComDate(s):
     """
@@ -194,21 +182,8 @@ class TvComSeriesDownloadCmd(object):
         self._url = url
         
         
-    def __compose_result(self, episodes, message):
-        """
-        Compose the result on a uniform place
-        """
-        return (episodes, message)
-        
-    
     def retrieve(self):
-        """ Retieves and decodes. Returns the following:
-        
-            (None, error_str)   - In case of error string
-            (serie, status_str) - In case of succesful extract
-            
-            serie -> [ (episode_nr, episode_string, ... {future} ),
-                       .... ]
+        """ Retieves and decodes. 
         """
 
         self.__log.put("Opening URL : '%s'" % self._url)
@@ -218,11 +193,13 @@ class TvComSeriesDownloadCmd(object):
             f = urllib2.urlopen(self._url)
             html = f.read()
         except urllib2.URLError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._url, self._series.name, msg))
+            self._series.setError("Error accessing site '%s' for serie '%s' : %s" % \
+                                   (self._url, self._series.name, msg))
+            return
         except ValueError, msg:
-            return self.__compose_result(None, "Error accessing site '%s' for serie '%s' : %s" % \
-                                               (self._url, self._series.id, msg))
+            self._series.setError("Error accessing site '%s' for serie '%s' : %s" % \
+                                  (self._url, self._series.id, msg))
+            return
             
         self.__log.put("Data for '%s' read. Parsing ..." % self._series.name)
         
@@ -231,17 +208,20 @@ class TvComSeriesDownloadCmd(object):
         
         res = soup.find("div", attrs = {"class" :"pod", "section": "episodes"})     
         if not res:
-            return self.__compose_result(None, "Can't find marker #1")
+            self._series.setError("Can't find marker #1")
+            return
             
         # find table entry where episodes are located in
         res = res.find("table", {"class": "f-11"})
         if not res:
-            return self.__compose_result(None, "Can't find marker #2")
+            self._series.setError("Can't find marker #2")
+            return
         
         # iterate for series
         res = res.findAll("td", {"class": "f-bold"})
         if not res:
-            return self.__compose_result(None, "Can't find marker #3")
+            self._series.setError("Can't find marker #3")
+            return
         
         self.__log.put("Found episode section. Parsing ...")
 
@@ -263,12 +243,8 @@ class TvComSeriesDownloadCmd(object):
                         date_txt = txt[0].strip()
                         episode.aired = unicode(_parseTvComDate(date_txt))
                 
-                ep_list.append( episode )
+                self._series.episodes.append( episode )
         
-                
         self.__log.put("Parsing complete!")
+        return
         
-        if not ep_list:
-            return self.__compose_result(None, "No valid series found!")
-        else:
-            return self.__compose_result(ep_list, "")

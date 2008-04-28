@@ -18,6 +18,7 @@ import series_list
 import signals
 import appcfg
 import db
+import datetime
 
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
@@ -160,7 +161,7 @@ def app_log(msg):
     Publisher().sendMessage(signals.APP_LOG, msg)
 
 
-def get_all_series():
+def get_all_series(manual = False):
     """ 
     Initializes the transfer to send all the serie jobs to the 
     receive thread, and after that, hopefully results will 
@@ -171,11 +172,31 @@ def get_all_series():
     # send all series from db to the receive queue
     result = db.store.find(series_list.Series)
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
+    ignored = 0
+    sent = 0
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
-        if series.postponed == 0:
+        if series.postponed != 0:
+            ignored += 1
+            continue
+        
+        allow = True
+        if not manual and series.update_period > 0:
+            d = series.getLastUpdate()
+            if d:
+                td = datetime.date.today()
+                allow = (d + datetime.timedelta(days=series.update_period) <= td)
+                    
+        if allow:
+            sent += 1
             item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
+            item.manual = manual
             retriever.in_queue.put( item )
+        else:
+            ignored += 1
+    
+    Publisher().sendMessage(signals.APP_LOG, "Sent %i series and ignored %i (not yet in time slot) ..." % \
+                            (sent, ignored))
 
 
 def probe_series():
@@ -192,70 +213,72 @@ def probe_series():
     db_changed = False
     
     while not retriever.out_queue.empty():
-        episode = retriever.out_queue.get()
+        item = retriever.out_queue.get()
+        if item:
+            for episode in item.episodes:
+                # for every episode, check if it exists in the DB. If it does 
+                # attempt an update. If it doesn't, we add it. We use the 
+                # follow up number (which is mandatory) for identification
+                if not episode.number or episode.series_id < 0:
+                    continue
+                    
+                nr = str(episode.number)
+                result = db.store.find(series_list.Episode, (series_list.Episode.number == unicode(nr)),
+                                                            (series_list.Episode.series_id == episode.series_id)).one()
         
-        # for every episode, check if it exists in the DB. If it does 
-        # attempt an update. If it doesn't, we add it. We use the 
-        # follow up number (which is mandatory) for identification
-        if not episode.number or episode.series_id < 0:
-            continue
-            
-        nr = str(episode.number)
-        result = db.store.find(series_list.Episode, (series_list.Episode.number == unicode(nr)),
-                                                    (series_list.Episode.series_id == episode.series_id)).one()
-
-        # also check if we need to cache the series ID
-        if episode.series_id not in series_cache:
-            series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
-            
-            if series:
-                series_cache[episode.series_id] = series
-            else:
-                # ignore this episode, the series parent is killed / gone
-                continue
-        else:
-            series = series_cache[episode.series_id]
-        
-        # update the series date when it's updated
-        series.setLastUpdate()
-                        
-        if not result:            
-            episode.changed = 1
-            episode.status = series_list.EP_NEW
-            episode.setLastUpdate()
-            
-            db.store.add(episode)
-            db_changed = True
-            db.store.flush()
-            
-            _series_sel.filterEpisode(episode)
-        else:
-            # we found the episode, we will update only certain parts
-            # if they are updated properly, we willl inform and update the DB
-            updated = False
-            if result.title == '' and episode.title != '':
-                result.title = unicode(episode.title)
-                updated = True
-            if result.season == '' and episode.season != '':
-                result.season = unicode(episode.season)
-                updated = True
-            # resolve policy; when aired date is too far in the future, we 
-            # set it to the lowest possible date
-            if result.aired == "" and episode.aired != "" or result.aired > episode.aired:
-                result.aired = episode.aired
-                updated = True
+                # also check if we need to cache the series ID
+                if episode.series_id not in series_cache:
+                    series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
+                    
+                    if series:
+                        series_cache[episode.series_id] = series
+                    else:
+                        # ignore this episode, the series parent is killed / gone
+                        continue
+                else:
+                    series = series_cache[episode.series_id]
                 
-            if updated:
-                db_changed = True
-                result.changed = 1
-                result.setLastUpdate()
-                _series_sel.filterEpisode(result, updated = True)
-
-    # all changes are committed here
-    if db_changed:
-        db.store.commit()
+                # only update the series if we are not manually retrieving
+                if not item.manual:
+                    series.setLastUpdate()
+                                
+                if not result:            
+                    episode.changed = 1
+                    episode.status = series_list.EP_NEW
+                    episode.setLastUpdate()
+                    
+                    db.store.add(episode)
+                    db_changed = True
+                    db.store.flush()
+                    
+                    _series_sel.filterEpisode(episode)
+                else:
+                    # we found the episode, we will update only certain parts
+                    # if they are updated properly, we willl inform and update the DB
+                    updated = False
+                    if result.title == '' and episode.title != '':
+                        result.title = unicode(episode.title)
+                        updated = True
+                    if result.season == '' and episode.season != '':
+                        result.season = unicode(episode.season)
+                        updated = True
+                    # resolve policy; when aired date is too far in the future, we 
+                    # set it to the lowest possible date
+                    if result.aired == "" and episode.aired != "" or result.aired > episode.aired:
+                        result.aired = episode.aired
+                        updated = True
+                        
+                    if updated:
+                        db_changed = True
+                        result.changed = 1
+                        result.setLastUpdate()
+                        _series_sel.filterEpisode(result, updated = True)
         
-    return
+            # all changes are committed here
+            if db_changed:
+                db.store.commit()
+                
+            return
         
 def is_busy():
     """
@@ -294,6 +317,7 @@ def get_selected_series():
     series = db.store.get(series_list.Series, _series_sel._selected_series_id)
     if series:
         item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split("\n"))
+        item.manual = True
         retriever.in_queue.put(item)
     
     

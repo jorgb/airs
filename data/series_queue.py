@@ -22,6 +22,15 @@ class SeriesQueueItem(object):
         self.id = series_id
         self.name = series_name
         self.url = series_url
+        self.episodes = list()
+        self.manual = False
+        self.errors = False
+        self.error_str = ''
+        
+    def setError(self, str):        
+        if not self.errors:
+            self.errors = True            
+            self.error_str = str
 
 
 class SeriesRetrieveThread(Thread):
@@ -91,23 +100,22 @@ class SeriesRetrieveThread(Thread):
                             cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, series, url)
         
                         if cmd:                            
-                            items = cmd.retrieve()
+                            cmd.retrieve()
                             
                             self._current_series = ''
                             
                             # in case of errors
-                            if items[0] == None:
-                                self.__report("ERROR: %s" % items[1])
-                            else:
-                                episode_list = items[0]
-                                self.__report("Downloaded %d episodes for series '%s'" % \
-                                              (len(episode_list), series.name))
-                                for episode in episode_list:
-                                    self.out_queue.put( episode )
+                            if series.errors:
+                                self.__report("ERROR: %s" % series.error_str)
+
+                            epcount = len(series.episodes)
+                            if epcount > 0:
+                                self.__report("Retrieved %d episodes for series '%s'" % \
+                                              (epcount, series.name))
+                                self.out_queue.put( series )
                         else:
-                                self.__report("ERROR: Unknown series url to process: %s" % url)
+                            self.__report("ERROR: Unknown series url to process: %s" % url)
                             
-            
             self._batchSize = 0
             self._currSize = 0
             self._is_downloading = False

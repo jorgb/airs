@@ -245,6 +245,8 @@ class AirsFrame(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK:
             # we instantiate a new series object
             series = series_list.Series()
+            series.update_period = 7
+            
             dlg.guiToObject(series)
             
             viewmgr.add_series(series)
