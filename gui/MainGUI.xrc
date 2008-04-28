@@ -195,17 +195,48 @@ Enter your options here
                     <style>wxTE_MULTILINE</style>
                 </object>
             </object>
-            <object class="spacer">
-                <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-                <border>5</border>
-                <size>5,5</size>
-            </object>
             <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxALL</flag>
+                <flag>wxGROW|wxALL</flag>
                 <border>5</border>
-                <object class="wxCheckBox" name="ID_CANCELLED">
-                    <label>This series is cancelled or finished. Don't include it in "UPDATE ALL"</label>
-                    <checked>0</checked>
+                <object class="wxStaticBoxSizer" name="wxID_ANY">
+                    <orient>wxVERTICAL</orient>
+                    <label>UPDATE ALL settings</label>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxCheckBox" name="ID_CANCELLED">
+                            <label>This series is cancelled or finished. Don't include it</label>
+                            <checked>0</checked>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxRIGHT</flag>
+                        <border>5</border>
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <label>Update this series every</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxTextCtrl" name="ID_UPDATE_PERIOD">
+                                    <size>40,-1</size>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <label>days (0 = always)</label>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
                 </object>
             </object>
             <object class="sizeritem">

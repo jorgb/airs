@@ -188,10 +188,8 @@ def probe_series():
     
     # cache list with ID of series as lookup
     # we use this to verify the series is present 
-    series_cache = []
+    series_cache = dict()
     db_changed = False
-    added = 0
-    updated = 0
     
     while not retriever.out_queue.empty():
         episode = retriever.out_queue.get()
@@ -199,30 +197,38 @@ def probe_series():
         # for every episode, check if it exists in the DB. If it does 
         # attempt an update. If it doesn't, we add it. We use the 
         # follow up number (which is mandatory) for identification
-        if not episode.number:
+        if not episode.number or episode.series_id < 0:
             continue
             
         nr = str(episode.number)
         result = db.store.find(series_list.Episode, (series_list.Episode.number == unicode(nr)),
                                                     (series_list.Episode.series_id == episode.series_id)).one()
-        if not result:
-            # not found, add to database, perform extra check for integrity
-            can_add = episode.series_id not in series_cache
-            if not can_add:
-                series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
-                if series:
-                    series_cache.append(series.id)
-                    can_add = True
+
+        # also check if we need to cache the series ID
+        if episode.series_id not in series_cache:
+            series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
             
-            if can_add:
-                added += 1
-                episode.changed = 1
-                episode.status = series_list.EP_NEW
-                episode.setLastUpdate()
-                db.store.add(episode)
-                db_changed = True
-                db.store.flush()
-                _series_sel.filterEpisode(episode)
+            if series:
+                series_cache[episode.series_id] = series
+            else:
+                # ignore this episode, the series parent is killed / gone
+                continue
+        else:
+            series = series_cache[episode.series_id]
+        
+        # update the series date when it's updated
+        series.setLastUpdate()
+                        
+        if not result:            
+            episode.changed = 1
+            episode.status = series_list.EP_NEW
+            episode.setLastUpdate()
+            
+            db.store.add(episode)
+            db_changed = True
+            db.store.flush()
+            
+            _series_sel.filterEpisode(episode)
         else:
             # we found the episode, we will update only certain parts
             # if they are updated properly, we willl inform and update the DB
@@ -240,7 +246,6 @@ def probe_series():
                 updated = True
                 
             if updated:
-                updated += 1
                 db_changed = True
                 result.changed = 1
                 result.setLastUpdate()
@@ -250,7 +255,7 @@ def probe_series():
     if db_changed:
         db.store.commit()
         
-    return (added, updated)
+    return
         
 def is_busy():
     """

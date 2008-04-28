@@ -24,6 +24,7 @@ class SeriesDlg(wx.Dialog):
         self._series_id = xrc.XRCCTRL(self, "ID_SERIES_ID")
         self._series_link = xrc.XRCCTRL(self, "ID_SERIES_LINK")
         self._postponed = xrc.XRCCTRL(self, "ID_CANCELLED")
+        self._update_period = xrc.XRCCTRL(self, "ID_UPDATE_PERIOD")
         
 
     # --------------------------------------------------------------------------
@@ -43,6 +44,15 @@ class SeriesDlg(wx.Dialog):
                 wx.MessageBox("A series with this name already exists", "Error", wx.ICON_ERROR)
                 return
 
+        try:
+            upd = int(self._update_period.GetValue())
+            if upd < 0:
+                wx.MessageBox("Please enter a positive (or zero) update period!", "Error", wx.ICON_ERROR)
+                return
+        except ValueError:
+            wx.MessageBox("Please enter a valid update number", "Error", wx.ICON_ERROR)
+            return
+            
         event.Skip()
 
 
@@ -59,6 +69,13 @@ class SeriesDlg(wx.Dialog):
             series.postponed = 1
         else:
             series.postponed = 0
+            
+        try:
+            upd = int(self._update_period.GetValue())
+            if upd >= 0:
+                series.update_period = upd
+        except ValueError:
+            pass
         
 
     def objectToGui(self, series):
@@ -69,5 +86,5 @@ class SeriesDlg(wx.Dialog):
         self._series_id.SetValue(series.name)
         self._series_link.SetValue(series.url)
         self._postponed.SetValue(series.postponed != 0)
-        
+        self._update_period.SetValue(str(series.update_period))
         

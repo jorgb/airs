@@ -45,6 +45,18 @@ class Series(object):
     update_period = Int()       # in how many days later
 
     
+    def __storm_loaded__(self):
+        if self.update_period == None:
+            self.update_period = 0
+    
+    
+    def setLastUpdate(self, d = None):
+        if d:
+            self.last_update = unicode("%04i%02i%02" % (d.year, d.month, d.day))
+        else:
+            self.last_update = unicode(datetime.date.today().strftime("%Y%m%d"))    
+    
+            
 class Episode(object):
     """
     Serie episode item
@@ -69,6 +81,7 @@ class Episode(object):
         self.status = EP_READY
         self.changed = 0 
             
+
     def setAired(self, d):
         """
         Sets date
