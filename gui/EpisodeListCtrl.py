@@ -6,6 +6,7 @@
 
 import wx, sys
 from data import signals, viewmgr, db, series_list, series_filter, appcfg
+from data import searches
 
 from images import whats_new, to_download, \
                    downloading, icon_processed, icon_ready, icon_new
@@ -185,6 +186,20 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onSetProcessed, 
                           menu.Append(wx.NewId(),"Set as Processed"))
                 st_series = True
+                
+            # show search engine list only with single selection
+            # and if there are any to show.
+            idx = self.GetFirstSelected()
+            if self.GetNextSelected(idx) == wx.NOT_FOUND:
+                result = db.store.find(searches.Searches)
+                lst = [s for s in result.order_by(searches.Searches.name)]
+                if lst:
+                    menu.AppendSeparator()
+                    searchmenu = wx.Menu()
+                    
+                    for se in lst:
+                        searchmenu.Append(wx.NewId(), se.name)
+                    menu.AppendMenu(wx.NewId(), "Online Search ...", searchmenu)
                 
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                 menu.AppendSeparator()

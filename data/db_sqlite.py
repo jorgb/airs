@@ -21,6 +21,12 @@ create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR,
                       status INTEGER,  series_id INTEGER, changed INTEGER);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
+create table searches (id integer primary key, name varchar, url varchar);
+create table options (id integer, name varchar, value varchar);
+update version set version=4, updated_on="%(date)s" where id=1;
+insert into searches (name, url) values ("newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season@+@episode@");
+insert into searches (name, url) values ("yabsearch", "http://www.yabsearch.nl/search/@series@+@season@+@episode@");
+insert into options (name, value) values ("defsearch", "1");
 """
 
 #-------------------------------------------------------------------------------
@@ -42,6 +48,19 @@ update version set version=2, updated_on="%(date)s" where id=1;
 upgr_v2_v3 = """\
 update version set version=3, updated_on="%(date)s" where id=1;
 """
+
+#-------------------------------------------------------------------------------
+# upgrade script for v3 to v4
+
+upgr_v3_v4 = """\
+create table searches (id integer primary key, name varchar, url varchar);
+create table options (id integer, name varchar, value varchar);
+update version set version=4, updated_on="%(date)s" where id=1;
+insert into searches (name, url) values ("newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season@+@episode@");
+insert into searches (name, url) values ("yabsearch", "http://www.yabsearch.nl/search/@series@+@season@+@episode@");
+insert into options (name, value) values ("defsearch", "1");
+"""
+
 
 #-------------------------------------------------------------------------------
 
@@ -134,7 +153,8 @@ def create(dbfile):
 
 # upgrade directory
 _upgrade_list = { 1: (None,        upgr_v1_v2, None),
-                  2: (upgr_pre_v3, upgr_v2_v3, None) }
+                  2: (upgr_pre_v3, upgr_v2_v3, None),
+                  3: (None,        upgr_v3_v4, None) }
 
 def upgrade(dbfile):
 
