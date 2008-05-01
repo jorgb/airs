@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
-    <object class="wxDialog" name="SeriesDlg">
+    <object class="wxDialog" name="SeriesDlg" subclass="SeriesDlg">
         <style>wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxTAB_TRAVERSAL</style>
         <exstyle>wxWS_EX_BLOCK_EVENTS</exstyle>
         <size>400,300</size>
@@ -63,6 +63,19 @@
                                 </object>
                             </object>
                             <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxChoice" name="ID_PERIOD_SELECT">
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxStaticText" name="wxID_STATIC">
+                                    <label>  (custom:</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
                                 <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
                                 <border>5</border>
                                 <object class="wxTextCtrl" name="ID_UPDATE_PERIOD">
@@ -73,44 +86,7 @@
                                 <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
                                 <border>5</border>
                                 <object class="wxStaticText" name="wxID_STATIC">
-                                    <label>days (0 = always)</label>
-                                </object>
-                            </object>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_LEFT|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <hidden>1</hidden>
-                                    <label>Last updated: </label>
-                                </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <font>
-                                        <size>8</size>
-                                        <family>swiss</family>
-                                        <weight>bold</weight>
-                                        <face>Tahoma</face>
-                                    </font>
-                                    <hidden>1</hidden>
-                                    <label>2008-08-08</label>
-                                </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT</flag>
-                                <border>5</border>
-                                <object class="wxButton" name="ID_BUTTON1">
-                                    <hidden>1</hidden>
-                                    <label>&amp;Reset To Today</label>
+                                    <label>days)</label>
                                 </object>
                             </object>
                         </object>
@@ -134,7 +110,7 @@
                 <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
                 <border>5</border>
                 <object class="wxStaticText" name="wxID_STATIC">
-                    <label>     http://tv.com, http://epguides.com</label>
+                    <label>     http://www.tv.com, http://epguides.com</label>
                 </object>
             </object>
             <object class="sizeritem">

@@ -25,9 +25,39 @@ class SeriesDlg(wx.Dialog):
         self._series_link = xrc.XRCCTRL(self, "ID_SERIES_LINK")
         self._postponed = xrc.XRCCTRL(self, "ID_CANCELLED")
         self._update_period = xrc.XRCCTRL(self, "ID_UPDATE_PERIOD")
+        self._period_select = xrc.XRCCTRL(self, "ID_PERIOD_SELECT")
+        self._last_updated = xrc.XRCCTRL(self, "ID_UPDATE_DATE")
+        
+        i = -1
+        while i >= series_list.min_period:
+            self._period_select.Append(series_list.period_trans[i], i)
+            i -= 1
+        self._period_select.Append(series_list.period_custom[1], 
+                                   series_list.period_custom[0])
+        
+        self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
+        self.Bind(wx.EVT_CHOICE, self._onPeriodSelect, self._period_select)
+    
+    
+    def _onPeriodSelect(self, event):
+        lst = self._period_select
+        if lst.GetClientData(lst.GetSelection()) == series_list.period_custom[0]:
+            self._update_period.SetValue('0')
+        else:
+            self._update_period.SetValue('')
         
 
-    # --------------------------------------------------------------------------
+    def _onUpdateUI(self, event):
+        lst = self._period_select
+        idx = lst.GetSelection()
+        if idx != wx.NOT_FOUND:
+            # custom select enables edit box
+            if lst.GetClientData(idx) == series_list.period_custom[0]:
+                self._update_period.Enable(True)
+            else:
+                self._update_period.Enable(False)
+                
+
     def _onOK(self, event): 
         """ Press OK, verify the path and notify if the path is not valid """
         
@@ -45,12 +75,13 @@ class SeriesDlg(wx.Dialog):
                 return
 
         try:
-            upd = int(self._update_period.GetValue())
-            if upd < 0:
-                wx.MessageBox("Please enter a positive (or zero) update period!", "Error", wx.ICON_ERROR)
-                return
+            lst = self._period_select
+            if lst.GetClientData(lst.GetSelection()) != series_list.period_custom[0]:
+                upd = lst.GetClientData(lst.GetSelection())
+            else:
+                upd = int(self._update_period.GetValue())
         except ValueError:
-            wx.MessageBox("Please enter a valid update number", "Error", wx.ICON_ERROR)
+            wx.MessageBox("Please enter a valid update period", "Error", wx.ICON_ERROR)
             return
             
         event.Skip()
@@ -65,15 +96,20 @@ class SeriesDlg(wx.Dialog):
         
         series.name = unicode(series_name)
         series.url = unicode(series_link)
+        
         if self._postponed.GetValue():
             series.postponed = 1
         else:
             series.postponed = 0
             
         try:
-            upd = int(self._update_period.GetValue())
-            if upd >= 0:
-                series.update_period = upd
+            lst = self._period_select
+            idx = lst.GetSelection()
+            if lst.GetClientData(idx) == series_list.period_custom[0]:
+                upd = int(self._update_period.GetValue())
+            else:
+                upd = lst.GetClientData(idx)
+            series.update_period = upd
         except ValueError:
             pass
         
@@ -86,5 +122,20 @@ class SeriesDlg(wx.Dialog):
         self._series_id.SetValue(series.name)
         self._series_link.SetValue(series.url)
         self._postponed.SetValue(series.postponed != 0)
-        self._update_period.SetValue(str(series.update_period))
-        
+
+        per = series.update_period
+        lst = self._period_select
+        if per < 0:
+            cdata = per
+        else:
+            cdata = series_list.period_custom[0]
+            
+        for i in xrange(0, lst.GetCount()):
+            if lst.GetClientData(i) == cdata:
+                lst.SetSelection(i)
+                break
+        if per >= 0:
+            self._update_period.SetValue(str(per))
+        else:
+            self._update_period.SetValue('')
+            

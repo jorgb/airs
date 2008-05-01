@@ -7,7 +7,7 @@ Source: ..\airs.ico; DestDir: {app}
 OutputDir=..\setup
 SourceDir=..\dist
 OutputBaseFilename=Airs-Setup
-VersionInfoVersion=0.9
+VersionInfoVersion=1.1
 VersionInfoCompany=ImpossibleSoft
 VersionInfoCopyright=(c) Jorgen Bodde
 AppCopyright=© Jorgen Bodde

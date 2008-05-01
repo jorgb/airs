@@ -13,6 +13,10 @@ from images import whats_new, to_download, \
 from wx.lib.pubsub import Publisher
 import datetime
 
+aired_days    = { 0: 'Today',  1: 'Tomorrow', -1: 'Yesterday' }
+aired_weekday = { 0: 'Monday', 1: 'Tuesday',   2: 'Wednesday', 3: 'Thursday',
+                  4: 'Friday', 5: 'Saturday',  6: 'Sunday' }
+
 
 def _sort_updated(a, b):
     """
@@ -112,7 +116,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._onAppClose, signals.APP_CLOSE)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
-        self._today = datetime.date.today().strftime("%Y%m%d")
+        self._syncToday()
 
     
     def _onAppClose(self, event):
@@ -135,8 +139,14 @@ class EpisodeListCtrl(wx.ListCtrl):
         Proxy method to clear list
         """
         self.DeleteAllItems()
-        self._today = datetime.date.today().strftime("%Y%m%d")
+        self._syncToday()
         
+        
+    def _syncToday(self):
+        self._today_d = datetime.date.today()        
+        self._today = self._today_d.strftime("%Y%m%d")
+        
+
     def _onMenuPopup(self, event):
         """
         Create popup menu to perform some options
@@ -296,7 +306,26 @@ class EpisodeListCtrl(wx.ListCtrl):
         imgidx = self._stat_to_icon[ep.status]
             
         self.SetItemImage(index, imgidx, imgidx)
-        self.SetStringItem(index, 4, ep.getStrDate())
+        
+        # set date
+        if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON:
+            # display in periods
+            epdate = ep.getAired()
+            if epdate:
+                delta = epdate - self._today_d
+                if delta.days in aired_days:
+                    self.SetStringItem(index, 4, aired_days[delta.days])
+                else:
+                    if delta.days < 0 and delta.days > -8:
+                        self.SetStringItem(index, 4, "%i days ago" % abs(delta.days))
+                    elif delta.days > 0 and delta.days < 8:
+                        self.SetStringItem(index, 4, aired_weekday[epdate.weekday()])
+                    else:
+                        self.SetStringItem(index, 4, ep.getStrDate())
+            else:
+                self.SetStringItem(index, 4, '')
+        else:
+            self.SetStringItem(index, 4, ep.getStrDate())
         
         upd = ep.last_update
         item = self.GetItem(index)

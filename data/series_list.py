@@ -14,6 +14,17 @@ EP_DOWNLOADING = 2
 EP_READY       = 3
 EP_PROCESSED   = 4
 
+# period definitions
+# > 0 = custom days
+# 0 = always
+# -1 to -7 = update monday to sunday
+# -8 and -9 = bi-weekly and monthly
+min_period = -9
+period_trans  = { -1: "monday",   -2: "tuesday",   -3: "wednesday",
+                  -4: "thursday", -5: "friday",    -6: "saturday",
+                  -7: "sunday", -8: "bi-weekly", -9: "monthly" }
+period_custom = ( -999, "custom" )
+
 #
 # Module that contains functionality
 # to store a number of series and functionality
@@ -116,7 +127,17 @@ class Episode(object):
             return "%s-%s-%s" % (s[0:4], s[4:6], s[6:8])
         return ''
     
+    def getAired(self):
+        s = self.aired
+        if s and len(s) > 7:
+            try:
+                d = datetime.date(day = int(s[6:8]), month = int(s[4:6]), year = int(s[0:4]))
+                return d
+            except ValueError:
+                pass
+        return None    
                     
+    
 class SeriesList(object):
     """
     List of series collection manager 

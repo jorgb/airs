@@ -181,12 +181,43 @@ def get_all_series(manual = False):
             continue
         
         allow = True
-        if not manual and series.update_period > 0:
-            d = series.getLastUpdate()
-            if d:
-                td = datetime.date.today()
-                allow = (d + datetime.timedelta(days=series.update_period) <= td)
-                    
+        d = series.getLastUpdate()        
+        if not manual and d != None:            
+            upd = series.update_period 
+            if upd < 0:
+                # we have to check if the weekday is today
+                # and we haven't checked today yet
+                td = datetime.date.today()                
+                if upd > -8:
+                    delta = td - d
+                    if delta.days <= 7 and delta.days > 0:
+                        # if less or equal to a week, check for the week day
+                        if td.weekday() == abs(upd + 1):
+                            # if we updated today already, skip
+                            if td.strftime("%Y%m%d") == series.last_update:
+                                allow = False
+                        else:
+                            allow = False
+                    elif delta.days == 0:
+                        # today already checked, skip it
+                        allow = False
+                    else:
+                        # placeholder for fall through if days > 7
+                        # we should always check because the user could
+                        # have logged in one day later or even longer
+                        # ago.
+                        pass
+                        
+                else:
+                    # check every bi-weekly or monthly
+                    if upd == -8:
+                        weeks = 2
+                    else:
+                        weeks = 4
+                    allow = (d + datetime.timedelta(weeks=weeks) <= td)
+            else:
+                allow = (d + datetime.timedelta(days=upd) <= td)
+                
         if allow:
             sent += 1
             item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
