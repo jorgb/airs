@@ -91,6 +91,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._ep_idx = 0
         self._updating = False
         self.viewID = ''    # kind of view
+        self._search_ids = dict()
 
         a = appcfg
         self.InsertColumn(0, "Nr.", width = a.options[a.CFG_LAYOUT_COL_NR])
@@ -197,8 +198,13 @@ class EpisodeListCtrl(wx.ListCtrl):
                     menu.AppendSeparator()
                     searchmenu = wx.Menu()
                     
+                    self._search_ids = dict()                    
+                    
                     for se in lst:
-                        searchmenu.Append(wx.NewId(), se.name)
+                        mnu_id = wx.NewId()
+                        self._search_ids[mnu_id] = se
+                        m = searchmenu.Append(mnu_id, se.name)
+                        self.Bind(wx.EVT_MENU, self._onSearchEntry, m)
                     menu.AppendMenu(wx.NewId(), "Online Search ...", searchmenu)
                 
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
@@ -219,7 +225,21 @@ class EpisodeListCtrl(wx.ListCtrl):
             self.PopupMenu(menu)
             menu.Destroy()   
                     
-                
+           
+    def _onSearchEntry(self, event):
+        try:
+            se = self._search_ids[event.GetId()]
+        except KeyError:
+            return
+        
+        eps = self.__getSelectedEpisodes()
+        if eps:
+            episode = eps[0]
+            series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
+            url = se.getSearchURL(episode, series)
+            wx.LaunchDefaultBrowser(url)
+            
+            
     def __getSelectedEpisodes(self):
         episodes = list()
         idx = self.GetFirstSelected()

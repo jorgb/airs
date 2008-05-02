@@ -15,17 +15,19 @@ VERSION = 3
 # main script that initializes the database
 _main_sql = """\
 CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR, 
-                     last_update VARCHAR, update_period INTEGER, postponed INTEGER);
+                     last_update VARCHAR, update_period INTEGER, postponed INTEGER,
+                     notes VARCHAR);
 create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, 
                       season VARCHAR, aired VARCHAR, last_update VARCHAR, 
-                      status INTEGER,  series_id INTEGER, changed INTEGER);
+                      status INTEGER,  series_id INTEGER, changed INTEGER, 
+                      seen INTEGER);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
-create table searches (id integer primary key, name varchar, url varchar);
+create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR);
 create table options (id integer, name varchar, value varchar);
 update version set version=4, updated_on="%(date)s" where id=1;
-insert into searches (name, url) values ("newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season@+@episode@");
-insert into searches (name, url) values ("yabsearch", "http://www.yabsearch.nl/search/@series@+@season@+@episode@");
+insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
+insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into options (name, value) values ("defsearch", "1");
 """
 
@@ -53,12 +55,16 @@ update version set version=3, updated_on="%(date)s" where id=1;
 # upgrade script for v3 to v4
 
 upgr_v3_v4 = """\
-create table searches (id integer primary key, name varchar, url varchar);
+create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
 create table options (id integer, name varchar, value varchar);
 update version set version=4, updated_on="%(date)s" where id=1;
-insert into searches (name, url) values ("newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season@+@episode@");
-insert into searches (name, url) values ("yabsearch", "http://www.yabsearch.nl/search/@series@+@season@+@episode@");
+insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
+insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into options (name, value) values ("defsearch", "1");
+alter table series add notes VARCHAR;
+alter table episode add seen INTEGER;
+update series set notes="";
+update episode set seen=0;
 """
 
 
