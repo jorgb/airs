@@ -206,6 +206,9 @@ class EpisodeListCtrl(wx.ListCtrl):
                         m = searchmenu.Append(mnu_id, se.name)
                         self.Bind(wx.EVT_MENU, self._onSearchEntry, m)
                     menu.AppendMenu(wx.NewId(), "Online Search ...", searchmenu)
+                    
+                self.Bind(wx.EVT_MENU, self._onEditSeries, 
+                          menu.Append(wx.NewId(), "Edit Series ..."))
                 
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                 menu.AppendSeparator()
@@ -226,6 +229,12 @@ class EpisodeListCtrl(wx.ListCtrl):
             menu.Destroy()   
                     
            
+    def _onEditSeries(self, event):
+        eps = self.__getSelectedEpisodes()
+        if eps:
+            Publisher().sendMessage(signals.QUERY_EDIT_SERIES, eps[0])
+        
+            
     def _onSearchEntry(self, event):
         try:
             se = self._search_ids[event.GetId()]

@@ -26,6 +26,7 @@ SERIES_UPDATED       = ('series',  'updated')
 EPISODES_CLEARED     = ('episode', 'cleared')
 SET_VIEW             = ('view',    'set')
 SELECT_ALL_EPISODES  = ('episode', 'select', 'all')
+QUERY_EDIT_SERIES    = ('series', 'query', 'edit')
 
 # from data model
 DATA_SERIES_RESTORED = ('data', 'series', 'added')

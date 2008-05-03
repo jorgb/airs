@@ -28,6 +28,7 @@ create table options (id integer, name varchar, value varchar);
 update version set version=4, updated_on="%(date)s" where id=1;
 insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
+insert into searches (name, url, options, defoptions, show) values ("NzbIndex", "http://www.nzbindex.nl/?go=search&new=1&searchitem=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into options (name, value) values ("defsearch", "1");
 """
 
@@ -60,6 +61,7 @@ create table options (id integer, name varchar, value varchar);
 update version set version=4, updated_on="%(date)s" where id=1;
 insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
+insert into searches (name, url, options, defoptions, show) values ("NzbIndex", "http://www.nzbindex.nl/?go=search&new=1&searchitem=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into options (name, value) values ("defsearch", "1");
 alter table series add notes VARCHAR;
 alter table episode add seen INTEGER;

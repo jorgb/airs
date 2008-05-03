@@ -262,25 +262,36 @@ class AirsFrame(wx.Frame):
         dlg.Destroy()
 
 
-    def _onGuiEdit(self, event):
+    def _onQueryEditSeries(self, msg):
+
+        series = db.store.get(series_list.Series, msg.data.series_id)
+        self._doEditSeries(series)
+        
+         
+    def _onGuiEdit(self, event = None):
         """ Event handler to edit a Series """
         
         # only edit when a genuine series is selected
         if viewmgr.series_active():
             sel_id = viewmgr._series_sel._selected_series_id
             if sel_id != -1:        
-                dlg = SeriesDlg.SeriesDlg(self)
-                dlg._editing = True
-                
                 series = db.store.get(series_list.Series, sel_id)
-                dlg.objectToGui(series)
-                if dlg.ShowModal() == wx.ID_OK:
-                    dlg.guiToObject(series)
-                    viewmgr.update_series(series)
+                self._doEditSeries(series)
                 
-                dlg.Destroy()
-
-
+                
+    def _doEditSeries(self, series):
+        if series:        
+            dlg = SeriesDlg.SeriesDlg(self)
+            dlg._editing = True
+    
+            dlg.objectToGui(series)
+            if dlg.ShowModal() == wx.ID_OK:
+                dlg.guiToObject(series)
+                viewmgr.update_series(series)
+            
+            dlg.Destroy()
+        
+                
     def _onGuiDelete(self, event):
         """ Event handler for deleting a Series """
 
@@ -430,6 +441,7 @@ class AirsFrame(wx.Frame):
         your application is called
         """
         Publisher().subscribe(self._onSignalSettingsChanged, signals.APP_SETTINGS_CHANGED)
+        Publisher().subscribe(self._onQueryEditSeries, signals.QUERY_EDIT_SERIES)
 
 
     def _onSignalSettingsChanged(self, msg):
