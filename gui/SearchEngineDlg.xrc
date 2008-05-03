@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
-    <object class="wxPanel" name="ID_SEARCHENGINEDLG" subclass="SearchEngineDlg">
-        <style>wxTAB_TRAVERSAL</style>
+    <object class="wxDialog" name="SearchEngineDlg" subclass="SearchEngineDlg">
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxTAB_TRAVERSAL</style>
         <size>400,300</size>
-        <title>SearchEngineDlg</title>
+        <title>Search Engine Properties</title>
         <centered>1</centered>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
@@ -26,7 +26,7 @@
                         <option>1</option>
                         <object class="wxListCtrl" name="ID_SEARCH_ENGINES">
                             <size>500,100</size>
-                            <style>wxLC_REPORT</style>
+                            <style>wxLC_REPORT|wxLC_SINGLE_SEL</style>
                         </object>
                     </object>
                     <object class="sizeritem">

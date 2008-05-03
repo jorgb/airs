@@ -676,10 +676,10 @@ http://www.tv.com/supernatural/show/30144/summary.html
             </object>
         </object>
     </object>
-    <object class="wxPanel" name="ID_SEARCHENGINEDLG" subclass="SearchEngineDlg">
-        <style>wxTAB_TRAVERSAL</style>
+    <object class="wxDialog" name="SearchEngineDlg" subclass="SearchEngineDlg">
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxTAB_TRAVERSAL</style>
         <size>400,300</size>
-        <title>SearchEngineDlg</title>
+        <title>Search Engine Properties</title>
         <centered>1</centered>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
@@ -702,7 +702,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                         <option>1</option>
                         <object class="wxListCtrl" name="ID_SEARCH_ENGINES">
                             <size>500,100</size>
-                            <style>wxLC_REPORT</style>
+                            <style>wxLC_REPORT|wxLC_SINGLE_SEL</style>
                         </object>
                     </object>
                     <object class="sizeritem">
@@ -749,8 +749,8 @@ http://www.tv.com/supernatural/show/30144/summary.html
             </object>
         </object>
     </object>
-    <object class="wxPanel" name="ID_SEARCHENGINEITEMDLG" subclass="SearchEngineItemDlg">
-        <style>wxTAB_TRAVERSAL</style>
+    <object class="wxDialog" name="SearchEngineItemDlg" subclass="SearchEngineItemDlg">
+        <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxCLOSE_BOX|wxTAB_TRAVERSAL</style>
         <size>400,300</size>
         <title>SearchEngineItemDlg</title>
         <centered>1</centered>
@@ -766,7 +766,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
             <object class="sizeritem">
                 <flag>wxGROW|wxALL</flag>
                 <border>5</border>
-                <object class="wxTextCtrl" name="ID_TEXTCTRL1">
+                <object class="wxTextCtrl" name="ID_NAME">
                 </object>
             </object>
             <object class="sizeritem">
@@ -779,7 +779,15 @@ http://www.tv.com/supernatural/show/30144/summary.html
             <object class="sizeritem">
                 <flag>wxGROW|wxALL</flag>
                 <border>5</border>
-                <object class="wxTextCtrl" name="ID_TEXTCTRL2">
+                <object class="wxTextCtrl" name="ID_URL">
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_LEFT|wxALL</flag>
+                <border>5</border>
+                <object class="wxCheckBox" name="ID_CHECKBOX1">
+                    <label>On doubleclick, this engine is default for searching</label>
+                    <checked>0</checked>
                 </object>
             </object>
             <object class="sizeritem">

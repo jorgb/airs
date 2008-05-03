@@ -21,11 +21,12 @@ import StatisticsPanel
 import ProgressLogPanel
 import MainPanel
 import SeriesDlg
+import SearchEngineDlg
 
 # images
 from images import icon_main, icon_about
 from images import icon_home, icon_help, \
-                   icon_visit_site
+                   icon_visit_site, icon_searches
 from images import icon_default_layout
 from images import icon_add, icon_delete, icon_edit
 
@@ -111,10 +112,17 @@ class AirsFrame(wx.Frame):
 
         # Episode menu
         mnu = wx.Menu()
-        self._menuSelectAll = wx.MenuItem(mnu, wx.NewId(), "Select All\tCtrl+A", 
+        self._menuSelectAll = wx.MenuItem(mnu, wx.NewId(), "&Select All\tCtrl+A", 
                                           "Select all episodes", wx.ITEM_NORMAL)
         mnu.AppendItem(self._menuSelectAll)
 
+        mnu.AppendSeparator()
+        
+        self._menuEditSearches = wx.MenuItem(mnu, wx.NewId(), "Search &Engines ...",
+                                             "Edit Search Engines", wx.ITEM_NORMAL)
+        self._menuEditSearches.SetBitmap(icon_searches.getBitmap())
+        mnu.AppendItem(self._menuEditSearches)
+        
         #self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", 
         #                             "Edit Series properties", wx.ITEM_NORMAL)
         #self._menuEdit.SetBitmap(icon_edit.getBitmap())
@@ -192,7 +200,7 @@ class AirsFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self._onGuiDelete, self._menuDelete)
         self.Bind(wx.EVT_MENU, self._onClearCache, self._menuClearCache)
         self.Bind(wx.EVT_MENU, self._onSelectAll, self._menuSelectAll)
-    
+        self.Bind(wx.EVT_MENU, self._onEditSearchEngines, self._menuEditSearches)
         
     def _createWindows(self):
         """
@@ -321,6 +329,13 @@ class AirsFrame(wx.Frame):
                              "Would you like to do this?", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
                 viewmgr.clear_current_cache()
     
+                
+    def _onEditSearchEngines(self, event):
+        dlg = SearchEngineDlg.SearchEngineDlg(self)
+        dlg.ShowModal()
+        dlg.Destroy()
+        
+                
     # ============================= CLOSE METHODS ==============================
     
     def _onGuiExit(self, event):
