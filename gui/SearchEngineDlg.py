@@ -8,7 +8,7 @@ import sys
 import wx
 import wx.xrc as xrc
 import xmlres
-from data import appcfg
+from data import appcfg, options
 from data import viewmgr, db, searches
 import SearchEngineItemDlg
 
@@ -24,20 +24,41 @@ class SearchEngineDlg(wx.Dialog):
         
         sel = self._list
         sel.InsertColumn(0, "Name", width = 80)
-        sel.InsertColumn(1, "URL", width = 410)
-
-        self._populateSearchEngines()
+        sel.InsertColumn(1, "", width = 20)
+        sel.InsertColumn(2, "URL", width = 380)
         
         self._add = xrc.XRCCTRL(self, "ID_ADD")
         self._edit = xrc.XRCCTRL(self, "ID_EDIT")
         self._delete = xrc.XRCCTRL(self, "ID_DELETE")
+        self._default = xrc.XRCCTRL(self, "ID_DEFAULT")
         
         self.Bind(wx.EVT_BUTTON, self._onOK,  xrc.XRCCTRL(self, "wxID_OK"))
         self.Bind(wx.EVT_BUTTON, self._onAdd, self._add)
         self.Bind(wx.EVT_BUTTON, self._onEdit, self._edit)
         self.Bind(wx.EVT_BUTTON, self._onDelete, self._delete)
+        self.Bind(wx.EVT_BUTTON, self._onDefault, self._default)
         
+        self._populateSearchEngines()
+
         
+    def _onDefault(self, event):
+        idx = self._list.GetFirstSelected()
+        if idx != wx.NOT_FOUND:
+            id = self._list.GetItemData(idx)
+            
+            old_id = options.getIntOption("default_search")
+            options.setOption("default_search", str(id))
+            
+            search = db.store.find(searches.Searches, searches.Searches.id == id).one()
+            self._updateItem(idx, search)
+            
+            if old_id != -1:
+                idx = self._list.FindItemData(-1, old_id)
+                if idx != wx.NOT_FOUND:
+                    search = db.store.find(searches.Searches, searches.Searches.id == old_id).one()
+                    self._updateItem(idx, search)
+                    
+                    
     def _onAdd(self, event):
         dlg = SearchEngineItemDlg.SearchEngineItemDlg(self)
         s = searches.Searches()
@@ -63,10 +84,12 @@ class SearchEngineDlg(wx.Dialog):
             if s:
                 dlg = SearchEngineItemDlg.SearchEngineItemDlg(self)
                 dlg.objectToGui(s)
+                
                 if dlg.ShowModal() == wx.ID_OK:
                     dlg.guiToObject(s)
                     db.store.commit()
                     self._updateItem(idx, s)
+                                        
                 dlg.Destroy()
                 
 
@@ -81,7 +104,15 @@ class SearchEngineDlg(wx.Dialog):
                     searches.delete_search(s)
                 self._list.DeleteItem(idx)
                 
-        
+                # resync the default search engine
+                id = options.getIntOption("default_search")
+                if id != -1:
+                    idx = self._list.FindItemData(-1, id)
+                    if idx != wx.NOT_FOUND:
+                        search = db.store.find(searches.Searches, searches.Searches.id == id).one()
+                        self._updateItem(idx, search)
+                
+            
     def _populateSearchEngines(self):
         
         sel = self._list
@@ -91,13 +122,19 @@ class SearchEngineDlg(wx.Dialog):
             index = sel.InsertStringItem(sys.maxint, '')
             sel.SetItemData(index, eng.id)            
             self._updateItem(index, eng)
-            
-            
+                            
+    
     def _updateItem(self, index, eng):
         sel = self._list
         sel.SetStringItem(index, 0, eng.name)
-        sel.SetStringItem(index, 1, eng.url)
+        sel.SetStringItem(index, 2, eng.url)
         
+        id = options.getIntOption("default_search") 
+        if id == eng.id:
+            sel.SetStringItem(index, 1, '*')
+        else:
+            sel.SetStringItem(index, 1, '')
+            
 
     def _onOK(self, event): 
         event.Skip()

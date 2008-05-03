@@ -63,7 +63,7 @@ def delete_search(search):
     db.store.commit()
     
     if find_new:
-        s = db.store.find(Searches).one()
+        s = db.store.find(Searches, Searches.id == search.id).one()
         next_id = -1
         if s:
             next_id = s.id()

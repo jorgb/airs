@@ -53,3 +53,5 @@ class SearchEngineItemDlg(wx.Dialog):
         """
         self._name.SetValue(engine.name)
         self._url.SetValue(engine.url)
+
+            

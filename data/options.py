@@ -21,7 +21,7 @@ def getOption(name):
      return ''
      
 def setOption(name, value):
-     opt = db.store.find(Options, Options.name == name).one()
+     opt = db.store.find(Options, Options.name == unicode(name)).one()
      if opt:
           opt.value = unicode(value)
      else:

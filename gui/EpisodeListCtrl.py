@@ -6,7 +6,7 @@
 
 import wx, sys
 from data import signals, viewmgr, db, series_list, series_filter, appcfg
-from data import searches
+from data import searches, options
 
 from images import whats_new, to_download, \
                    downloading, icon_processed, icon_ready, icon_new
@@ -117,10 +117,34 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._onSelectAll, signals.SELECT_ALL_EPISODES)
         Publisher().subscribe(self._onAppClose, signals.APP_CLOSE)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
+        self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._onItemActivated)
         
         self._syncToday()
 
     
+    def _onItemActivated(self, event):
+        # find search engine to use
+        executed = False
+        id = options.getIntOption("default_search")
+        if id != -1:
+            search = db.store.find(searches.Searches, searches.Searches.id == id).one()
+            if search:
+                self._doExecuteSearch(search)
+                executed = True
+        if not executed:
+            wx.MessageBox("Please specify a default search engine!", "Error",
+                          wx.ICON_ERROR)
+                
+        
+    def _doExecuteSearch(self, search):
+        eps = self.__getSelectedEpisodes()
+        if eps:
+            episode = eps[0]
+            series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
+            url = search.getSearchURL(episode, series)
+            wx.LaunchDefaultBrowser(url)
+        
+                
     def _onAppClose(self, event):
         a = appcfg
         a.options[a.CFG_LAYOUT_COL_NR] = self.GetColumnWidth(0)
@@ -240,13 +264,7 @@ class EpisodeListCtrl(wx.ListCtrl):
             se = self._search_ids[event.GetId()]
         except KeyError:
             return
-        
-        eps = self.__getSelectedEpisodes()
-        if eps:
-            episode = eps[0]
-            series = db.store.find(series_list.Series, series_list.Series.id == episode.series_id).one()
-            url = se.getSearchURL(episode, series)
-            wx.LaunchDefaultBrowser(url)
+        self._doExecuteSearch(se)
             
             
     def __getSelectedEpisodes(self):
