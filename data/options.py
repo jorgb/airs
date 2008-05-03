@@ -15,18 +15,30 @@ class Options(object):
      value = Unicode()
      
 def getOption(name):
-     opt = db.store.find(Options, Options.name == name).one()
+     opt = db.store.find(Options, Options.name == unicode(name)).one()
      if opt:
           return opt.value
+     return ''
      
 def setOption(name, value):
      opt = db.store.find(Options, Options.name == name).one()
      if opt:
-          opt.value = value
+          opt.value = unicode(value)
      else:
           opt = Options()
-          opt.name = name
-          opt.value = value
+          opt.name = unicode(name)
+          opt.value = unicode(value)
           db.store.add(opt)
      
      db.store.commit()
+
+def getIntOption(name, defaultVal = -1):
+     s = getOption(name)
+     if s:
+          try:
+               i = int(s)
+               return i
+          except ValueError:
+               pass
+     return defaultVal
+     

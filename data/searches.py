@@ -7,6 +7,7 @@
 from storm.locals import *
 from storm.locals import SQL
 import re
+from data import options, db
 
 def _encodeText(s):
     l = s.split(' ')
@@ -51,5 +52,20 @@ class Searches(object):
             s = s.replace(str, _encodeText(rep))
         return s
     
-def getDefaultSearch():
-    pass
+
+def delete_search(search):
+    find_new = False
+    id = options.getIntOption("default_search", -1)
+    if id == search.id:
+        find_new = True
+
+    db.store.remove(search)
+    db.store.commit()
+    
+    if find_new:
+        s = db.store.find(Searches).one()
+        next_id = -1
+        if s:
+            next_id = s.id()
+        options.setOption("default_search", str(next_id))
+

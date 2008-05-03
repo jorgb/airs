@@ -78,8 +78,7 @@ class SearchEngineDlg(wx.Dialog):
             if res == wx.YES:                
                 s = db.store.find(searches.Searches, searches.Searches.id == self._list.GetItemData(idx)).one()
                 if s:
-                    db.store.remove(s)
-                    db.store.commit()
+                    searches.delete_search(s)
                 self._list.DeleteItem(idx)
                 
         

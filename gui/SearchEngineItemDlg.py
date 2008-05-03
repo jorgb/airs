@@ -45,7 +45,7 @@ class SearchEngineItemDlg(wx.Dialog):
         """
         engine.name = unicode(self._name.GetValue().strip())
         engine.url = unicode(self._url.GetValue().strip())
-        
+                
         
     def objectToGui(self, engine):
         """
