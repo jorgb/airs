@@ -114,8 +114,13 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._clear, signals.EPISODES_CLEARED)
         Publisher().subscribe(self._onSelectAll, signals.SELECT_ALL_EPISODES)
         Publisher().subscribe(self._onAppClose, signals.APP_CLOSE)
+        
+	# for wxMSW
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
+	# for wxGTK
+        self.Bind(wx.EVT_RIGHT_UP, self._onMenuPopup)
+
         self._syncToday()
 
     
