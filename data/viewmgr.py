@@ -297,7 +297,7 @@ def probe_series():
                     # set it to the lowest possible date
                     if result.aired == "" and episode.aired != "" or result.aired > episode.aired:
                         result.aired = episode.aired
-                        updated = True
+                        updated = True                        
                         
                     if updated:
                         db_changed = True

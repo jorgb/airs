@@ -119,6 +119,13 @@ class EpisodeListCtrl(wx.ListCtrl):
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._onItemActivated)
         
+
+        # for wxMSW
+        self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
+        
+	    # for wxGTK
+        self.Bind(wx.EVT_RIGHT_UP, self._onMenuPopup)
+        
         self._syncToday()
 
     
