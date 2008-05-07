@@ -73,6 +73,8 @@ For full text, see LICENSE.txt
 
 # placeholder for application directory (where script is started from)
 appdir = ''
+# database path
+dbpath = ''
 
 highlightColor = wx.Colour(50, 177, 5)
 max_records    = 300

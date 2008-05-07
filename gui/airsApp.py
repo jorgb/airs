@@ -5,6 +5,7 @@
 #==============================================================================
 
 import os
+from optparse import OptionParser
 
 import wx
 import xmlres
@@ -23,13 +24,15 @@ class AirsApp(wx.App):
         self.SetAppName(appcfg.APP_NAME)
 
         appcfg.Read()
-
+                
         # initialize / create database
         if not os.path.exists(wx.StandardPaths.Get().GetUserDataDir()):
             os.makedirs(wx.StandardPaths.Get().GetUserDataDir())
         
-        dbfile = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), appcfg.DB_NAME)
-        if db.init(dbfile, False) == db.UPGRADE_NEEDED:
+        if not appcfg.dbpath:
+            appcfg.dbpath = os.path.join(wx.StandardPaths.Get().GetUserDataDir(), appcfg.DB_NAME)
+            
+        if db.init(appcfg.dbpath, False) == db.UPGRADE_NEEDED:
             res = wx.MessageBox("The database needs upgrading. Please backup the file:\n" + \
                                 dbfile + "\n" + "And press YES to upgrade, NO to close the application",
                                 "Warning", wx.ICON_WARNING | wx.YES_NO)

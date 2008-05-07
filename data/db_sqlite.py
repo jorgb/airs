@@ -23,7 +23,7 @@ create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR,
                       seen INTEGER);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
-create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR);
+create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
 create table options (id integer primary key, name varchar, value varchar);
 update version set version=4, updated_on="%(date)s" where id=1;
 insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
