@@ -13,6 +13,7 @@ EP_TO_DOWNLOAD = 1
 EP_DOWNLOADING = 2
 EP_READY       = 3
 EP_PROCESSED   = 4
+EP_DOWNLOADED  = 5
 
 # period definitions
 # > 0 = custom days

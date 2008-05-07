@@ -7,7 +7,7 @@ from data import series_filter, signals, series_list
 
 from images import whats_new, whats_on, to_download, \
                    downloading, all_series, \
-                   where_queue
+                   where_queue, icon_downloaded
 
 class ViewSelectPanel(wx.Panel):
 
@@ -126,6 +126,7 @@ class ViewSelectPanel(wx.Panel):
         self._icons.Add(downloading.getBitmap())     #3
         self._icons.Add(all_series.getBitmap())      #4
         self._icons.Add(where_queue.getBitmap())     #5
+        self._icons.Add(icon_downloaded.getBitmap()) #6
         sel.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
 
         lst = [ ("All Series", 4, series_filter.VIEW_SERIES),
@@ -133,6 +134,7 @@ class ViewSelectPanel(wx.Panel):
                 ("What's Aired", 1, series_filter.VIEW_WHATS_ON),
                 ("To Download ...", 2, series_filter.VIEW_TO_DOWNLOAD),
                 ("Downloading ...", 3, series_filter.VIEW_DOWNLOADING),
+                ("Downloaded ...", 6, series_filter.VIEW_DOWNLOADED),
                 ("Find Episode(s) ...", 5, series_filter.VIEW_QUEUES)
                             
             ]

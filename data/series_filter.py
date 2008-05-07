@@ -28,6 +28,7 @@ VIEW_TO_DOWNLOAD = 2
 VIEW_DOWNLOADING = 3
 VIEW_SERIES      = 4
 VIEW_QUEUES      = 5
+VIEW_DOWNLOADED  = 6
 
 class SeriesSelectionList(object):
     def __init__(self):
@@ -142,7 +143,10 @@ class SeriesSelectionList(object):
                 result = db.store.find(series_list.Episode)
             else:
                 result = list()
-            
+        elif self._view_type == VIEW_DOWNLOADED:
+            # we restore all episodes that are queued
+            result = db.store.find(series_list.Episode, 
+                                   series_list.Episode.status == series_list.EP_DOWNLOADED)
         else:
             # restore the episode list belonging to this series_id
             if self._show_only_unseen:
@@ -214,6 +218,10 @@ class SeriesSelectionList(object):
         #       episode.status == series_list.EP_PROCESSED:
         #        return False
             
+        if self._view_type == VIEW_DOWNLOADED and \
+           episode.status != series_list.EP_DOWNLOADED:
+            return False
+        
         if self._view_type == VIEW_TO_DOWNLOAD and \
            episode.status != series_list.EP_TO_DOWNLOAD:
             return False

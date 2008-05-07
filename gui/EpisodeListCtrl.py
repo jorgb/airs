@@ -9,7 +9,8 @@ from data import signals, viewmgr, db, series_list, series_filter, appcfg
 from data import searches, options
 
 from images import whats_new, to_download, \
-                   downloading, icon_processed, icon_ready, icon_new
+                   downloading, icon_processed, icon_ready, icon_new, \
+                   icon_downloaded
 
 from wx.lib.pubsub import Publisher
 import datetime
@@ -108,7 +109,9 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._stat_to_icon[series_list.EP_PROCESSED] = self._icons.Add(icon_processed.getBitmap())
         self._stat_to_icon[series_list.EP_TO_DOWNLOAD] = self._icons.Add(to_download.getBitmap())
         self._stat_to_icon[series_list.EP_READY] = self._icons.Add(icon_ready.getBitmap())
-        self.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
+        self._stat_to_icon[series_list.EP_DOWNLOADED] = self._icons.Add(icon_downloaded.getBitmap())
+
+	self.SetImageList(self._icons, wx.IMAGE_LIST_SMALL)
         
         Publisher().subscribe(self._add, signals.EPISODE_ADDED)
         Publisher().subscribe(self._delete, signals.EPISODE_DELETED)
@@ -191,6 +194,7 @@ class EpisodeListCtrl(wx.ListCtrl):
             st_to_download = False
             st_downloading = False
             st_series = False
+	    st_downloaded = False
             
             if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW or \
                viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON:
@@ -206,17 +210,22 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onSetDownloading, 
                           menu.Append(wx.NewId(),"Add to Downloading"))
                 st_to_download = True
-
+				
             if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADING:
+                self.Bind(wx.EVT_MENU, self._onSetDownloaded, 
+                          menu.Append(wx.NewId(),"Add to Downloaded"))
+                st_to_download = True
+		
+            if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADED:
                 self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          menu.Append(wx.NewId(),"Remove from Download"))
-                st_downloading = True
-                
-            if viewmgr._series_sel._view_type == series_filter.VIEW_SERIES:
+                          menu.Append(wx.NewId(),"Mark as Ready"))
+                st_downloaded = True		
+		
+	    if viewmgr._series_sel._view_type == series_filter.VIEW_SERIES:
                 self.Bind(wx.EVT_MENU, self._onSetReady, 
                           menu.Append(wx.NewId(),"Set as Ready"))
                 self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          menu.Append(wx.NewId(),"Set as Processed"))
+                          menu.Append(wx.NewId(),"Set as Processed / Seen"))
                 st_series = True
                 
             # show search engine list only with single selection
@@ -244,18 +253,27 @@ class EpisodeListCtrl(wx.ListCtrl):
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                 menu.AppendSeparator()
             
+	    statusmenu = wx.Menu()
+	    
             if not st_changed:
                 self.Bind(wx.EVT_MENU, self._onSetToDownload, 
-                          menu.Append(wx.NewId(), "&Mark as To Download"))
+                          statusmenu.Append(wx.NewId(), "&To Download"))
             if not st_to_download:
                 self.Bind(wx.EVT_MENU, self._onSetDownloading, 
-                          menu.Append(wx.NewId(), "&Mark as Downloading"))
-            if not st_downloading and not st_series:
+                          statusmenu.Append(wx.NewId(), "&Downloading"))
+            if not st_downloaded:
+                self.Bind(wx.EVT_MENU, self._onSetDownloaded, 
+                          statusmenu.Append(wx.NewId(), "Down&loaded"))
+
+	    if not st_downloaded:
                 self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          menu.Append(wx.NewId(), "&Mark as Ready"))
-                self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          menu.Append(wx.NewId(), "&Mark as Processed"))
+                          statusmenu.Append(wx.NewId(), "&Ready"))
+	    if not st_series:
+		self.Bind(wx.EVT_MENU, self._onSetProcessed, 
+                          statusmenu.Append(wx.NewId(), "&Processed / Seen"))
             
+	    menu.AppendMenu(wx.NewId(), "Mark Episode(s) As ...", statusmenu)
+		
             self.PopupMenu(menu)
             menu.Destroy()   
                     
@@ -293,7 +311,14 @@ class EpisodeListCtrl(wx.ListCtrl):
             db.store.commit()
             viewmgr.episode_updated(episode)
 
-            
+    def _onSetDownloaded(self, event):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = series_list.EP_DOWNLOADED
+            episode.changed = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+
     def _onSetDownloading(self, event):
         episodes = self.__getSelectedEpisodes()
         for episode in episodes:
