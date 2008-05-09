@@ -12,7 +12,7 @@ APP_TITLE           = "Airs:: Automatic Series Monitor"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
-APP_VERSION         = "1.1b"
+APP_VERSION         = "1.1"
 
 # the name of the default database
 DB_NAME             = 'series.db'
