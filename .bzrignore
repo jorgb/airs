@@ -7,3 +7,6 @@ doc/export
 setup/Airs-Src.exe
 setup/Airs-Setup.exe
 setup/airs.tar.gz
+*.deb
+*.dsc
+*.changes

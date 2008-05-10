@@ -1,0 +1,12 @@
+Source: airs
+Section: utilities
+Priority: optional
+Maintainer: Jorgen Bodde <jorgb@xs4all.nl>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: airs
+Architecture: any
+Depends: python-wxgtk2.8 (>= 2.8.7.1-0ubuntu3), python-storm (>= 0.12-0ubuntu1), python-beautifulsoup (>= 3.0.4-1build1)
+Description: Airs is an automatic series monitor
+ With airs you can monitor your favorite series, check out when new episodes arrive and search for them with ease. Airs supports life time management for your episode, so you know exactly which ones you still have to watch.
