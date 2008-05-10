@@ -478,9 +478,9 @@ class AirsFrame(wx.Frame):
         info.Name = appcfg.APP_TITLE
         info.Version = "v%s" % appcfg.APP_VERSION
         if not appcfg.APP_VENDOR:
-            info.Copyright = "(C) 2007 %s" % appcfg.APP_AUTHOR
+            info.Copyright = "(C) 2008 %s" % appcfg.APP_AUTHOR
         else:
-            info.Copyright = "(C) 2007 %s, %s" % (appcfg.APP_AUTHOR, appcfg.APP_VENDOR)
+            info.Copyright = "(C) 2008 %s, %s" % (appcfg.APP_AUTHOR, appcfg.APP_VENDOR)
         info.Description = wordwrap(appcfg.description, 350, wx.ClientDC(self))
         info.WebSite = (appcfg.SITE_URL[0], appcfg.SITE_URL[1])
         authorstr = appcfg.APP_AUTHOR

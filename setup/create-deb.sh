@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ..
+
 # delete all the python compiled files, and backup files
 find -name "*.pyc" -exec rm '{}' \;
 find -name "*.*~" -exec rm '{}' \;
@@ -9,9 +11,7 @@ find -name "*.bak" -exec rm '{}' \;
 rm -rf build
 mkdir build
 
-rm -f setup/*.deb
-rm -f setup/*.changes
-rm -f setup/*.dsc
+rm -rf setup/build-ubuntu
 
 cp airs.py build
 cp airs.ico build
@@ -56,10 +56,14 @@ sudo dpkg-buildpackage -d
 
 cd ..
 
-mv -f *.deb ../setup
-mv -f *.dsc ../setup
-mv -f *.changes ../setup
+mkdir -p ../setup/build-ubuntu
+mv -f *.deb ../setup/build-ubuntu
+mv -f *.dsc ../setup/build-ubuntu
+mv -f *.changes ../setup/build-ubuntu
 
 cd ..
 
 sudo rm -rf build
+
+bzr export airs.tar.gz 
+mv airs.tar.gz setup/build-ubuntu

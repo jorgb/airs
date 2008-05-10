@@ -10,3 +10,4 @@ setup/airs.tar.gz
 *.deb
 *.dsc
 *.changes
+setup/build-ubuntu
