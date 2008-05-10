@@ -1,0 +1,12 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Categories=Utility
+Icon[en_US]=/usr/share/apps/airs/airs.ico
+Name[en_US]=Airs
+Exec=/usr/bin/airs
+Name=Airs
+Icon=/usr/share/apps/airs/airs.ico

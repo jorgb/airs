@@ -1,0 +1,2 @@
+Open changelog, change version number and append change log
+Open create-deb.sh and change version number of dir to copy files in
