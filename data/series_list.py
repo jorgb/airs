@@ -7,6 +7,7 @@
 from storm.locals import *
 from storm.locals import SQL
 import datetime
+import pickle
 
 EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
@@ -23,7 +24,7 @@ EP_DOWNLOADED  = 5
 min_period = -9
 period_trans  = { -1: "monday",   -2: "tuesday",   -3: "wednesday",
                   -4: "thursday", -5: "friday",    -6: "saturday",
-                  -7: "sunday", -8: "bi-weekly", -9: "monthly" }
+                  -7: "sunday",   -8: "bi-weekly", -9: "monthly" }
 period_custom = ( -999, "custom" )
 
 #
@@ -93,6 +94,7 @@ class Episode(object):
     status = Int()                # status of episode
     changed = Int()
     series_id = Int()             # id of series table entry
+    prio_entries = Unicode()      # not to be used directly
         
     def __init__(self):
         self.title = u""
@@ -102,8 +104,31 @@ class Episode(object):
         self.last_update = u""
         self.status = EP_READY
         self.changed = 0 
+        self.__priorities = dict()
             
 
+    def __storm_loaded__(self):
+        if self.prio_entries != "":
+            self.__priorities = pickle.loads(self.prio_entries)
+        
+        
+    def getPriority(self, key):
+        """
+        Returns priority setting of this episode
+        """
+        if key in self.__priorities:
+            return self.__priorities[key]
+        return 0
+        
+
+    def setPriority(self, key, value):
+        """
+        Set priority setting of this episode
+        """
+        self.__priorities[key] = int(value)
+        self.prio_entries = pickle.dumps(self.__priorities)
+        
+    
     def setAired(self, d):
         """
         Sets date

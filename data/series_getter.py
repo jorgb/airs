@@ -136,6 +136,7 @@ class EpGuidesSeriesDownloadCmd(object):
                                     pass
                 
                 # add episode
+                episode.setPriority("aired", 2)
                 episode.series_id = self._series.id                                                
                 self._series.episodes.append(episode)
 
@@ -243,6 +244,7 @@ class TvComSeriesDownloadCmd(object):
                         date_txt = txt[0].strip()
                         episode.aired = unicode(_parseTvComDate(date_txt))
                 
+                episode.setPriority("aired", 1)
                 self._series.episodes.append( episode )
         
         self.__log.put("Parsing complete!")

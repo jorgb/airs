@@ -16,6 +16,17 @@ from Queue import Queue
 import time
 import series_getter
 
+def getPrioFromURL(url):
+    """
+    Returns priority of the URL ranked by most reliability
+    The lower the number, the better confidence 
+    """
+    if url.startswith("http://www.tv.com"):
+        return 1
+    elif url.startswith("http://epguides.com"):
+        return 2
+    return 0
+    
 
 class SeriesQueueItem(object):
     def __init__(self, series_id, series_name, series_url):

@@ -293,10 +293,11 @@ def probe_series():
                     if result.season == '' and episode.season != '':
                         result.season = unicode(episode.season)
                         updated = True
-                    # resolve policy; when aired date is too far in the future, we 
-                    # set it to the lowest possible date
-                    if result.aired == "" and episode.aired != "" or result.aired > episode.aired:
+                    # resolve policy
+                    if (result.aired == "" and episode.aired != "") or \
+                       (result.getPriority("aired") < episode.getPriority("aired")):
                         result.aired = episode.aired
+                        result.setPriority("aired", episode.getPriority("aired"))
                         updated = True                        
                         
                     if updated:
