@@ -20,7 +20,7 @@ CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR,
 create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, 
                       season VARCHAR, aired VARCHAR, last_update VARCHAR, 
                       status INTEGER,  series_id INTEGER, changed INTEGER, 
-                      seen INTEGER);
+                      seen INTEGER, prio_entries VARCHAR);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
 create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
@@ -69,6 +69,13 @@ update series set notes="";
 update episode set seen=0;
 """
 
+#-------------------------------------------------------------------------------
+# upgrade script for v4 to v3
+
+upgr_v3_v4 = """\
+alter table episode add prio_entries VARCHAR;
+update episode set prio_entries="";
+"""
 
 #-------------------------------------------------------------------------------
 
