@@ -107,6 +107,13 @@ def series_active():
            _series_sel._view_type == series_filter.VIEW_SERIES
 
 
+def edit_episode(episode_id):
+    """
+    Publishes a signal to edit the episode
+    """
+    Publisher().sendMessage(signals.EPISODE_EDIT, episode_id);
+    
+
 def add_series(series):
     """ 
     Add this new series object to the database, and emit signal that

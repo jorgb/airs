@@ -95,6 +95,7 @@ class Episode(object):
     changed = Int()
     series_id = Int()             # id of series table entry
     prio_entries = Unicode()      # not to be used directly
+    new = Int()
         
     def __init__(self):
         self.title = u""
@@ -105,6 +106,7 @@ class Episode(object):
         self.status = EP_READY
         self.changed = 0 
         self.__priorities = dict()
+        self.new = 0
             
 
     def __storm_loaded__(self):

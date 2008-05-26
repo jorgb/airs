@@ -941,7 +941,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@<
             </object>
         </object>
     </object>
-    <object class="wxDialog" name="ID_EPISODEEDITDLG" subclass="EpisodeEditDlg">
+    <object class="wxDialog" name="EpisodeEditDlg" subclass="EpisodeEditDlg">
         <style>wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxTAB_TRAVERSAL</style>
         <exstyle>wxWS_EX_BLOCK_EVENTS</exstyle>
         <size>400,300</size>

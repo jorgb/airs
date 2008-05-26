@@ -109,12 +109,14 @@ class AirsFrame(wx.Frame):
         mnu.AppendItem(self._menuClearCache)    
         self._menuBar.Append(mnu, "&Series")
 
-
         # Episode menu
         mnu = wx.Menu()
         self._menuSelectAll = wx.MenuItem(mnu, wx.NewId(), "&Select All\tCtrl+A", 
                                           "Select all episodes", wx.ITEM_NORMAL)
         mnu.AppendItem(self._menuSelectAll)
+        #self._menuEditSe = wx.MenuItem(mnu, wx.NewId(), "&Edit ...", 
+        #                                  "Edit Episode", wx.ITEM_NORMAL)
+        #mnu.AppendItem(self._menuSelectAll)
 
         mnu.AppendSeparator()
         

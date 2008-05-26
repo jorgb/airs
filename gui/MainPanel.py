@@ -11,6 +11,7 @@ from data import appcfg, viewmgr, signals
 import xmlres
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
+import EpisodeEditDlg
 
 class MainPanel(wx.Panel):
 
@@ -72,7 +73,18 @@ class MainPanel(wx.Panel):
         Publisher().subscribe(self._onSerieSelected, signals.SERIES_SELECT)
         Publisher().subscribe(self._onSerieUpdated, signals.SERIES_UPDATED)
         Publisher().subscribe(self._onViewChanged, signals.SET_VIEW)
+        Publisher().subscribe(self._onEditEpisode, signals.EPISODE_EDIT)
                               
+        
+    def _onEditEpisode(self, msg):
+        episode_id = msg.data
+        episode = db.store.find(series_list.Episode, series_list.Episode.id == episode_id).one()
+        if episode is not None:
+            dlg = EpisodeEditDlg.EpisodeEditDlg(self)
+            if dlg.ShowModal() == wx.ID_OK:
+                pass
+            dlg.Destroy()
+            
         
     def _onViewChanged(self, msg):
         view = msg.data

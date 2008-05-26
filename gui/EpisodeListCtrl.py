@@ -250,6 +250,9 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onEditSeries, 
                           menu.Append(wx.NewId(), "Edit Series ..."))
                 
+		self.Bind(wx.EVT_MENU, self._onEditEpisode, 
+			  menu.Append(wx.NewId(), "Edit Episode ..."))
+                
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                 menu.AppendSeparator()
             
@@ -278,6 +281,12 @@ class EpisodeListCtrl(wx.ListCtrl):
             menu.Destroy()   
                     
            
+    def _onEditEpisode(self, event):
+        eps = self.__getSelectedEpisodes()
+        if eps:
+            viewmgr.edit_episode(eps[0].id)
+    
+	    
     def _onEditSeries(self, event):
         eps = self.__getSelectedEpisodes()
         if eps:
