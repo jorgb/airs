@@ -4208,14 +4208,6 @@ http://www.tv.com/supernatural/show/30144/summary.html
             <string name="proxy-type">"wbBoxSizerProxy"</string>
             <string name="proxy-Orientation">"Vertical"</string>
             <string name="proxy-Member variable name">""</string>
-            <string name="proxy-AlignH">"Centre"</string>
-            <string name="proxy-AlignV">"Centre"</string>
-            <long name="proxy-Stretch factor">0</long>
-            <long name="proxy-Border">5</long>
-            <bool name="proxy-wxLEFT">1</bool>
-            <bool name="proxy-wxRIGHT">1</bool>
-            <bool name="proxy-wxTOP">1</bool>
-            <bool name="proxy-wxBOTTOM">1</bool>
             <bool name="proxy-wxSHAPED">0</bool>
             <bool name="proxy-wxADJUST_MINSIZE">0</bool>
             <bool name="proxy-wxFIXED_MINSIZE">0</bool>
@@ -4946,7 +4938,7 @@ http://www.tv.com/supernatural/show/30144/summary.html
                 <string name="proxy-Implementation filename">""</string>
                 <string name="proxy-Header filename">""</string>
                 <string name="proxy-Member variable name">""</string>
-                <string name="proxy-Label">"Processed Episode"</string>
+                <string name="proxy-Label">"Seen Episode"</string>
                 <long name="proxy-Wrapping width">-1</long>
                 <string name="proxy-Help text">""</string>
                 <string name="proxy-Tooltip text">""</string>
@@ -7999,7 +7991,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <string name="proxy-Implementation filename">""</string>
                 <string name="proxy-Header filename">""</string>
                 <string name="proxy-Member variable name">""</string>
-                <string name="proxy-Label">"Season"</string>
+                <string name="proxy-Label">"Season (SnnEnn)"</string>
                 <long name="proxy-Wrapping width">-1</long>
                 <string name="proxy-Help text">""</string>
                 <string name="proxy-Tooltip text">""</string>
@@ -8119,7 +8111,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <string name="proxy-Custom ctor arguments">""</string>
               </document>
               <document>
-                <string name="title">"wxTextCtrl: ID_TEXTCTRL"</string>
+                <string name="title">"wxTextCtrl: ID_SEASON"</string>
                 <string name="type">"dialog-control-document"</string>
                 <string name="filename">""</string>
                 <string name="icon-name">"textctrl"</string>
@@ -8129,7 +8121,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <long name="locked">0</long>
                 <string name="created">"21/5/2008"</string>
                 <string name="proxy-type">"wbTextCtrlProxy"</string>
-                <string name="proxy-Id name">"ID_TEXTCTRL"</string>
+                <string name="proxy-Id name">"ID_SEASON"</string>
                 <long name="proxy-Id value">10037</long>
                 <string name="proxy-Name">""</string>
                 <string name="proxy-Class">"wxTextCtrl"</string>
@@ -8201,7 +8193,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <string name="proxy-Custom ctor arguments">""</string>
               </document>
               <document>
-                <string name="title">"wxTextCtrl: ID_TEXTCTRL1"</string>
+                <string name="title">"wxTextCtrl: ID_TITLE"</string>
                 <string name="type">"dialog-control-document"</string>
                 <string name="filename">""</string>
                 <string name="icon-name">"textctrl"</string>
@@ -8211,7 +8203,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <long name="locked">0</long>
                 <string name="created">"21/5/2008"</string>
                 <string name="proxy-type">"wbTextCtrlProxy"</string>
-                <string name="proxy-Id name">"ID_TEXTCTRL1"</string>
+                <string name="proxy-Id name">"ID_TITLE"</string>
                 <long name="proxy-Id value">10038</long>
                 <string name="proxy-Name">""</string>
                 <string name="proxy-Class">"wxTextCtrl"</string>
@@ -8378,7 +8370,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <bool name="proxy-wxFIXED_MINSIZE">0</bool>
                 <string name="proxy-Platform">"&lt;Any platform&gt;"</string>
                 <document>
-                  <string name="title">"wxDatePickerCtrl: ID_DATECTRL"</string>
+                  <string name="title">"wxDatePickerCtrl: ID_AIRED"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"spinctrl"</string>
@@ -8388,7 +8380,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <long name="locked">0</long>
                   <string name="created">"21/5/2008"</string>
                   <string name="proxy-type">"wbDatePickerCtrlProxy"</string>
-                  <string name="proxy-Id name">"ID_DATECTRL"</string>
+                  <string name="proxy-Id name">"ID_AIRED"</string>
                   <long name="proxy-Id value">10039</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxDatePickerCtrl"</string>
@@ -8449,7 +8441,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <string name="proxy-Custom ctor arguments">""</string>
                 </document>
                 <document>
-                  <string name="title">"wxCheckBox: ID_CHECKBOX"</string>
+                  <string name="title">"wxCheckBox: ID_LOCK_UPDATE"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"checkbox"</string>
@@ -8459,7 +8451,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <long name="locked">0</long>
                   <string name="created">"21/5/2008"</string>
                   <string name="proxy-type">"wbCheckBoxProxy"</string>
-                  <string name="proxy-Id name">"ID_CHECKBOX"</string>
+                  <string name="proxy-Id name">"ID_LOCK_UPDATE"</string>
                   <long name="proxy-Id value">10040</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxCheckBox"</string>
@@ -8469,7 +8461,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <string name="proxy-Implementation filename">""</string>
                   <string name="proxy-Header filename">""</string>
                   <string name="proxy-Member variable name">""</string>
-                  <string name="proxy-Label">"Lock Date"</string>
+                  <string name="proxy-Label">"Lock Updates"</string>
                   <bool name="proxy-Initial value">0</bool>
                   <string name="proxy-Help text">""</string>
                   <string name="proxy-Tooltip text">""</string>
@@ -8609,7 +8601,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                 <bool name="proxy-wxFIXED_MINSIZE">0</bool>
                 <string name="proxy-Platform">"&lt;Any platform&gt;"</string>
                 <document>
-                  <string name="title">"wxChoice: ID_CHOICE"</string>
+                  <string name="title">"wxChoice: ID_STATUS"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"choice"</string>
@@ -8619,7 +8611,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <long name="locked">0</long>
                   <string name="created">"21/5/2008"</string>
                   <string name="proxy-type">"wbChoiceProxy"</string>
-                  <string name="proxy-Id name">"ID_CHOICE"</string>
+                  <string name="proxy-Id name">"ID_STATUS"</string>
                   <long name="proxy-Id value">10041</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxChoice"</string>
@@ -8669,7 +8661,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <string name="proxy-Custom ctor arguments">""</string>
                 </document>
                 <document>
-                  <string name="title">"wxCheckBox: ID_CHECKBOX1"</string>
+                  <string name="title">"wxCheckBox: ID_UPDATED"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"checkbox"</string>
@@ -8679,7 +8671,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <long name="locked">0</long>
                   <string name="created">"21/5/2008"</string>
                   <string name="proxy-type">"wbCheckBoxProxy"</string>
-                  <string name="proxy-Id name">"ID_CHECKBOX1"</string>
+                  <string name="proxy-Id name">"ID_UPDATED"</string>
                   <long name="proxy-Id value">10042</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxCheckBox"</string>
@@ -8733,7 +8725,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <string name="proxy-Custom ctor arguments">""</string>
                 </document>
                 <document>
-                  <string name="title">"wxCheckBox: ID_CHECKBOX2"</string>
+                  <string name="title">"wxCheckBox: ID_NEW"</string>
                   <string name="type">"dialog-control-document"</string>
                   <string name="filename">""</string>
                   <string name="icon-name">"checkbox"</string>
@@ -8743,7 +8735,7 @@ http://www.newzleech.com/?mode=usenet&amp;q=@series@+@season__nr@+@episode__nr@"
                   <long name="locked">0</long>
                   <string name="created">"21/5/2008"</string>
                   <string name="proxy-type">"wbCheckBoxProxy"</string>
-                  <string name="proxy-Id name">"ID_CHECKBOX2"</string>
+                  <string name="proxy-Id name">"ID_NEW"</string>
                   <long name="proxy-Id value">10043</long>
                   <string name="proxy-Name">""</string>
                   <string name="proxy-Class">"wxCheckBox"</string>

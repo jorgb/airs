@@ -13,7 +13,7 @@ EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
 EP_DOWNLOADING = 2
 EP_READY       = 3
-EP_PROCESSED   = 4
+EP_SEEN        = 4
 EP_DOWNLOADED  = 5
 
 # period definitions
@@ -96,6 +96,7 @@ class Episode(object):
     series_id = Int()             # id of series table entry
     prio_entries = Unicode()      # not to be used directly
     new = Int()
+    locked = Int()
         
     def __init__(self):
         self.title = u""
@@ -106,6 +107,7 @@ class Episode(object):
         self.status = EP_READY
         self.changed = 0 
         self.__priorities = dict()
+        self.locked = 0
         self.new = 0
             
 
@@ -136,7 +138,7 @@ class Episode(object):
         Sets date
         """
         if d:
-            self.aired = unicode("%04i%02i%02" % (d.year, d.month, d.day))
+            self.aired = unicode("%04i%02i%02i" % (d.year, d.month, d.day))
         else:
             self.aired = unicode('')
     

@@ -106,7 +106,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._stat_to_icon = dict()
         self._stat_to_icon[series_list.EP_NEW] = self._icons.Add(icon_new.getBitmap())
         self._stat_to_icon[series_list.EP_DOWNLOADING] = self._icons.Add(downloading.getBitmap())
-        self._stat_to_icon[series_list.EP_PROCESSED] = self._icons.Add(icon_processed.getBitmap())
+        self._stat_to_icon[series_list.EP_SEEN] = self._icons.Add(icon_processed.getBitmap())
         self._stat_to_icon[series_list.EP_TO_DOWNLOAD] = self._icons.Add(to_download.getBitmap())
         self._stat_to_icon[series_list.EP_READY] = self._icons.Add(icon_ready.getBitmap())
         self._stat_to_icon[series_list.EP_DOWNLOADED] = self._icons.Add(icon_downloaded.getBitmap())
@@ -225,7 +225,7 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onSetReady, 
                           menu.Append(wx.NewId(),"Set as Ready"))
                 self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          menu.Append(wx.NewId(),"Set as Processed / Seen"))
+                          menu.Append(wx.NewId(),"Set as Seen"))
                 st_series = True
                 
             # show search engine list only with single selection
@@ -273,7 +273,7 @@ class EpisodeListCtrl(wx.ListCtrl):
                           statusmenu.Append(wx.NewId(), "&Ready"))
 	    if not st_series:
 		self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          statusmenu.Append(wx.NewId(), "&Processed / Seen"))
+                          statusmenu.Append(wx.NewId(), "&Seen"))
             
 	    menu.AppendMenu(wx.NewId(), "Mark Episode(s) As ...", statusmenu)
 		
@@ -350,7 +350,7 @@ class EpisodeListCtrl(wx.ListCtrl):
     def _onSetProcessed(self, event):
         episodes = self.__getSelectedEpisodes()
         for episode in episodes:
-            episode.status = series_list.EP_PROCESSED
+            episode.status = series_list.EP_SEEN
             episode.changed = 0
             db.store.commit()
             viewmgr.episode_updated(episode)

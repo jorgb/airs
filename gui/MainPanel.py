@@ -81,11 +81,14 @@ class MainPanel(wx.Panel):
         episode = db.store.find(series_list.Episode, series_list.Episode.id == episode_id).one()
         if episode is not None:
             dlg = EpisodeEditDlg.EpisodeEditDlg(self)
+            dlg.ObjectToGui(episode)            
             if dlg.ShowModal() == wx.ID_OK:
-                pass
+                dlg.GuiToObject(episode)
+                db.store.commit()
+                viewmgr.episode_updated(episode)
             dlg.Destroy()
             
-        
+            
     def _onViewChanged(self, msg):
         view = msg.data
         if view != series_filter.VIEW_SERIES:
