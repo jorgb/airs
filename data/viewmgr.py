@@ -181,6 +181,7 @@ def get_all_series(manual = False):
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     ignored = 0
     sent = 0
+    td = datetime.date.today() 
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
         if series.postponed != 0:
@@ -193,8 +194,7 @@ def get_all_series(manual = False):
             upd = series.update_period 
             if upd < 0:
                 # we have to check if the weekday is today
-                # and we haven't checked today yet
-                td = datetime.date.today()                
+                # and we haven't checked today yet               
                 if upd > -8:
                     delta = td - d
                     if delta.days <= 7 and delta.days > 0:
@@ -293,26 +293,27 @@ def probe_series():
                 else:
                     # we found the episode, we will update only certain parts
                     # if they are updated properly, we willl inform and update the DB
-                    updated = False
-                    if result.title == '' and episode.title != '':
-                        result.title = unicode(episode.title)
-                        updated = True
-                    if result.season == '' and episode.season != '':
-                        result.season = unicode(episode.season)
-                        updated = True
-                    # resolve policy
-                    if (result.aired == "" and episode.aired != "") or \
-                       (result.getPriority("aired") < episode.getPriority("aired")):
-                        result.aired = episode.aired
-                        result.setPriority("aired", episode.getPriority("aired"))
-                        updated = True                        
-                        
-                    if updated:
-                        db_changed = True
-                        result.changed = 1
-                        result.setLastUpdate()
-                        _series_sel.filterEpisode(result, updated = True)
-        
+                    if result.locked == 0:
+                        updated = False
+                        if result.title == '' and episode.title != '':
+                            result.title = unicode(episode.title)
+                            updated = True
+                        if result.season == '' and episode.season != '':
+                            result.season = unicode(episode.season)
+                            updated = True
+                        # resolve policy
+                        if (result.aired == "" and episode.aired != "") or \
+                           (result.getPriority("aired") < episode.getPriority("aired")):
+                            result.aired = episode.aired
+                            result.setPriority("aired", episode.getPriority("aired"))
+                            updated = True                        
+                            
+                        if updated:
+                            db_changed = True
+                            result.changed = 1
+                            result.setLastUpdate()
+                            _series_sel.filterEpisode(result, updated = True)
+            
             # all changes are committed here
             if db_changed:
                 db.store.commit()

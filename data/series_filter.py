@@ -132,7 +132,8 @@ class SeriesSelectionList(object):
             result = db.store.find(series_list.Episode, 
                                    series_list.Episode.aired != unicode(""),
                                    series_list.Episode.aired <= unicode(self._today),
-                                   series_list.Episode.aired > unicode(bottom_str))
+                                   series_list.Episode.aired > unicode(bottom_str),
+                                   series_list.Episode.new != 0)
             # narrow list
             result = [ ep for ep in result if ep.status != series_list.EP_SEEN and \
                                               ep.status != series_list.EP_TO_DOWNLOAD and \
@@ -211,6 +212,8 @@ class SeriesSelectionList(object):
             if episode.aired == "" or episode.aired > self._today:
                 return False
             if episode.status != series_list.EP_READY and episode.status != series_list.EP_NEW:
+                return False
+            if episode.new == 0:
                 return False
            
         #if self._view_type == VIEW_QUEUES:

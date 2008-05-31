@@ -311,51 +311,29 @@ class EpisodeListCtrl(wx.ListCtrl):
             idx = self.GetNextSelected(idx)
         return episodes
             
-            
+    def _doSetStatus(self, status):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = status
+            episode.changed = 0
+	    episode.new = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+	    
     def _onSetToDownload(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_TO_DOWNLOAD
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
+	self._doSetStatus(series_list.EP_TO_DOWNLOAD)
+	
     def _onSetDownloaded(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_DOWNLOADED
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+	self._doSetStatus(series_list.EP_DOWNLOADED)
 
     def _onSetDownloading(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_DOWNLOADING
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
+	self._doSetStatus(series_list.EP_DOWNLOADING)
             
     def _onSetReady(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_READY
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-        pass
-
+	self._doSetStatus(series_list.EP_READY)
     
     def _onSetProcessed(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_SEEN
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-        pass
-            
+	self._doSetStatus(series_list.EP_SEEN)            
     
     def _add(self, msg):
         """

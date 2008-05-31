@@ -27,6 +27,24 @@ period_trans  = { -1: "monday",   -2: "tuesday",   -3: "wednesday",
                   -7: "sunday",   -8: "bi-weekly", -9: "monthly" }
 period_custom = ( -999, "custom" )
 
+def prio_to_string(priorities):
+    s = ''
+    for key in priorities:
+        if s != '':
+            s += '|'
+        s += '%s:%i' % (key, priorities[key])
+    return s
+
+
+def string_to_prio(s):
+    prios = dict()
+    lst = s.split('|')
+    for item in lst:
+        s1, s2 = item.split(':')
+        prios[s1] = int(s2)
+    return prios
+        
+
 #
 # Module that contains functionality
 # to store a number of series and functionality
@@ -106,22 +124,25 @@ class Episode(object):
         self.last_update = u""
         self.status = EP_READY
         self.changed = 0 
-        self.__priorities = dict()
         self.locked = 0
         self.new = 0
+        self.priorities = dict()
             
 
     def __storm_loaded__(self):
+        self.priorities = dict()
         if self.prio_entries != "":
-            self.__priorities = pickle.loads(self.prio_entries)
+            prios = string_to_prio(self.prio_entries)
+            for key in prios:
+                self.priorities[key] = prios[key]
         
         
     def getPriority(self, key):
         """
         Returns priority setting of this episode
         """
-        if key in self.__priorities:
-            return self.__priorities[key]
+        if key in self.priorities:
+            return self.priorities[key]
         return 0
         
 
@@ -129,8 +150,8 @@ class Episode(object):
         """
         Set priority setting of this episode
         """
-        self.__priorities[key] = int(value)
-        self.prio_entries = pickle.dumps(self.__priorities)
+        self.priorities[key] = int(value)
+        self.prio_entries = unicode(prio_to_string(self.priorities))
         
     
     def setAired(self, d):
