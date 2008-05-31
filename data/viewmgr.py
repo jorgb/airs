@@ -306,6 +306,7 @@ def probe_series():
                            (result.getPriority("aired") < episode.getPriority("aired")):
                             result.aired = episode.aired
                             result.setPriority("aired", episode.getPriority("aired"))
+                            result.new = 1
                             updated = True                        
                             
                         if updated:
