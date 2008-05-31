@@ -20,6 +20,8 @@ import appcfg
 import db
 import datetime
 
+from webserver import db_conv_xml
+
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
 
@@ -152,6 +154,9 @@ def set_selection(series):
             _series_sel.setView(series_filter.VIEW_SERIES)
         else:
             _series_sel.setSelection(series.id)            
+    f = open("d:\\series.xml", "wt")
+    f.write(db_conv_xml.get_series_xml())
+    f.close()
             
             
 def app_restore():

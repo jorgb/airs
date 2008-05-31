@@ -1,0 +1,33 @@
+<airs>
+    <series>
+        <item cancelled="0" id="9" name="24" />
+        <item cancelled="0" id="10" name="American Dad" />
+        <item cancelled="0" id="6" name="Battlestar Galactica" />
+        <item cancelled="0" id="29" name="Bionic Woman" />
+        <item cancelled="0" id="11" name="Breaking Bad" />
+        <item cancelled="0" id="12" name="Cavemen" />
+        <item cancelled="0" id="13" name="Chuck" />
+        <item cancelled="1" id="14" name="Dead Zone" />
+        <item cancelled="0" id="27" name="Doctor Who" />
+        <item cancelled="0" id="28" name="Eureka" />
+        <item cancelled="0" id="5" name="Family Guy" />
+        <item cancelled="0" id="15" name="Flash Gordon" />
+        <item cancelled="0" id="8" name="Heroes" />
+        <item cancelled="1" id="16" name="Home Movies" />
+        <item cancelled="0" id="17" name="Honest" />
+        <item cancelled="0" id="18" name="Kyle XY" />
+        <item cancelled="0" id="7" name="Lost" />
+        <item cancelled="0" id="4" name="Moonlight" />
+        <item cancelled="0" id="20" name="New Amsterdam" />
+        <item cancelled="0" id="21" name="Reaper" />
+        <item cancelled="0" id="22" name="Robot Chicken" />
+        <item cancelled="0" id="23" name="Scrubs" />
+        <item cancelled="0" id="24" name="Stargate Atlantis" />
+        <item cancelled="0" id="2" name="Supernatural" />
+        <item cancelled="0" id="3" name="Terminator: The Sarah Connor Chronicles" />
+        <item cancelled="0" id="31" name="The Lost Room" />
+        <item cancelled="1" id="26" name="The Office UK" />
+        <item cancelled="0" id="25" name="The Office US" />
+        <item cancelled="0" id="30" name="The Universe" />
+    </series>
+</airs>
