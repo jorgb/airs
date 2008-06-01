@@ -20,7 +20,7 @@ CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR,
 create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, 
                       season VARCHAR, aired VARCHAR, last_update VARCHAR, 
                       status INTEGER,  series_id INTEGER, changed INTEGER, 
-                      seen INTEGER, prio_entries VARCHAR);
+                      seen INTEGER, prio_entries VARCHAR, new INTEGER);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
 create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
@@ -70,12 +70,18 @@ update episode set seen=0;
 """
 
 #-------------------------------------------------------------------------------
-# upgrade script for v4 to v3
+# upgrade script for v4 to v5
 
-upgr_v3_v4 = """\
+upgr_v4_v5 = """\
 alter table episode add prio_entries VARCHAR;
+alter table episode add new INTEGER;
+alter table episode add locked INTEGER;
 update episode set prio_entries="";
+update episode set new = 1;
+update episode set locked=0;
 """
+
+# NOTE: episode.seen is obsolete, and should be removed upon a new creation
 
 #-------------------------------------------------------------------------------
 
@@ -133,7 +139,7 @@ def upgr_pre_v3(conn):
         if r[5] != 0:
             st = series_list.EP_TO_DOWNLOAD
         elif r[4] != 0:
-            st = series_list.EP_PROCESSED
+            st = series_list.EP_SEEN
         elif r[6] != 0:
             st = series_list.EP_READY
             upd = td
@@ -146,7 +152,28 @@ def upgr_pre_v3(conn):
     conn.commit()    
     c.close()
     
-
+#-------------------------------------------------------------------------------
+#def upgr_pre_v5(conn):
+#    """
+#    The status EP_SEEN means it is seen, these are now seperate for
+#    the future guide.
+#    """
+#    
+#    c = conn.cursor()
+#            
+#    # cleanup in the episode table, recreate with better fields
+#    c.execute("select id, status from episode")
+#    records = [ rec for rec in c ]
+#    
+#    for r in records:
+#        if not r[1] == series_list.EP_SEEN:
+#            c.execute("update episode set seen = 1 where id = ?", (r[0]))
+#        else:
+#            c.execute("update episode set seen = 0 where id = ?", (r[0]))
+#            
+#    conn.commit()    
+#    c.close()
+    
 #-------------------------------------------------------------------------------
 def create(dbfile):
     # can't create if already exists

@@ -11,6 +11,7 @@ import sys
 import wx
 from wx.lib.pubsub import Publisher
 import series_queue
+from webserver import reactor
 from series_filter import SeriesSelectionList
 import series_filter
 #from storage import series_list_xml
@@ -25,6 +26,7 @@ import datetime
 
 is_closing = False
 retriever = None
+server = None
 _series_sel = SeriesSelectionList()
 
 #===============================================================================
@@ -36,15 +38,18 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever, _series_sel
+    global retriever, server, _series_sel
     
     # set up classes
     retriever = series_queue.SeriesRetrieveThread()
+    server = reactor.WebServerThread()
 
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
     _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
+    
     retriever.start()
+    server.start()
 
     # send signal to listeners telling the data is ready
     Publisher().sendMessage(signals.APP_INITIALIZED)
@@ -106,6 +111,13 @@ def series_active():
     return _series_sel._selected_series_id != -1 and \
            _series_sel._view_type == series_filter.VIEW_SERIES
 
+
+def edit_episode(episode_id):
+    """
+    Publishes a signal to edit the episode
+    """
+    Publisher().sendMessage(signals.EPISODE_EDIT, episode_id);
+    
 
 def add_series(series):
     """ 
@@ -174,6 +186,7 @@ def get_all_series(manual = False):
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     ignored = 0
     sent = 0
+    td = datetime.date.today() 
     for series in all_series:
         # we have to decouple the series object (due to multi threading issues)
         if series.postponed != 0:
@@ -186,8 +199,7 @@ def get_all_series(manual = False):
             upd = series.update_period 
             if upd < 0:
                 # we have to check if the weekday is today
-                # and we haven't checked today yet
-                td = datetime.date.today()                
+                # and we haven't checked today yet               
                 if upd > -8:
                     delta = td - d
                     if delta.days <= 7 and delta.days > 0:
@@ -286,26 +298,28 @@ def probe_series():
                 else:
                     # we found the episode, we will update only certain parts
                     # if they are updated properly, we willl inform and update the DB
-                    updated = False
-                    if result.title == '' and episode.title != '':
-                        result.title = unicode(episode.title)
-                        updated = True
-                    if result.season == '' and episode.season != '':
-                        result.season = unicode(episode.season)
-                        updated = True
-                    # resolve policy
-                    if (result.aired == "" and episode.aired != "") or \
-                       (result.getPriority("aired") < episode.getPriority("aired")):
-                        result.aired = episode.aired
-                        result.setPriority("aired", episode.getPriority("aired"))
-                        updated = True                        
-                        
-                    if updated:
-                        db_changed = True
-                        result.changed = 1
-                        result.setLastUpdate()
-                        _series_sel.filterEpisode(result, updated = True)
-        
+                    if result.locked == 0:
+                        updated = False
+                        if result.title == '' and episode.title != '':
+                            result.title = unicode(episode.title)
+                            updated = True
+                        if result.season == '' and episode.season != '':
+                            result.season = unicode(episode.season)
+                            updated = True
+                        # resolve policy
+                        if (result.aired == "" and episode.aired != "") or \
+                           (result.getPriority("aired") < episode.getPriority("aired")):
+                            result.aired = episode.aired
+                            result.setPriority("aired", episode.getPriority("aired"))
+                            result.new = 1
+                            updated = True                        
+                            
+                        if updated:
+                            db_changed = True
+                            result.changed = 1
+                            result.setLastUpdate()
+                            _series_sel.filterEpisode(result, updated = True)
+            
             # all changes are committed here
             if db_changed:
                 db.store.commit()
@@ -340,7 +354,9 @@ def app_destroy():
     retriever.stop = True
     retriever.join(2000)
     
-        
+    server.stop()
+    server.join(2000)
+    
     
 def get_selected_series():
     """

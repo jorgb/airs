@@ -106,7 +106,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._stat_to_icon = dict()
         self._stat_to_icon[series_list.EP_NEW] = self._icons.Add(icon_new.getBitmap())
         self._stat_to_icon[series_list.EP_DOWNLOADING] = self._icons.Add(downloading.getBitmap())
-        self._stat_to_icon[series_list.EP_PROCESSED] = self._icons.Add(icon_processed.getBitmap())
+        self._stat_to_icon[series_list.EP_SEEN] = self._icons.Add(icon_processed.getBitmap())
         self._stat_to_icon[series_list.EP_TO_DOWNLOAD] = self._icons.Add(to_download.getBitmap())
         self._stat_to_icon[series_list.EP_READY] = self._icons.Add(icon_ready.getBitmap())
         self._stat_to_icon[series_list.EP_DOWNLOADED] = self._icons.Add(icon_downloaded.getBitmap())
@@ -225,7 +225,7 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onSetReady, 
                           menu.Append(wx.NewId(),"Set as Ready"))
                 self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          menu.Append(wx.NewId(),"Set as Processed / Seen"))
+                          menu.Append(wx.NewId(),"Set as Seen"))
                 st_series = True
                 
             # show search engine list only with single selection
@@ -250,6 +250,9 @@ class EpisodeListCtrl(wx.ListCtrl):
                 self.Bind(wx.EVT_MENU, self._onEditSeries, 
                           menu.Append(wx.NewId(), "Edit Series ..."))
                 
+		self.Bind(wx.EVT_MENU, self._onEditEpisode, 
+			  menu.Append(wx.NewId(), "Edit Episode ..."))
+                
             if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                 menu.AppendSeparator()
             
@@ -270,7 +273,7 @@ class EpisodeListCtrl(wx.ListCtrl):
                           statusmenu.Append(wx.NewId(), "&Ready"))
 	    if not st_series:
 		self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          statusmenu.Append(wx.NewId(), "&Processed / Seen"))
+                          statusmenu.Append(wx.NewId(), "&Seen"))
             
 	    menu.AppendMenu(wx.NewId(), "Mark Episode(s) As ...", statusmenu)
 		
@@ -278,6 +281,12 @@ class EpisodeListCtrl(wx.ListCtrl):
             menu.Destroy()   
                     
            
+    def _onEditEpisode(self, event):
+        eps = self.__getSelectedEpisodes()
+        if eps:
+            viewmgr.edit_episode(eps[0].id)
+    
+	    
     def _onEditSeries(self, event):
         eps = self.__getSelectedEpisodes()
         if eps:
@@ -302,51 +311,29 @@ class EpisodeListCtrl(wx.ListCtrl):
             idx = self.GetNextSelected(idx)
         return episodes
             
-            
+    def _doSetStatus(self, status):
+        episodes = self.__getSelectedEpisodes()
+        for episode in episodes:
+            episode.status = status
+            episode.changed = 0
+	    episode.new = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+	    
     def _onSetToDownload(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_TO_DOWNLOAD
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
+	self._doSetStatus(series_list.EP_TO_DOWNLOAD)
+	
     def _onSetDownloaded(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_DOWNLOADED
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
+	self._doSetStatus(series_list.EP_DOWNLOADED)
 
     def _onSetDownloading(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_DOWNLOADING
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
+	self._doSetStatus(series_list.EP_DOWNLOADING)
             
     def _onSetReady(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_READY
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-        pass
-
+	self._doSetStatus(series_list.EP_READY)
     
     def _onSetProcessed(self, event):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = series_list.EP_PROCESSED
-            episode.changed = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-        pass
-            
+	self._doSetStatus(series_list.EP_SEEN)            
     
     def _add(self, msg):
         """
