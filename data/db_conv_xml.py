@@ -19,7 +19,12 @@ def get_series_xml():
         serie.attrib["name"] = item.name
         serie.attrib["id"] = str(item.id)
         serie.attrib["cancelled"] = str(item.postponed)
+
+    s = "<?xml version='1.0' encoding='utf-8'?>" + et.tostring(root)
+    f = open("D:\\series.xml", "wt")
+    f.write(s)
+    f.close()
     
-    return et.tostring(root)
+    return s
     
     

@@ -12,6 +12,7 @@ import xmlres
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
 import EpisodeEditDlg
+from webserver import reactor
 
 class MainPanel(wx.Panel):
 
@@ -148,6 +149,13 @@ class MainPanel(wx.Panel):
     
         # send messages from thread queue to log window
         q = viewmgr.retriever.msg_queue
+        msgs = 30
+        while not q.empty() and msgs > 0:
+            viewmgr.app_log(q.get())
+            msgs -= 1
+
+        # send messages from webserver queue to log window
+        q = reactor.msg_queue
         msgs = 30
         while not q.empty() and msgs > 0:
             viewmgr.app_log(q.get())

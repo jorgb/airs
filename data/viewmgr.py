@@ -11,6 +11,7 @@ import sys
 import wx
 from wx.lib.pubsub import Publisher
 import series_queue
+from webserver import reactor
 from series_filter import SeriesSelectionList
 import series_filter
 #from storage import series_list_xml
@@ -20,13 +21,12 @@ import appcfg
 import db
 import datetime
 
-from webserver import db_conv_xml
-
 # Signals constants are used in the view manager (and the rest of the 
 # application to send around changes in the application.
 
 is_closing = False
 retriever = None
+server = None
 _series_sel = SeriesSelectionList()
 
 #===============================================================================
@@ -38,15 +38,18 @@ def app_init():
     """
     Initialize all singleton and data elements of viewmgr
     """
-    global retriever, _series_sel
+    global retriever, server, _series_sel
     
     # set up classes
     retriever = series_queue.SeriesRetrieveThread()
+    server = reactor.WebServerThread()
 
     # finish work
     _series_sel._show_only_unseen = appcfg.options[appcfg.CFG_SHOW_UNSEEN]
     _series_sel._update_mode = appcfg.options[appcfg.CFG_UPDATED_VIEW]
+    
     retriever.start()
+    server.start()
 
     # send signal to listeners telling the data is ready
     Publisher().sendMessage(signals.APP_INITIALIZED)
@@ -154,9 +157,6 @@ def set_selection(series):
             _series_sel.setView(series_filter.VIEW_SERIES)
         else:
             _series_sel.setSelection(series.id)            
-    f = open("d:\\series.xml", "wt")
-    f.write(db_conv_xml.get_series_xml())
-    f.close()
             
             
 def app_restore():
@@ -354,7 +354,9 @@ def app_destroy():
     retriever.stop = True
     retriever.join(2000)
     
-        
+    server.stop()
+    server.join(2000)
+    
     
 def get_selected_series():
     """
