@@ -6,17 +6,23 @@ from Queue import Queue
 import synccmd
 
 msg_queue = Queue()
-in_queue = Queue()
 
-#parent = None
-#def send_command(cmd, args):
-#    callID = synccmd.getCallID()
-#    if parent is not None:
-#        evt = synccmd.SyncCallbackCommandEvent(id = callID, cmd = cmd, args = args)
-#        parent.AddPendingEvent(evt)
-#        
-#        # now wait for a response (5 secs)
-#        synccmd.waitForResponse(in_queue, 5000)
+parent = None
+def send_command(s, args):
+    """ Sends a command event to the frame and awaits response with the same id """
+    cmd = None
+    callID = synccmd.getCallID()
+    if parent is not None:
+        evt = synccmd.SyncCallbackCommandEvent(callid = callID, cmd = s, args = args)
+        parent.AddPendingEvent(evt)
+        # now wait for a response (5 secs)
+        cmd = synccmd.waitForResponse(callID, 3000)
+    if cmd is None:
+        cmd = synccmd.SyncCommand(-1)
+        cmd.html = "<html><h1>Command '%s' has timed out!</h1>" % s + \
+                   "Airs did not respond in a timely matter or could not be reached. Please retry again.</html>" 
+    return cmd
+        
 
 def report(msg):
     msg_queue.put(msg)
@@ -32,7 +38,8 @@ class series_http_handler(resource.Resource):
             # - De GUI vertellen dat ie data moet gaan verzamelen
             # - Op een of andere manier moet wachten op die data
             # - Als het er is, aan twisted terug geven zodat ik die op het scherm kan tonen
-            pass
+            cmd = send_command("get_index", args = {})
+            request.write(cmd.html)
         
         else:
             if "id" in request.args:
