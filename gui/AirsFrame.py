@@ -14,6 +14,7 @@ from wx.lib.pubsub import Publisher
 
 from data import appcfg, viewmgr, signals
 from data import series_list, db, series_filter
+from webserver import synccmd, reactor
 
 # gui elements
 import ViewSelectPanel
@@ -44,9 +45,12 @@ class AirsFrame(wx.Frame):
         self._createWindows()
         self._createStatusBar()
 
+        reactor.parent = self
+        
         # generic application events
         self.Bind(wx.EVT_CLOSE, self._onGuiClose)
         self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
+        self.Bind(synccmd.EVT_REACTOR_CALLBACK_COMMAND, self._onWebRequest)
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
@@ -451,6 +455,19 @@ class AirsFrame(wx.Frame):
         
     # ============================ VARIOUS METHODS =============================
 
+    
+    def _onWebRequest(self, event):
+        """ Handle request of the web browser plugin """
+        id = event.callid
+        cmd = event.cmd
+        
+        viewmgr.app_log("Received command '%s' with id %i from web browser" % (cmd, id))
+        
+        cb = synccmd.SyncCommand(id)
+        cb.html = "<h1>Here you go!</h1>"
+        synccmd.get().putCmd(cb)
+        
+        
     def _connectSignals(self):
         """
         Connects all the signals used in this application to members of this
