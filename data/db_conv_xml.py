@@ -26,6 +26,17 @@ def get_series_xml():
         serie.setProp("id", str(item.id))
         serie.setProp("cancelled", str(item.postponed))
 
+        # report total number of episodes and the 
+        # episodes already seen
+        c = db.store.execute("select count(*) from episode where series_id = %i" % item.id)
+        totalcount = str(c.get_one()[0])
+        
+        c = db.store.execute("select count(*) from episode where series_id = %i and status = 4" % item.id)
+        seencount = str(c.get_one()[0])
+        
+        serie.setProp("seencount", seencount)
+        serie.setProp("count", totalcount)
+        
         items.addChild(serie)
 
     return dom
