@@ -6,6 +6,8 @@ import time
 # event used to call back to GUI for synchronized db access
 SyncCallbackCommandEvent, EVT_REACTOR_CALLBACK_COMMAND = wx.lib.newevent.NewEvent()
 
+# set this to true when a possible wait needs to be aborted
+abort_command = False
 
 class SyncCommand(object):
     def __init__(self, id):
@@ -60,11 +62,12 @@ def waitForResponse(id, msec):
     """ Wait for a timed response in 50 msec intervals """
     sl = get()
     trials = (msec / TIME_CHUNK) + 1
-    while trials > 0:
+    while trials > 0 and abort_command == False:
         cmd = sl.getCmd(id)
         if cmd is not None:
             return cmd
         time.sleep(TIME_CHUNK / 1000.0)
+        trials -= 1
     return None
 
 #===============================================================================

@@ -107,7 +107,7 @@ class SeriesRetrieveThread(Thread):
                         cmd = None
                         if url.startswith("http://www.tv.com"):
                             cmd = series_getter.TvComSeriesDownloadCmd(self.msg_queue, series, url)
-                        elif url.startswith("http://epguides.com"):
+                        elif url.startswith("http://epguides.com") or url.startswith("http://www.epguides.com"):
                             cmd = series_getter.EpGuidesSeriesDownloadCmd(self.msg_queue, series, url)
         
                         if cmd:                            

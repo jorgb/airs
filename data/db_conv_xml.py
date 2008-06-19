@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as et
+import libxml2
 from data import series_list
 from data import db
 
@@ -8,23 +8,26 @@ def get_series_xml():
     that are currently in airs, with all properties needed for XSLT -> HTML
     """
     
-    root = et.Element("airs")
-    items = et.SubElement(root, "series")
+    dom = libxml2.newDoc("1.0")
+        
+    root = libxml2.newNode("airs")
+    dom.addChild(root)
     
+    items = libxml2.newNode("series")
+    root.addChild(items)
+        
     result = db.store.find(series_list.Series).order_by(series_list.Series.name)
     series = [serie for serie in result]
     
     for item in series:
-        serie = et.SubElement(items, "item")
-        serie.attrib["name"] = item.name
-        serie.attrib["id"] = str(item.id)
-        serie.attrib["cancelled"] = str(item.postponed)
+        serie = libxml2.newNode("item")
 
-    s = "<?xml version='1.0' encoding='utf-8'?>" + et.tostring(root)
-    f = open("D:\\series.xml", "wt")
-    f.write(s)
-    f.close()
-    
-    return s
+        serie.setProp("name", item.name)
+        serie.setProp("id", str(item.id))
+        serie.setProp("cancelled", str(item.postponed))
+
+        items.addChild(serie)
+
+    return dom
     
     

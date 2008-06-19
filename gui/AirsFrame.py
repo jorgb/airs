@@ -31,6 +31,7 @@ from images import icon_home, icon_help, \
 from images import icon_default_layout
 from images import icon_add, icon_delete, icon_edit
 
+from webserver import webdispatch
 
 class AirsFrame(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -463,10 +464,7 @@ class AirsFrame(wx.Frame):
         
         viewmgr.app_log("Received command '%s' with id %i from web browser" % (cmd, id))
         
-        cb = synccmd.SyncCommand(id)
-        cb.html = "<h1>Here you go!</h1>"
-        synccmd.get().putCmd(cb)
-        
+        webdispatch.execute(cmd, id)
         
     def _connectSignals(self):
         """
