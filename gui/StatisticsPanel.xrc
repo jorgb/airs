@@ -100,7 +100,7 @@
                         <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Processed Episode</label>
+                            <label>Seen Episode</label>
                         </object>
                     </object>
                 </object>

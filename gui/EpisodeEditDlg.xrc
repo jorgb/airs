@@ -22,7 +22,7 @@
                         <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
                         <border>5</border>
                         <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Season</label>
+                            <label>Season (SnnEnn)</label>
                         </object>
                     </object>
                     <object class="sizeritem">
@@ -35,13 +35,13 @@
                     <object class="sizeritem">
                         <flag>wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM</flag>
                         <border>5</border>
-                        <object class="wxTextCtrl" name="ID_TEXTCTRL">
+                        <object class="wxTextCtrl" name="ID_SEASON">
                         </object>
                     </object>
                     <object class="sizeritem">
                         <flag>wxGROW|wxGROW|wxRIGHT|wxBOTTOM</flag>
                         <border>5</border>
-                        <object class="wxTextCtrl" name="ID_TEXTCTRL1">
+                        <object class="wxTextCtrl" name="ID_TITLE">
                         </object>
                     </object>
                     <object class="sizeritem">
@@ -60,15 +60,15 @@
                                 <flag>wxGROW|wxRIGHT|wxTOP|wxBOTTOM</flag>
                                 <border>5</border>
                                 <option>1</option>
-                                <object class="wxDatePickerCtrl" name="ID_DATECTRL">
+                                <object class="wxDatePickerCtrl" name="ID_AIRED">
                                     <style>wxDP_DEFAULT</style>
                                 </object>
                             </object>
                             <object class="sizeritem">
                                 <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
-                                <object class="wxCheckBox" name="ID_CHECKBOX">
-                                    <label>Lock Date</label>
+                                <object class="wxCheckBox" name="ID_LOCK_UPDATE">
+                                    <label>Lock Updates</label>
                                     <checked>0</checked>
                                 </object>
                             </object>
@@ -89,14 +89,14 @@
                             <object class="sizeritem">
                                 <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
                                 <border>5</border>
-                                <object class="wxChoice" name="ID_CHOICE">
+                                <object class="wxChoice" name="ID_STATUS">
                                     <size>140,-1</size>
                                 </object>
                             </object>
                             <object class="sizeritem">
                                 <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
-                                <object class="wxCheckBox" name="ID_CHECKBOX1">
+                                <object class="wxCheckBox" name="ID_UPDATED">
                                     <label>Updated</label>
                                     <checked>0</checked>
                                 </object>
@@ -104,7 +104,7 @@
                             <object class="sizeritem">
                                 <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
-                                <object class="wxCheckBox" name="ID_CHECKBOX2">
+                                <object class="wxCheckBox" name="ID_NEW">
                                     <label>New (appears in "Whats Aired" again)</label>
                                     <checked>0</checked>
                                 </object>

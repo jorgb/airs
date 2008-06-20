@@ -13,7 +13,7 @@ EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
 EP_DOWNLOADING = 2
 EP_READY       = 3
-EP_PROCESSED   = 4
+EP_SEEN        = 4
 EP_DOWNLOADED  = 5
 
 # period definitions
@@ -26,6 +26,24 @@ period_trans  = { -1: "monday",   -2: "tuesday",   -3: "wednesday",
                   -4: "thursday", -5: "friday",    -6: "saturday",
                   -7: "sunday",   -8: "bi-weekly", -9: "monthly" }
 period_custom = ( -999, "custom" )
+
+def prio_to_string(priorities):
+    s = ''
+    for key in priorities:
+        if s != '':
+            s += '|'
+        s += '%s:%i' % (key, priorities[key])
+    return s
+
+
+def string_to_prio(s):
+    prios = dict()
+    lst = s.split('|')
+    for item in lst:
+        s1, s2 = item.split(':')
+        prios[s1] = int(s2)
+    return prios
+        
 
 #
 # Module that contains functionality
@@ -96,6 +114,7 @@ class Episode(object):
     series_id = Int()             # id of series table entry
     prio_entries = Unicode()      # not to be used directly
     new = Int()
+    locked = Int()
         
     def __init__(self):
         self.title = u""
@@ -105,21 +124,25 @@ class Episode(object):
         self.last_update = u""
         self.status = EP_READY
         self.changed = 0 
-        self.__priorities = dict()
+        self.locked = 0
         self.new = 0
+        self.priorities = dict()
             
 
     def __storm_loaded__(self):
+        self.priorities = dict()
         if self.prio_entries != "":
-            self.__priorities = pickle.loads(self.prio_entries)
+            prios = string_to_prio(self.prio_entries)
+            for key in prios:
+                self.priorities[key] = prios[key]
         
         
     def getPriority(self, key):
         """
         Returns priority setting of this episode
         """
-        if key in self.__priorities:
-            return self.__priorities[key]
+        if key in self.priorities:
+            return self.priorities[key]
         return 0
         
 
@@ -127,8 +150,8 @@ class Episode(object):
         """
         Set priority setting of this episode
         """
-        self.__priorities[key] = int(value)
-        self.prio_entries = pickle.dumps(self.__priorities)
+        self.priorities[key] = int(value)
+        self.prio_entries = unicode(prio_to_string(self.priorities))
         
     
     def setAired(self, d):
@@ -136,7 +159,7 @@ class Episode(object):
         Sets date
         """
         if d:
-            self.aired = unicode("%04i%02i%02" % (d.year, d.month, d.day))
+            self.aired = unicode("%04i%02i%02i" % (d.year, d.month, d.day))
         else:
             self.aired = unicode('')
     

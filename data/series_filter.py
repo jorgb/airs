@@ -132,9 +132,10 @@ class SeriesSelectionList(object):
             result = db.store.find(series_list.Episode, 
                                    series_list.Episode.aired != unicode(""),
                                    series_list.Episode.aired <= unicode(self._today),
-                                   series_list.Episode.aired > unicode(bottom_str))
+                                   series_list.Episode.aired > unicode(bottom_str),
+                                   series_list.Episode.new != 0)
             # narrow list
-            result = [ ep for ep in result if ep.status != series_list.EP_PROCESSED and \
+            result = [ ep for ep in result if ep.status != series_list.EP_SEEN and \
                                               ep.status != series_list.EP_TO_DOWNLOAD and \
                                               ep.status != series_list.EP_DOWNLOADING ]
             
@@ -152,7 +153,7 @@ class SeriesSelectionList(object):
             if self._show_only_unseen:
                 result = db.store.find(series_list.Episode, 
                                        series_list.Episode.series_id == self._selected_series_id,
-                                       series_list.Episode.status != series_list.EP_PROCESSED)
+                                       series_list.Episode.status != series_list.EP_SEEN)
             else:
                 result = db.store.find(series_list.Episode, 
                                        series_list.Episode.series_id == self._selected_series_id)
@@ -212,10 +213,12 @@ class SeriesSelectionList(object):
                 return False
             if episode.status != series_list.EP_READY and episode.status != series_list.EP_NEW:
                 return False
+            if episode.new == 0:
+                return False
            
         #if self._view_type == VIEW_QUEUES:
         #    if episode.status == series_list.EP_READY or \
-        #       episode.status == series_list.EP_PROCESSED:
+        #       episode.status == series_list.EP_SEEN:
         #        return False
             
         if self._view_type == VIEW_DOWNLOADED and \

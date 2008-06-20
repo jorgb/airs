@@ -12,6 +12,7 @@ import xmlres
 from EpisodeListCtrl import EpisodeListCtrl
 from data import db, series_list, series_filter
 import EpisodeEditDlg
+from webserver import reactor
 
 class MainPanel(wx.Panel):
 
@@ -81,11 +82,14 @@ class MainPanel(wx.Panel):
         episode = db.store.find(series_list.Episode, series_list.Episode.id == episode_id).one()
         if episode is not None:
             dlg = EpisodeEditDlg.EpisodeEditDlg(self)
+            dlg.ObjectToGui(episode)            
             if dlg.ShowModal() == wx.ID_OK:
-                pass
+                dlg.GuiToObject(episode)
+                db.store.commit()
+                viewmgr.episode_updated(episode)
             dlg.Destroy()
             
-        
+            
     def _onViewChanged(self, msg):
         view = msg.data
         if view != series_filter.VIEW_SERIES:
@@ -145,6 +149,13 @@ class MainPanel(wx.Panel):
     
         # send messages from thread queue to log window
         q = viewmgr.retriever.msg_queue
+        msgs = 30
+        while not q.empty() and msgs > 0:
+            viewmgr.app_log(q.get())
+            msgs -= 1
+
+        # send messages from webserver queue to log window
+        q = reactor.msg_queue
         msgs = 30
         while not q.empty() and msgs > 0:
             viewmgr.app_log(q.get())
