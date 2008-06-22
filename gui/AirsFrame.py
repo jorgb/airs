@@ -594,10 +594,11 @@ class AirsFrame(wx.Frame):
         """ Handle request of the web browser plugin """
         id = event.callid
         cmd = event.cmd
+        args = event.args
 
         viewmgr.app_log("Received command '%s' with id %i from web browser" % (cmd, id))
 
-        webdispatch.execute(cmd, id)
+        webdispatch.execute(cmd, id, args)
 
     def _connectSignals(self):
         """

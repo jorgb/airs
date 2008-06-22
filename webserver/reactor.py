@@ -30,23 +30,20 @@ def report(msg):
 
 class series_http_handler(resource.Resource):
     def __init__(self):
-        self.tel = 0
-
+        pass
+        
     def render_GET(self, request):
         if not request.args:
-            # HIER MOET IK:
-            # - De GUI vertellen dat ie data moet gaan verzamelen
-            # - Op een of andere manier moet wachten op die data
-            # - Als het er is, aan twisted terug geven zodat ik die op het scherm kan tonen
             cmd = send_command("get_index", args = {})
             request.write(cmd.html)
         
         else:
             if "id" in request.args:
-                id = request.args["id"][0]
-                request.write("Series ID: %s" % id)
+                id = int(request.args["id"][0])
+                cmd = send_command("get_episodes", args={"id": id})
+                
+                request.write(cmd.html)
    
-        self.tel = self.tel + 1
         return ""
     
     
@@ -70,7 +67,7 @@ class WebServerThread(Thread):
         
         port = 8000
         succes = False
-        report("Binding to 127.0.0.1:%i ..." % port)
+        report("Webserver bound to port %i ..." % port)
 
         try:
             reactor.listenTCP(port, server.Site(root))

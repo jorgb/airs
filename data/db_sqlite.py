@@ -16,7 +16,7 @@ VERSION = 3
 _main_sql = """\
 CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR, 
                      last_update VARCHAR, update_period INTEGER, postponed INTEGER,
-                     notes VARCHAR);
+                     notes VARCHAR, folder VARCHAR);
 create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, 
                       season VARCHAR, aired VARCHAR, last_update VARCHAR, 
                       status INTEGER,  series_id INTEGER, changed INTEGER, 
@@ -76,9 +76,11 @@ upgr_v4_v5 = """\
 alter table episode add prio_entries VARCHAR;
 alter table episode add new INTEGER;
 alter table episode add locked INTEGER;
+alter table series add folder VARCHAR;
 update episode set prio_entries="";
 update episode set new = 1;
 update episode set locked=0;
+update series set folder="";
 """
 
 # NOTE: episode.seen is obsolete, and should be removed upon a new creation
