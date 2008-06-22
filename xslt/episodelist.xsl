@@ -9,6 +9,7 @@
             <title><xsl:value-of select="@name" /></title>
         </head>
         <body>
+            <img src="www/icon_about.png" /><br/>
             <h1><xsl:value-of select="@name" /></h1>
             <table>
                 <tr>

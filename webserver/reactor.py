@@ -1,9 +1,12 @@
 from threading import Thread
+import os
 
 from twisted.web import resource, static, server, twcgi
 from twisted.internet import reactor
 from Queue import Queue
 import synccmd
+
+from data import appcfg
 
 msg_queue = Queue()
 
@@ -60,14 +63,15 @@ class WebServerThread(Thread):
         report("Starting up web server thread ...")
         root = resource.Resource()
 
-        #root = static.File("c:\www")
-        #root.indexNames=['index.html','index.htm']        
+        webdir = os.path.join(appcfg.appdir, "www")
         
         root.putChild("series", series_http_handler())
+        root.putChild("www", static.File(webdir))
         
         port = 8000
         succes = False
         report("Webserver bound to port %i ..." % port)
+        report("Web public directory is at '%s'" % webdir) 
 
         try:
             reactor.listenTCP(port, server.Site(root))

@@ -6,27 +6,36 @@
 <xsl:template match="/">
     <html>
         <head>
+            <link rel="stylesheet" type="text/css" href="www/airs.css" />
+
             <title>Airs Series Overview</title>
         </head>
         <body>
-            <h1>Airs Series Overview</h1>
-            <table>
-                <tr>
-                    <td><u><b>Series Name</b></u></td>
-                    <td><u><b># Episodes  </b></u></td>
-                </tr>
-                <xsl:for-each select="airs/series/item">
+            <div id="overall">
+              <div id="title">Airs Series Overview</div>
+              <div id="series_area">
+                <table>
                     <tr>
-                        <td>
-                          <a>
-                              <xsl:attribute name="href">series?id=<xsl:value-of select="@id"/></xsl:attribute>
-                              <xsl:value-of select="@name"/>
-                          </a>
-                        </td>
-                        <td><xsl:value-of select="@count" /></td>
+                        <td><div id="sheader">Series Name</div></td>
+                        <td><div id="eheader"># Episodes</div></td>
                     </tr>
-                </xsl:for-each>
-            </table>
+                    <xsl:for-each select="airs/series/item">
+                        <tr>
+                            <td class="">
+                              <div id="seriestitle">
+                                <a>
+                                    <xsl:attribute name="class">series_name</xsl:attribute>
+                                    <xsl:attribute name="href">series?id=<xsl:value-of select="@id"/></xsl:attribute>
+                                    <xsl:value-of select="@name"/>
+                                </a>
+                              </div>
+                            </td>
+                            <td><div id="seriescount"><xsl:value-of select="@count"/></div></td>
+                        </tr>
+                    </xsl:for-each>
+                </table>
+              </div>
+            </div>
         </body>
     </html>
 </xsl:template>

@@ -1,0 +1,60 @@
+
+/* body of airs pages */
+body 
+{
+    color: #ffffff;
+    background-color: #00005c; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* overall div that encapsulates all content */
+#overall
+{
+    /* margin: auto 33% auto 33%; */
+    font-size: 200%;
+}
+
+/* the title of the contents */
+#title
+{
+    font-size: 200%;
+    color: #eae975;
+    margin-bottom: 20pt;
+}
+
+a, a:visited, #seriescount
+{
+    text-decoration: none;
+    color: #acacac;
+    font-style: bold;
+    font-size: 150%;
+}
+
+#sheader, #eheader
+{
+    font-style: italic;
+    font-size: 150%;
+}
+
+#seriescount
+{
+    margin-left: 20pt;
+}
+
+#seriestitle
+{
+    margin-left: 20pt;
+}
+
+a:hover 
+{
+    text-decoration: underline;
+    color: fff700;
+}
+
+a img 
+{
+    border: 0;
+}
+
+
