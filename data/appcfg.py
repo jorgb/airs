@@ -41,6 +41,8 @@ CFG_LAYOUT_COL_SEASON = 'window/columns/season'
 CFG_LAYOUT_COL_TITLE  = 'window/columns/title'
 CFG_LAYOUT_COL_SERIES = 'window/columns/series'
 CFG_LAYOUT_COL_DATE   = 'window/columns/date'
+CFG_LAYOUT_HIDDEN     = 'window/hidden'
+CFG_TRAY_MINIMIZE     = 'window/minimized'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -55,7 +57,9 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_COL_SEASON,     'i', 70   ),
             (CFG_LAYOUT_COL_SERIES,     'i', 100  ),
             (CFG_LAYOUT_COL_TITLE,      'i', 220  ),
-            (CFG_LAYOUT_COL_DATE,       'i', 100  )
+            (CFG_LAYOUT_COL_DATE,       'i', 100  ),
+            (CFG_LAYOUT_HIDDEN,         'b', False),
+            (CFG_TRAY_MINIMIZE,         'b', False)
         ]
 
 # max files in the file history

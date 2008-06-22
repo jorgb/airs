@@ -15,6 +15,9 @@ APP_CLOSE            = ('app', 'close')              # final call before window 
                                                      # application WILL close after this call
 APP_SETTINGS_CHANGED = ('app', 'settings', 'changed')   # sent when the settings are changed, submitted after
                                                         # a call to viewmgr.app_settings_changed() is made
+APP_RESTORE          = ('app', 'restore')            # sent to restore the application when it was hidden
+                                                     # in the system tray. The GUI must handle this
+
 APP_LOG              = ('app',     'log')
 EPISODE_ADDED        = ('episode', 'added')
 EPISODE_DELETED      = ('episode', 'deleted')
