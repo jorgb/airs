@@ -31,10 +31,10 @@ class AirsTrayIcon(wx.TaskBarIcon):
         The various platforms have different requirements for the
         icon size...
         """
-        if "wxMSW" in wx.PlatformInfo:
-            img = img.Scale(16, 16)
-        elif "wxGTK" in wx.PlatformInfo:
-            img = img.Scale(22, 22)
+        #if "wxMSW" in wx.PlatformInfo:
+        #    img = img.Scale(16, 16)
+        #elif "wxGTK" in wx.PlatformInfo:
+        #    img = img.Scale(22, 22)
         # wxMac can be any size upto 128x128, so leave the source img alone....
         return wx.IconFromBitmap(img.ConvertToBitmap())
     
