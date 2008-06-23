@@ -7,65 +7,60 @@
     <html>
         <head>
             <title><xsl:value-of select="@name" /></title>
+            <link rel="stylesheet" type="text/css" href="www/airs.css" />
         </head>
         <body>
-            <img src="www/icon_about.png" /><br/>
-            <h1><xsl:value-of select="@name" /></h1>
-            <table>
-                <tr>
-                    <td><u><b>Number</b></u></td>
-                    <td><u><b>Season</b></u></td>
-                    <td><u><b>Title</b></u></td>
-                    <td><u><b>Actions</b></u></td>
-                </tr>
-                <xsl:for-each select="item">
+            <div id="overall">
+              <div id="title"><xsl:value-of select="@name" /></div>
+              <table>
+                  <tr class="captionrow">
+                      <td class="header"><div id="headertext">Number</div></td>
+                      <td class="header"><div id="headertext">Season</div></td>
+                      <td class="header"><div id="headertext">Title</div></td>
+                      <td class="header"><div id="headertext">Actions</div></td>
+                  </tr>
+                  
+                  <xsl:for-each select="item">
                     <tr>
-                        <td><xsl:value-of select="@number"/></td>
-                        <td><xsl:value-of select="@season"/></td>
-                        <td>
-                          <xsl:value-of select="@title"/>
-                        
-                          <!-- If we have files to display prepare a table and list them -->
-                          <xsl:if test="count(files/file) &gt; 0">
-                            <br/>
-                            <table>
-                              <xsl:for-each select="files/file">
-                                <tr>
-                                  <td>
-                                  </td>
-                                  <td>
-                                    <a>
-                                      <xsl:attribute name="href">series?play=<xsl:value-of select="@filepath"/></xsl:attribute>
-                                      <xsl:value-of select="@filename"/>
-                                    </a>
-                                  </td>
-                                  <td>
-                                    <a>
-                                      <xsl:attribute name="href">series?delete=<xsl:value-of select="@filepath"/></xsl:attribute>
-                                      [DELETE]
-                                    </a>
-                                  </td>
-                                  <td>
-                                    <a>
-                                      <xsl:attribute name="href">series?archive=<xsl:value-of select="@filepath"/></xsl:attribute>
-                                      [ARCHIVE]
-                                    </a>
-                                  </td>
-                                </tr>
-                              </xsl:for-each>
-                            </table>
-                          </xsl:if>
-                        </td>
-                        <td>
-                          <a>
-                              <xsl:attribute name="href">series?seen=<xsl:value-of select="@id"/></xsl:attribute>
-                              [MARK SEEN]
-                          </a>     
-                        </td>
-                        <td><xsl:value-of select="@count" /></td>
+                      <!-- Alternating table color cosmetics -->
+                      <!-- <xsl:if test="position() mod 2 =0 ">
+                        <xsl:attribute name="class">evenrow</xsl:attribute>
+                      </xsl:if>
+                      <xsl:if test="position() mod 2 =1 ">
+                        <xsl:attribute name="class">oddrow</xsl:attribute>
+                      </xsl:if> -->
+
+                      <td class="eprow"><div id="eptext"><xsl:value-of select="@number"/></div></td>
+                      <td class="eprow"><div id="eptext"><xsl:value-of select="@season"/></div></td>
+                      <td class="eprow">
+                        <div id="epcaption"><xsl:value-of select="@title"/></div>
+                      </td>
+                      <td>
+                        <a>
+                          <xsl:attribute name="href">series?seen=<xsl:value-of select="@id"/></xsl:attribute>
+                          <img src="www/icon_delete_big.png" />
+                        </a>     
+                      </td>
                     </tr>
-                </xsl:for-each>
-            </table>
+                    <!-- If we have files to display prepare a table and list them -->
+                    <xsl:if test="count(files/file) &gt; 0">
+                      <xsl:for-each select="files/file">
+                        <tr valign="center">
+                          <td colspan="3" >
+                            <img src="www/icon_play_large.png" />
+                            <img src="www/icon_delete_big.png" />
+                            <img src="www/icon_archive_big.png" />
+                            <a>
+                              <xsl:attribute name="href">series?play=<xsl:value-of select="@filepath"/></xsl:attribute>
+                              <xsl:value-of select="@filename"/>
+                            </a>
+                          </td>
+                        </tr>
+                      </xsl:for-each>
+                    </xsl:if>
+                  </xsl:for-each>
+              </table>
+            </div>
         </body>
     </html>
 </xsl:template>

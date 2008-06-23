@@ -7,6 +7,58 @@ body
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
+tr.oddrow 
+{
+    background-color: #00007a;
+}
+
+td.header
+{
+    border-bottom-style: dashed; 
+    border-bottom-color: #ffffff; 
+    border-bottom-width: 1px;
+}
+
+#headertext
+{
+    font-style: italic;
+    font-size: 150%;
+}
+
+a, a:visited, #seriescount
+{
+    text-decoration: none;
+    color: #acacac;
+    font-style: bold;
+    font-size: 150%;
+}
+
+#epcaption, #eptext
+{
+    color: #d6d66e;
+    font-style: bold;
+    font-size: 180%;
+    border-bottom-style: solid; 
+    border-bottom-color: #4b4bff; 
+    border-bottom-width: 1px;
+}
+
+td.eprow
+{
+    vertical-align: top;
+}
+
+tr.eprow2
+{
+    vertical-align: center;
+}
+
+
+/* TODO: Fix gap in table */
+
+
+/* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
+
 /* overall div that encapsulates all content */
 #overall
 {
@@ -22,19 +74,9 @@ body
     margin-bottom: 20pt;
 }
 
-a, a:visited, #seriescount
-{
-    text-decoration: none;
-    color: #acacac;
-    font-style: bold;
-    font-size: 150%;
-}
 
-#sheader, #eheader
-{
-    font-style: italic;
-    font-size: 150%;
-}
+
+
 
 #seriescount
 {
@@ -46,10 +88,11 @@ a, a:visited, #seriescount
     margin-left: 20pt;
 }
 
+
 a:hover 
 {
     text-decoration: underline;
-    color: fff700;
+    color: #fff700;
 }
 
 a img 

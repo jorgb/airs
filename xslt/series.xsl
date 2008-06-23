@@ -12,26 +12,41 @@
         </head>
         <body>
             <div id="overall">
+              
               <div id="title">Airs Series Overview</div>
+
               <div id="series_area">
+
                 <table>
-                    <tr>
-                        <td><div id="sheader">Series Name</div></td>
-                        <td><div id="eheader"># Episodes</div></td>
+                    <!-- Main Table Header -->
+                    <tr class="captionrow">
+                        <td class="header"><div id="headertext">Series Name</div></td>
+                        <td class="header"><div id="headertext"># Episodes</div></td>
                     </tr>
+                    
+                    <!-- Repeating table rows per series item -->
                     <xsl:for-each select="airs/series/item">
-                        <tr>
-                            <td class="">
-                              <div id="seriestitle">
-                                <a>
-                                    <xsl:attribute name="class">series_name</xsl:attribute>
-                                    <xsl:attribute name="href">series?id=<xsl:value-of select="@id"/></xsl:attribute>
-                                    <xsl:value-of select="@name"/>
-                                </a>
-                              </div>
-                            </td>
-                            <td><div id="seriescount"><xsl:value-of select="@count"/></div></td>
-                        </tr>
+                      <tr>
+                        <!-- Alternating table color cosmetics -->
+                        <xsl:if test="position() mod 2 =0 ">
+                          <xsl:attribute name="class">evenrow</xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="position() mod 2 =1 ">
+                          <xsl:attribute name="class">oddrow</xsl:attribute>
+                        </xsl:if>
+                          
+                        <td class="seriestitle">
+                          <a>
+                            <xsl:attribute name="class">series_name</xsl:attribute>
+                            <xsl:attribute name="href">series?id=<xsl:value-of select="@id"/></xsl:attribute>
+                            <xsl:value-of select="@name"/>
+                          </a>
+                        </td>
+                        
+                        <td>
+                          <div id="seriescount"><xsl:value-of select="@count"/></div>
+                        </td>
+                      </tr>
                     </xsl:for-each>
                 </table>
               </div>
