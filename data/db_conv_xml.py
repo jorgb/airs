@@ -1,6 +1,6 @@
 import libxml2
 from data import series_list
-from data import db
+from data import db, appcfg
 import re
 import os
 
@@ -10,6 +10,23 @@ class EpisodeFile(object):
     def __init__(self):
         self.filename = ''
         self.filepath = ''
+        
+
+def _createOptionsNode():
+    """ Creates a node with in there some options that the XSLT engine
+    might want to alter the output """
+    
+    options = libxml2.newNode("options")
+    
+    layout = libxml2.newNode("layout")
+    options.addChild(layout)
+    
+    s = "screen"
+    if appcfg.options[appcfg.CFG_LAYOUT_SCREEN] == appcfg.LAYOUT_TV:
+        s = "tv"
+    layout.setContent(s)
+    
+    return options 
         
 
 def _collectEpisodeFiles(series_path):
@@ -77,6 +94,9 @@ def get_series_xml():
     root = libxml2.newNode("airs")
     dom.addChild(root)
     
+    options = _createOptionsNode()
+    root.addChild(options)
+    
     items = libxml2.newNode("series")
     root.addChild(items)
         
@@ -119,6 +139,9 @@ def get_episode_list(series_id):
     root = libxml2.newNode("airs")
     dom.addChild(root)
 
+    options = _createOptionsNode()
+    root.addChild(options)
+        
     series = db.store.find(series_list.Series, series_list.Series.id == series_id).one()
     if series is None:
         return dom

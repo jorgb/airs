@@ -7,6 +7,7 @@ from data import viewmgr
 from data import series_list
 from data import appcfg
 from data import db_conv_xml
+from data import db
 
 
 class WebDispatchError(Exception):
@@ -34,21 +35,39 @@ def seriesIndex(cmd, args):
 
 def episodeList(cmd, args):
     xml = db_conv_xml.get_episode_list(args["id"])
+
+    # DEBUG ONLY!
+    #f = open("/home/jorg/personal/src/airs/xslt/test/episodes.xml", "wt")
+    #xml.dump(f)
+    #f.close()
     
     try:
         styleDoc = libxml2.parseFile(_getXSLTpath("episodelist.xsl"))
     except libxml2.parserError, msg:
         raise WebDispatchError, "Parser error occured: %s" % str(msg)
     
+    
     style = libxslt.parseStylesheetDoc(styleDoc)
 
     result = style.applyStylesheet(xml, None)
     cmd.html = style.saveResultToString(result)
       
+
+def markSeen(cmd, args):
+
+    episode = db.store.find(series_list.Episode, series_list.Episode.id == args["id"]).one()
+    if episode:
+        episode.status = series_list.EP_SEEN
+        db.store.commit()
     
+        # redirect to episode list
+        cmd.html = """<html><head><meta http-equiv="Refresh" content="0; url=127.0.0.1/series/cmd_get_series=%i</head>
+<body>Please wait!</body></html>""" % episode.series_id        
+        
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,
-                    "get_episodes": episodeList }
+                    "get_episodes": episodeList,
+                    "mark_seen": markSeen}
 
 def execute(cmd, id, args):
     cb = synccmd.SyncCommand(id)

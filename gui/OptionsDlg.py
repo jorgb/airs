@@ -13,7 +13,18 @@ class OptionsDlg(wx.Dialog):
         res.LoadOnDialog(pre, parent, "OptionsDialog")
         self.PostCreate(pre)
        
-        #self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
+        self._layout = xrc.XRCCTRL(self, "ID_LAYOUT")
+        self._layout.Append("Screen (small fonts and icons)", appcfg.LAYOUT_SCREEN)
+        self._layout.Append("TV (big fonts and icons)", appcfg.LAYOUT_TV)
+        
+        layout = appcfg.options[appcfg.CFG_LAYOUT_SCREEN]
+        for idx in xrange(0, self._layout.GetCount()):
+            if self._layout.GetClientData(idx) == layout:
+                self._layout.SetSelection(idx)
+                break
+        
+        
+        self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
 
         # TODO: Set the settings in the dialog controls
 
@@ -25,6 +36,8 @@ class OptionsDlg(wx.Dialog):
         
         # TODO: return from this function without event.Skip if not correct        
 
+        appcfg.options[appcfg.CFG_LAYOUT_SCREEN] = self._layout.GetClientData(self._layout.GetSelection())
+        
         event.Skip()
 
 

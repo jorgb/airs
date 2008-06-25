@@ -6,7 +6,7 @@
 <xsl:template match="/">
     <html>
         <head>
-            <link rel="stylesheet" type="text/css" href="www/airs.css" />
+            <link rel="stylesheet" type="text/css" href="www/screen/airs.css" />
 
             <title>Airs Series Overview</title>
         </head>
@@ -38,7 +38,7 @@
                         <td class="seriestitle">
                           <a>
                             <xsl:attribute name="class">series_name</xsl:attribute>
-                            <xsl:attribute name="href">series?id=<xsl:value-of select="@id"/></xsl:attribute>
+                            <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
                             <xsl:value-of select="@name"/>
                           </a>
                         </td>

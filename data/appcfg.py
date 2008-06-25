@@ -21,28 +21,33 @@ DB_NAME             = 'series.db'
 # your settings to disk, the registry key, etc
 APP_NAME            = 'Airs'
 
+LAYOUT_SCREEN = 1
+LAYOUT_TV     = 2
+
 # generic author information
 APP_AUTHOR          = 'Jorgen Bodde'
 APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
 # configuration values
-CFG_LAYOUT_DEFAULT    = 'window/default_layout'       # default layout upon saving (saved one time only)
-CFG_LAYOUT_LAST       = 'window/last_layout'          # last layout when closing window
-CFG_LAYOUT_LAST_H     = 'window/last_height'          # last height when closing window
-CFG_LAYOUT_LAST_W     = 'window/last_width'           # last width when closing window
-CFG_LAYOUT_LAST_X     = 'window/last_xpos'            # last height when closing window
-CFG_LAYOUT_LAST_Y     = 'window/last_ypos'            # last width when closing window
-CFG_SHOW_UNSEEN       = 'series/show_unseen'
-CFG_EPISODE_DELTA     = 'series/episode_delta'
-CFG_UPDATED_VIEW      = 'series/updated_view'
-CFG_LAYOUT_COL_NR     = 'window/columns/number'
-CFG_LAYOUT_COL_SEASON = 'window/columns/season'
-CFG_LAYOUT_COL_TITLE  = 'window/columns/title'
-CFG_LAYOUT_COL_SERIES = 'window/columns/series'
-CFG_LAYOUT_COL_DATE   = 'window/columns/date'
-CFG_LAYOUT_HIDDEN     = 'window/hidden'
-CFG_TRAY_MINIMIZE     = 'window/minimized'
+CFG_LAYOUT_DEFAULT      = 'window/default_layout'       # default layout upon saving (saved one time only)
+CFG_LAYOUT_LAST         = 'window/last_layout'          # last layout when closing window
+CFG_LAYOUT_LAST_H       = 'window/last_height'          # last height when closing window
+CFG_LAYOUT_LAST_W       = 'window/last_width'           # last width when closing window
+CFG_LAYOUT_LAST_X       = 'window/last_xpos'            # last height when closing window
+CFG_LAYOUT_LAST_Y       = 'window/last_ypos'            # last width when closing window
+CFG_SHOW_UNSEEN         = 'series/show_unseen'
+CFG_EPISODE_DELTA       = 'series/episode_delta'
+CFG_UPDATED_VIEW        = 'series/updated_view'
+CFG_LAYOUT_COL_NR       = 'window/columns/number'
+CFG_LAYOUT_COL_SEASON   = 'window/columns/season'
+CFG_LAYOUT_COL_TITLE    = 'window/columns/title'
+CFG_LAYOUT_COL_SERIES   = 'window/columns/series'
+CFG_LAYOUT_COL_DATE     = 'window/columns/date'
+CFG_LAYOUT_HIDDEN       = 'window/hidden'
+CFG_TRAY_MINIMIZE       = 'window/minimized'
+CFG_LAYOUT_SCREEN       = 'webserver/layout'
+CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -59,7 +64,9 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_COL_TITLE,      'i', 220  ),
             (CFG_LAYOUT_COL_DATE,       'i', 100  ),
             (CFG_LAYOUT_HIDDEN,         'b', False),
-            (CFG_TRAY_MINIMIZE,         'b', False)
+            (CFG_TRAY_MINIMIZE,         'b', False),
+            (CFG_LAYOUT_SCREEN,         'i', LAYOUT_SCREEN),
+            (CFG_WEBSERVER_HIDE_SEEN,   'b', True)
         ]
 
 # max files in the file history
