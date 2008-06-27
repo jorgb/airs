@@ -74,10 +74,11 @@ class Series(object):
     postponed = Int()
     last_update = Unicode()
     update_period = Int()       # in how many days later
+    folder = Unicode()
 
     
     def __storm_loaded__(self):
-        if self.update_period == None:
+        if self.update_period is None:
             self.update_period = 0
     
     

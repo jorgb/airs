@@ -1,0 +1,103 @@
+
+/* body of airs pages */
+body 
+{
+    color: #ffffff;
+    background-color: #00005c; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+tr.oddrow 
+{
+    background-color: #00007a;
+}
+
+td.header
+{
+    border-bottom-style: dashed; 
+    border-bottom-color: #ffffff; 
+    border-bottom-width: 1px;
+}
+
+#headertext
+{
+    font-style: italic;
+    font-size: 150%;
+}
+
+a, a:visited, #seriescount
+{
+    text-decoration: none;
+    color: #acacac;
+    font-style: bold;
+    font-size: 150%;
+}
+
+#epcaption, #eptext
+{
+    color: #d6d66e;
+    font-style: bold;
+    font-size: 180%;
+    border-bottom-style: solid; 
+    border-bottom-color: #4b4bff; 
+    border-bottom-width: 1px;
+}
+
+td.eprow
+{
+    vertical-align: top;
+}
+
+tr.eprow2
+{
+    vertical-align: center;
+}
+
+
+/* TODO: Fix gap in table */
+
+
+/* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
+
+/* overall div that encapsulates all content */
+#overall
+{
+    /* margin: auto 33% auto 33%; */
+    font-size: 200%;
+}
+
+/* the title of the contents */
+#title
+{
+    font-size: 200%;
+    color: #eae975;
+    margin-bottom: 20pt;
+}
+
+
+
+
+
+#seriescount
+{
+    margin-left: 20pt;
+}
+
+#seriestitle
+{
+    margin-left: 20pt;
+}
+
+
+a:hover 
+{
+    text-decoration: underline;
+    color: #fff700;
+}
+
+a img 
+{
+    border: 0;
+}
+
+
