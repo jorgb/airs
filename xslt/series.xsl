@@ -37,7 +37,7 @@
                           
                         <td class="seriestitle">
                           <a>
-                            <xsl:attribute name="class">series_name</xsl:attribute>
+                            <xsl:attribute name="class">series</xsl:attribute>
                             <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
                             <xsl:value-of select="@name"/>
                           </a>

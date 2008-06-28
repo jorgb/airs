@@ -1,4 +1,5 @@
 import libxml2
+import datetime
 from data import series_list
 from data import db, appcfg
 import re
@@ -17,6 +18,7 @@ def _createOptionsNode():
     might want to alter the output """
     
     options = libxml2.newNode("options")
+    options.setProp("today", datetime.date.today().strftime("%Y%m%d"))
     
     layout = libxml2.newNode("layout")
     options.addChild(layout)
@@ -25,7 +27,7 @@ def _createOptionsNode():
     if appcfg.options[appcfg.CFG_LAYOUT_SCREEN] == appcfg.LAYOUT_TV:
         s = "tv"
     layout.setContent(s)
-    
+        
     return options 
         
 
@@ -36,7 +38,11 @@ def _collectEpisodeFiles(series_path):
     epfiles = dict()
     ucat = list()
     
-    m = re.compile("(.*?)S(?P<season>[0-9]+)E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+    m1 = re.compile("(.*?)S(?P<season>[0-9]+)E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+    m2 = re.compile("(?P<season>[1-9]{1})(?P<episode>[0-9]{2})(.*?)")
+    matches = [ m1, 
+                m2 ]
+
     for root, dirs, files in os.walk(series_path):
         
         for fn in files:
@@ -47,19 +53,30 @@ def _collectEpisodeFiles(series_path):
                 item.filename = fn
                 item.filepath = os.path.join(root, fn)
 
-                result = m.match(fn)
-                if result is not None:
-                    season = "S%sE%s" % (result.group("season"), result.group("episode"))
-                    
-                    if season in epfiles:
-                        epfiles[season].append(item)
-                    else:
-                        l = list()
-                        l.append(item)
-                        epfiles[season] = l
+                orhpan = True
+                result = None
+                for m in matches:
+                    result = m.match(fn)
+                
+                    if result is not None:
+                        sstr = result.group("season")
+                        if len(sstr) == 1:
+                            sstr = "0" + sstr
+                        season = "S%sE%s" % (sstr, result.group("episode"))
                         
-                else:
+                        if season in epfiles:
+                            epfiles[season].append(item)
+                        else:
+                            l = list()
+                            l.append(item)
+                            epfiles[season] = l
+                        
+                        orphan = False
+                        break
+                    
+                if orphan:
                     ucat.append(item)
+
 
     # store all not categorised items here, leave '_' as key
     # for sorting properly later on

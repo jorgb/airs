@@ -42,13 +42,14 @@ class series_http_handler(resource.Resource):
         
         elif "cmd_get_series" in request.args:
             id = int(request.args["cmd_get_series"][0])
-            cmd = send_command("get_episodes", args={"id": id})
-                
+            cmd = send_command("get_episodes", args={"id": id})   
             request.write(cmd.html)
+            
         elif "cmd_mark_seen" in request.args:
             id = int(request.args["cmd_mark_seen"][0])
             cmd = send_command("mark_seen", args={"id": id})
-            
+            request.write(cmd.html)
+                        
         return ""
     
     

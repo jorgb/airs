@@ -37,16 +37,15 @@ def episodeList(cmd, args):
     xml = db_conv_xml.get_episode_list(args["id"])
 
     # DEBUG ONLY!
-    #f = open("/home/jorg/personal/src/airs/xslt/test/episodes.xml", "wt")
-    #xml.dump(f)
-    #f.close()
+    f = open("/home/jorg/personal/src/airs/xslt/test/episodes.xml", "wt")
+    xml.dump(f)
+    f.close()
     
     try:
         styleDoc = libxml2.parseFile(_getXSLTpath("episodelist.xsl"))
     except libxml2.parserError, msg:
         raise WebDispatchError, "Parser error occured: %s" % str(msg)
-    
-    
+        
     style = libxslt.parseStylesheetDoc(styleDoc)
 
     result = style.applyStylesheet(xml, None)
@@ -61,8 +60,8 @@ def markSeen(cmd, args):
         db.store.commit()
     
         # redirect to episode list
-        cmd.html = """<html><head><meta http-equiv="Refresh" content="0; url=127.0.0.1/series/cmd_get_series=%i</head>
-<body>Please wait!</body></html>""" % episode.series_id        
+        args["id"] = episode.series_id
+        return episodeList(cmd, args)
         
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,
