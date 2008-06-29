@@ -19,7 +19,7 @@ def send_command(s, args):
         evt = synccmd.SyncCallbackCommandEvent(callid = callID, cmd = s, args = args)
         parent.AddPendingEvent(evt)
         # now wait for a response (5 secs)
-        cmd = synccmd.waitForResponse(callID, 3000)
+        cmd = synccmd.waitForResponse(callID, 15000)
     if cmd is None:
         cmd = synccmd.SyncCommand(-1)
         cmd.html = "<html><h1>Command '%s' has timed out!</h1>" % s + \

@@ -21,7 +21,8 @@
                     <!-- Main Table Header -->
                     <tr class="captionrow">
                         <td class="header"><div id="headertext">Series Name</div></td>
-                        <td class="header"><div id="headertext"># Episodes</div></td>
+                        <td class="header" colspan="2"><div id="headertext">Not Watched</div></td>
+                        <td class="header"><div id="headertext">Files</div></td>
                     </tr>
                     
                     <!-- Repeating table rows per series item -->
@@ -43,8 +44,14 @@
                           </a>
                         </td>
                         
-                        <td>
-                          <div id="seriescount"><xsl:value-of select="@count"/></div>
+                        <td class="number">
+                          <div id="seriescount"><xsl:value-of select="@seencount"/></div>
+                        </td>
+                        <td class="number">
+                          <div id="seriescount"><xsl:number value=" (100*number(@seencount)) div number(@count)"/>%</div>
+                        </td>
+                        <td class="number">
+                          <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
                         </td>
                       </tr>
                     </xsl:for-each>

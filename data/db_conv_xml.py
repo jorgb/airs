@@ -12,7 +12,16 @@ class EpisodeFile(object):
         self.filename = ''
         self.filepath = ''
         
-
+def _getMediaCount(series_path):
+    """ Returns number of files in directory which have a valid media extension """
+    count = 0
+    for root, dirs, files in os.walk(series_path):     
+        for fn in files:
+            fnroot, fnext = os.path.splitext(fn)
+            if fnext.lower().lstrip(".") in _media_extensions:
+                count += 1
+    return count
+        
 def _createOptionsNode():
     """ Creates a node with in there some options that the XSLT engine
     might want to alter the output """
@@ -127,7 +136,10 @@ def get_series_xml():
         serie.setProp("id", str(item.id))
         serie.setProp("cancelled", str(item.postponed))
         serie.setProp("folder", item.folder)
-
+        
+        seriespath = series_list.get_series_path(item)
+        serie.setProp("mediacount", str(_getMediaCount(seriespath)))
+        
         # report total number of episodes and the 
         # episodes already seen
         c = db.store.execute("select count(*) from episode where series_id = %i" % item.id)

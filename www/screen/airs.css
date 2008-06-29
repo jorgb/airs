@@ -26,6 +26,10 @@ table.episodes
     width: 100%;
 }
 
+td.number
+{
+    text-align: right;
+}
 
 #overall
 {
