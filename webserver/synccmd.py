@@ -14,6 +14,7 @@ class SyncCommand(object):
         self.id = id             # ID of caller
         self.params = dict()
         self.html = ''
+        self.redirect = ''
         
 
 class SyncCommandList(object):

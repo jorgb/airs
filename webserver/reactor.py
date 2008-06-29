@@ -36,20 +36,27 @@ class series_http_handler(resource.Resource):
         pass
         
     def render_GET(self, request):
+        cmd = None
         if not request.args:
             cmd = send_command("get_index", args = {})
-            request.write(cmd.html)
         
         elif "cmd_get_series" in request.args:
             id = int(request.args["cmd_get_series"][0])
             cmd = send_command("get_episodes", args={"id": id})   
-            request.write(cmd.html)
             
         elif "cmd_mark_seen" in request.args:
             id = int(request.args["cmd_mark_seen"][0])
             cmd = send_command("mark_seen", args={"id": id})
-            request.write(cmd.html)
-                        
+                                    
+        if cmd is not None:
+            if cmd.redirect:
+                # redirect goes before html display
+                request.redirect(cmd.redirect)
+            else:
+                request.write(cmd.html)
+        else:
+            request.write("<h1>ERROR, last request did not produce a valid command!</h1>") 
+        
         return ""
     
     

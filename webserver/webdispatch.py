@@ -60,8 +60,11 @@ def markSeen(cmd, args):
         db.store.commit()
     
         # redirect to episode list
-        args["id"] = episode.series_id
-        return episodeList(cmd, args)
+        #args["id"] = episode.series_id
+        #return episodeList(cmd, args)
+        
+        cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % episode.series_id
+        cmd.html = ''
         
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,

@@ -151,7 +151,7 @@
                                     <flag>wxALIGN_LEFT|wxALL</flag>
                                     <border>5</border>
                                     <object class="wxStaticText" name="wxID_STATIC">
-                                        <label>Enter absolute path for your series</label>
+                                        <label>Enter root path for your series (optional)</label>
                                     </object>
                                 </object>
                                 <object class="sizeritem">

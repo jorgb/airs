@@ -1,9 +1,11 @@
 import os
+import platform
 
 import wx
 import wx.xrc as xrc
 import xmlres
 from data import appcfg
+
 
 class OptionsDlg(wx.Dialog):
     def __init__(self, parent, id = wx.ID_ANY):
@@ -23,11 +25,38 @@ class OptionsDlg(wx.Dialog):
                 self._layout.SetSelection(idx)
                 break
         
+        self._playerPath = xrc.XRCCTRL(self, "ID_PLAYER_PATH")
+        self._playerBtn = xrc.XRCCTRL(self, "ID_PLAYER_BROWSE")
+        
+        self._seriesPath = xrc.XRCCTRL(self, "ID_SERIES_ROOT")
+        self._seriesBtn = xrc.XRCCTRL(self, "ID_SERIES_BROWSE")
+
+        self._playerPath.SetValue(appcfg.options[appcfg.CFG_PLAYER_PATH])
+        self._seriesPath.SetValue(appcfg.options[appcfg.CFG_SERIES_PATH])
         
         self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
+        self.Bind(wx.EVT_BUTTON, self._browseSeries, self._seriesBtn)
+        self.Bind(wx.EVT_BUTTON, self._browsePlayer, self._playerBtn)
 
-        # TODO: Set the settings in the dialog controls
-
+        
+    def _browsePlayer(self, event):
+        if platform.system().lower() == "windows":
+            wildcard = "*.*"
+        else:
+            wildcard = "*"
+        
+        dlg = wx.FileDialog(self, "Select the player executable", os.path.dirname(self._playerPath.GetValue()), 
+                            "", wildcard, wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            self._playerPath.SetValue(dlg.GetPath() + " %file%")
+      
+            
+    def _browseSeries(self, event):
+        dlg = wx.DirDialog(self, "Select path for series", self._seriesPath.GetValue())
+        if dlg.ShowModal() == wx.ID_OK:
+            self._seriesPath.SetValue(dlg.GetPath())
+            
+        
     # --------------------------------------------------------------------------
     def __OnOK(self, event): 
         """ Press OK, verify the path and notify if the path is not valid """
@@ -37,6 +66,8 @@ class OptionsDlg(wx.Dialog):
         # TODO: return from this function without event.Skip if not correct        
 
         appcfg.options[appcfg.CFG_LAYOUT_SCREEN] = self._layout.GetClientData(self._layout.GetSelection())
+        appcfg.options[appcfg.CFG_PLAYER_PATH] = self._playerPath.GetValue()
+        appcfg.options[appcfg.CFG_SERIES_PATH] = self._seriesPath.GetValue()
         
         event.Skip()
 
