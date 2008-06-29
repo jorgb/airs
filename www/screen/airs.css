@@ -21,6 +21,17 @@ td.header
     margin-bottom: 4pt;
 }
 
+table.episodes
+{
+    width: 100%;
+}
+
+
+#overall
+{
+    width: 80%;
+}
+
 #headertext
 {
     font-style: italic;

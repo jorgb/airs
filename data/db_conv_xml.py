@@ -53,7 +53,7 @@ def _collectEpisodeFiles(series_path):
                 item.filename = fn
                 item.filepath = os.path.join(root, fn)
 
-                orhpan = True
+                orphan = True
                 result = None
                 for m in matches:
                     result = m.match(fn)
@@ -172,7 +172,7 @@ def get_episode_list(series_id):
     episodes = [episode for episode in result]
     
     if series.folder != '':
-        sfiles = _collectEpisodeFiles(series.folder)
+        sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
     else:
         sfiles = dict()
     

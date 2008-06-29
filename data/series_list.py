@@ -6,8 +6,10 @@
 
 from storm.locals import *
 from storm.locals import SQL
+import os
 import datetime
 import pickle
+import appcfg
 
 EP_NEW         = 0
 EP_TO_DOWNLOAD = 1
@@ -27,6 +29,22 @@ period_trans  = { -1: "monday",   -2: "tuesday",   -3: "wednesday",
                   -7: "sunday",   -8: "bi-weekly", -9: "monthly" }
 period_custom = ( -999, "custom" )
 
+def get_series_path(series):
+    """ Returns the series path, if relative, it will append the root path
+    from the settings. If not relative, it will return the path """
+    seriespath = series.folder.strip()
+    rootpath = appcfg.options[appcfg.CFG_SERIES_PATH]
+    if seriespath == '':
+        return ''
+    
+    if os.path.isabs(seriespath):
+        return seriespath
+    else:
+        if rootpath == '':
+            return ''
+        else:
+            return os.path.join(rootpath, seriespath)
+        
 def prio_to_string(priorities):
     s = ''
     for key in priorities:

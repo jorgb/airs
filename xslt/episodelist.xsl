@@ -14,7 +14,7 @@
               <div id="title"><xsl:value-of select="airs/episodes/@name" /></div>
               <a class="subcaption" href="series">Return to episode list</a>
               <div id="titlespacing" />
-              <table>
+              <table class="episodes">
                   <!-- <tr class="captionrow">
                       <td class="header"><div id="headertext">Number</div></td>
                       <td class="header"><div id="headertext">Season</div></td>

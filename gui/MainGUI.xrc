@@ -235,209 +235,323 @@
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxALL</flag>
+                <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
                 <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <label>Enter the title of the series to add (must be unique)</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxTextCtrl" name="ID_SERIES_ID">
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxALL</flag>
-                <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <label>Enter the link of the site(s) that needs to scanned (one per line starting with http://)</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxTextCtrl" name="ID_SERIES_LINK">
-                    <size>-1,60</size>
-                    <style>wxTE_MULTILINE</style>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
-                <border>5</border>
-                <object class="wxStaticBoxSizer" name="wxID_ANY">
-                    <orient>wxVERTICAL</orient>
-                    <label>UPDATE ALL settings</label>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_LEFT|wxALL</flag>
-                        <border>5</border>
-                        <object class="wxCheckBox" name="ID_CANCELLED">
-                            <label>This series is cancelled or finished. Don't include it</label>
-                            <checked>0</checked>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_LEFT|wxRIGHT</flag>
-                        <border>5</border>
-                        <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <label>Update this series every</label>
+                <object class="wxNotebook" name="ID_NOTEBOOK">
+                    <style>wxBK_DEFAULT</style>
+                    <object class="notebookpage">
+                        <label>Collecing Info</label>
+                        <object class="wxPanel" name="ID_PANEL">
+                            <style>wxTAB_TRAVERSAL</style>
+                            <object class="wxBoxSizer">
+                                <orient>wxVERTICAL</orient>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>Enter the title of the series to add (must be unique)</label>
+                                    </object>
                                 </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                                <border>5</border>
-                                <object class="wxChoice" name="ID_PERIOD_SELECT">
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxTextCtrl" name="ID_SERIES_ID">
+                                    </object>
                                 </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <label>  (custom:</label>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>Enter the link of the site(s) that needs to scanned (one per line starting with http://)</label>
+                                    </object>
                                 </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                                <border>5</border>
-                                <object class="wxTextCtrl" name="ID_UPDATE_PERIOD">
-                                    <size>40,-1</size>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxTextCtrl" name="ID_SERIES_LINK">
+                                        <size>-1,60</size>
+                                        <style>wxTE_MULTILINE</style>
+                                    </object>
                                 </object>
-                            </object>
-                            <object class="sizeritem">
-                                <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
-                                <border>5</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <label>days)</label>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <font>
+                                            <size>8</size>
+                                            <family>swiss</family>
+                                            <weight>bold</weight>
+                                            <face>Tahoma</face>
+                                        </font>
+                                        <label>Supported sites are:</label>
+                                    </object>
                                 </object>
-                            </object>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxALL</flag>
-                <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <font>
-                        <size>8</size>
-                        <family>swiss</family>
-                        <weight>bold</weight>
-                        <face>Tahoma</face>
-                    </font>
-                    <label>Supported sites are:</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <label>     http://www.tv.com, http://epguides.com</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
-                <border>5</border>
-                <object class="wxStaticLine" name="wxID_STATIC">
-                    <style>wxLI_HORIZONTAL</style>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                <border>5</border>
-                <object class="wxStaticText" name="wxID_STATIC">
-                    <font>
-                        <size>8</size>
-                        <family>swiss</family>
-                        <weight>bold</weight>
-                        <face>Tahoma</face>
-                    </font>
-                    <label>Explanation</label>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
-                <border>5</border>
-                <object class="wxBoxSizer">
-                    <orient>wxHORIZONTAL</orient>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <font>
-                                <size>9</size>
-                                <family>swiss</family>
-                                <weight>bold</weight>
-                                <face>Tahoma</face>
-                            </font>
-                            <label>1.</label>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>On the tv series site, use the search function to find the series you want</label>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
-                <border>5</border>
-                <object class="wxBoxSizer">
-                    <orient>wxHORIZONTAL</orient>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <font>
-                                <size>9</size>
-                                <family>swiss</family>
-                                <weight>bold</weight>
-                                <face>Tahoma</face>
-                            </font>
-                            <label>2.</label>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Select the proper summaries page where the series are updated</label>
-                        </object>
-                    </object>
-                </object>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
-                <border>5</border>
-                <object class="wxBoxSizer">
-                    <orient>wxHORIZONTAL</orient>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_TOP|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <font>
-                                <size>9</size>
-                                <family>swiss</family>
-                                <weight>bold</weight>
-                                <face>Tahoma</face>
-                            </font>
-                            <label>3.</label>
-                        </object>
-                    </object>
-                    <object class="sizeritem">
-                        <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
-                        <border>5</border>
-                        <object class="wxStaticText" name="wxID_STATIC">
-                            <label>Copy the link to the above edit field, e.g:
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>     http://www.tv.com, http://epguides.com</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticLine" name="wxID_STATIC">
+                                        <style>wxLI_HORIZONTAL</style>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <font>
+                                            <size>8</size>
+                                            <family>swiss</family>
+                                            <weight>bold</weight>
+                                            <face>Tahoma</face>
+                                        </font>
+                                        <label>Explanation</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
+                                    <border>5</border>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <font>
+                                                    <size>9</size>
+                                                    <family>swiss</family>
+                                                    <weight>bold</weight>
+                                                    <face>Tahoma</face>
+                                                </font>
+                                                <label>1.</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>On the tv series site, use the search function to find the series you want</label>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
+                                    <border>5</border>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <font>
+                                                    <size>9</size>
+                                                    <family>swiss</family>
+                                                    <weight>bold</weight>
+                                                    <face>Tahoma</face>
+                                                </font>
+                                                <label>2.</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Select the proper summaries page where the series are updated</label>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT</flag>
+                                    <border>5</border>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_TOP|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <font>
+                                                    <size>9</size>
+                                                    <family>swiss</family>
+                                                    <weight>bold</weight>
+                                                    <face>Tahoma</face>
+                                                </font>
+                                                <label>3.</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Copy the link to the above edit field, e.g:
 http://www.tv.com/supernatural/show/30144/summary.html
 (the part behind the '?' is not needed)</label>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>Scheduling</label>
+                        <object class="wxPanel" name="ID_PANEL2">
+                            <style>wxTAB_TRAVERSAL</style>
+                            <object class="wxBoxSizer">
+                                <orient>wxVERTICAL</orient>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <font>
+                                            <size>10</size>
+                                            <family>swiss</family>
+                                            <weight>bold</weight>
+                                            <face>Sans</face>
+                                        </font>
+                                        <label>Settings for updating with Update ALL</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT</flag>
+                                    <border>5</border>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="spacer">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                            <border>5</border>
+                                            <size>5,5</size>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxRIGHT</flag>
+                                                    <border>5</border>
+                                                    <object class="wxBoxSizer">
+                                                        <orient>wxHORIZONTAL</orient>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                                            <border>5</border>
+                                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                                <label>Update this series every</label>
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                                                            <border>5</border>
+                                                            <object class="wxChoice" name="ID_PERIOD_SELECT">
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                                            <border>5</border>
+                                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                                <label>  (custom:</label>
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                                            <border>5</border>
+                                                            <object class="wxTextCtrl" name="ID_UPDATE_PERIOD">
+                                                                <size>40,-1</size>
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                                            <border>5</border>
+                                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                                <label>days)</label>
+                                                            </object>
+                                                        </object>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                                    <border>5</border>
+                                                    <object class="wxCheckBox" name="ID_CANCELLED">
+                                                        <label>This series is cancelled or finished. Don't include it</label>
+                                                        <checked>0</checked>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    <object class="notebookpage">
+                        <label>Episode Files</label>
+                        <object class="wxPanel" name="ID_PANEL3">
+                            <style>wxTAB_TRAVERSAL</style>
+                            <object class="wxBoxSizer">
+                                <orient>wxVERTICAL</orient>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>Path on disk to episodes</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxLEFT|wxRIGHT</flag>
+                                    <border>5</border>
+                                    <object class="wxBoxSizer">
+                                        <orient>wxHORIZONTAL</orient>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <option>1</option>
+                                            <object class="wxTextCtrl" name="ID_SERIES_PATH">
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM</flag>
+                                            <border>5</border>
+                                            <object class="wxButton" name="ID_SERIES_BROWSE">
+                                                <size>40,-1</size>
+                                                <label>...</label>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_RIGHT|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>(entering a relative folder will append it to the series root in preferences)</label>
+                                    </object>
+                                </object>
+                                <object class="spacer">
+                                    <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                                    <border>5</border>
+                                    <size>5,5</size>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="ID_WARNING">
+                                        <font>
+                                            <size>10</size>
+                                            <family>swiss</family>
+                                            <weight>bold</weight>
+                                            <face>Sans</face>
+                                        </font>
+                                        <fg>#FF0000</fg>
+                                        <label>WARNING: It is recommended to set a series root folder 
+in the preferences first! This enhances portability.</label>
+                                    </object>
+                                </object>
+                            </object>
                         </object>
                     </object>
                 </object>

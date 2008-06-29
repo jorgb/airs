@@ -4,6 +4,7 @@
 # License:     GPLv2 (see LICENSE.txt)
 #==============================================================================
 
+import os
 import wx
 import wx.xrc as xrc
 import xmlres
@@ -27,6 +28,11 @@ class SeriesDlg(wx.Dialog):
         self._update_period = xrc.XRCCTRL(self, "ID_UPDATE_PERIOD")
         self._period_select = xrc.XRCCTRL(self, "ID_PERIOD_SELECT")
         self._last_updated = xrc.XRCCTRL(self, "ID_UPDATE_DATE")
+        self._seriesFolder = xrc.XRCCTRL(self, "ID_SERIES_PATH")
+        self._seriesBrowse = xrc.XRCCTRL(self, "ID_SERIES_BROWSE")
+        self._warning = xrc.XRCCTRL(self, "ID_WARNING")
+        
+        self._warning.Show(appcfg.options[appcfg.CFG_SERIES_PATH] == '')
         
         i = -1
         while i >= series_list.min_period:
@@ -37,8 +43,28 @@ class SeriesDlg(wx.Dialog):
         
         self.Bind(wx.EVT_UPDATE_UI, self._onUpdateUI)
         self.Bind(wx.EVT_CHOICE, self._onPeriodSelect, self._period_select)
+        self.Bind(wx.EVT_BUTTON, self._onSeriesBrowse, self._seriesBrowse)
     
     
+    def _onSeriesBrowse(self, event):
+        joined = False
+        rootfolder = appcfg.options[appcfg.CFG_SERIES_PATH]
+        seriesfolder = self._seriesFolder.GetValue()
+        if not os.path.isabs(seriesfolder) and rootfolder != '':
+            seriesfolder = os.path.join(rootfolder, seriesfolder)
+            joined = True
+                    
+        dlg = wx.DirDialog(self, "Select the series path", seriesfolder)
+        if dlg.ShowModal() == wx.ID_OK:
+            if not joined:
+                self._seriesFolder.SetValue(dlg.GetPath())
+            else:
+                cmnstr = os.path.commonprefix([rootfolder, dlg.GetPath()])
+                if len(cmnstr) > 0:
+                    self._seriesFolder.SetValue(dlg.GetPath()[len(cmnstr):].strip('/\\'))
+                else:
+                    self._seriesFolder.SetValue(dlg.GetPath())
+        
     def _onPeriodSelect(self, event):
         lst = self._period_select
         if lst.GetClientData(lst.GetSelection()) == series_list.period_custom[0]:
@@ -97,6 +123,8 @@ class SeriesDlg(wx.Dialog):
         series.name = unicode(series_name)
         series.url = unicode(series_link)
         
+        series.folder = unicode(self._seriesFolder.GetValue())
+        
         if self._postponed.GetValue():
             series.postponed = 1
         else:
@@ -138,4 +166,6 @@ class SeriesDlg(wx.Dialog):
             self._update_period.SetValue(str(per))
         else:
             self._update_period.SetValue('')
+            
+        self._seriesFolder.SetValue(series.folder)
             
