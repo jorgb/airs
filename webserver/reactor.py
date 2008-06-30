@@ -47,7 +47,17 @@ class series_http_handler(resource.Resource):
         elif "cmd_mark_seen" in request.args:
             id = int(request.args["cmd_mark_seen"][0])
             cmd = send_command("mark_seen", args={"id": id})
-                                    
+            
+        elif "cmd_play_file" in request.args and "return" in request.args:
+            thefile = request.args["cmd_play_file"][0]
+            return_id = request.args["return"][0]
+            cmd = send_command("play_file", args={"id": int(return_id), "file": thefile})
+
+        elif "cmd_archive_file" in request.args and "return" in request.args:
+            thefile = request.args["cmd_archive_file"][0]
+            return_id = request.args["return"][0]
+            cmd = send_command("archive_file", args={"id": int(return_id), "file": thefile})
+                        
         if cmd is not None:
             if cmd.redirect:
                 # redirect goes before html display

@@ -29,6 +29,8 @@ APP_AUTHOR          = 'Jorgen Bodde'
 APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
+FILE_DELETE_EXT = ".seen"
+
 # configuration values
 CFG_LAYOUT_DEFAULT      = 'window/default_layout'       # default layout upon saving (saved one time only)
 CFG_LAYOUT_LAST         = 'window/last_layout'          # last layout when closing window

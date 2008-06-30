@@ -1,6 +1,7 @@
 import os
 import libxml2
 import libxslt
+import platform
 
 import synccmd
 from data import viewmgr
@@ -37,9 +38,9 @@ def episodeList(cmd, args):
     xml = db_conv_xml.get_episode_list(args["id"])
 
     # DEBUG ONLY!
-    f = open("/home/jorg/personal/src/airs/xslt/test/episodes.xml", "wt")
-    xml.dump(f)
-    f.close()
+    #f = open("/home/jorg/personal/src/airs/xslt/test/episodes.xml", "wt")
+    #xml.dump(f)
+    #f.close()
     
     try:
         styleDoc = libxml2.parseFile(_getXSLTpath("episodelist.xsl"))
@@ -66,10 +67,47 @@ def markSeen(cmd, args):
         cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % episode.series_id
         cmd.html = ''
         
+
+def playFile(cmd, args):
+        
+    cmdstr = appcfg.options[appcfg.CFG_PLAYER_PATH]
+    
+       
+    # in linux we must escape the spaces
+    succes = False
+    if platform.system().lower()  == 'linux':
+        cmdstr = cmdstr.replace("%file%", "\"" + args["file"] + "\"") + "&"
+    else:
+        cmdstr = os.path.normcase(cmdstr)
+
+    if os.popen(cmdstr) is None:
+        cmd.html = "<h1>Can't play file</h1></br>" + args["file"]
+    else:
+        cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
+        cmd.html = ""
+ 
+        
+def archiveFile(cmd, args):
+        
+    thefile = args["file"]
+    fnbase, fnext = os.path.splitext(thefile)
+    if fnext != appcfg.FILE_DELETE_EXT:
+        destfile = thefile + appcfg.FILE_DELETE_EXT
+        try:
+            os.rename(thefile, destfile) 
+        except OSError:
+            cmd.html = "<h1>Error archiving file</h1></br>" + thefile
+            return
+        
+    cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
+    cmd.html = ""
+ 
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,
                     "get_episodes": episodeList,
-                    "mark_seen": markSeen}
+                    "mark_seen": markSeen,
+                    "play_file": playFile,
+                    "archive_file": archiveFile }
 
 def execute(cmd, id, args):
     cb = synccmd.SyncCommand(id)

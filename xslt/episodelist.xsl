@@ -78,13 +78,17 @@
                               <td></td>
                               <td colspan="2">
                                 <a>
-                                  <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute>
+                                  <!-- <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute> -->
+                                  <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
                                   <xsl:attribute name="class">playfile</xsl:attribute>
                                   <xsl:value-of select="@filename"/>
                                 </a>
                               </td>
                               <td>
-                                <img src="www/screen/icon_delete.png" />
+                                <a>
+                                  <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
+                                  <img src="www/screen/icon_delete.png" />
+                                </a>
                               </td>
                               <td>
                               </td>                          
@@ -105,13 +109,16 @@
                         <td></td>
                         <td colspan="2">
                           <a>
-                            <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute>
+                            <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
                             <xsl:attribute name="class">playfile</xsl:attribute>
                             <xsl:value-of select="@filename"/>
                           </a>
                         </td>
                         <td>
-                          <img src="www/screen/icon_delete.png" />
+                           <a>
+                             <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
+                             <img src="www/screen/icon_delete.png" />
+                           </a>
                         </td>
                         <td>
                         </td>
