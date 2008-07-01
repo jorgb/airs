@@ -1,4 +1,5 @@
 import os
+import subprocess
 import libxml2
 import libxslt
 import platform
@@ -70,21 +71,19 @@ def markSeen(cmd, args):
 
 def playFile(cmd, args):
         
-    cmdstr = appcfg.options[appcfg.CFG_PLAYER_PATH]
+    argstr = list()
+    for arg in appcfg.options[appcfg.CFG_PLAYER_ARGS].split():
+        argstr.append(arg.replace("%file%", args["file"]))
+    argstr.insert(0, appcfg.options[appcfg.CFG_PLAYER_PATH])
     
-       
-    # in linux we must escape the spaces
-    succes = False
-    if platform.system().lower()  == 'linux':
-        cmdstr = cmdstr.replace("%file%", "\"" + args["file"] + "\"") + "&"
-    else:
-        cmdstr = os.path.normcase(cmdstr)
-
-    if os.popen(cmdstr) is None:
+    try:
+        subprocess.Popen( argstr )
+    except OSError:
         cmd.html = "<h1>Can't play file</h1></br>" + args["file"]
-    else:
-        cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
-        cmd.html = ""
+        return
+
+    cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
+    cmd.html = ""
  
         
 def archiveFile(cmd, args):

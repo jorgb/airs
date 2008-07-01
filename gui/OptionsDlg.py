@@ -26,12 +26,14 @@ class OptionsDlg(wx.Dialog):
                 break
         
         self._playerPath = xrc.XRCCTRL(self, "ID_PLAYER_PATH")
+        self._playerArgs = xrc.XRCCTRL(self, "ID_PLAYER_ARGS")
         self._playerBtn = xrc.XRCCTRL(self, "ID_PLAYER_BROWSE")
         
         self._seriesPath = xrc.XRCCTRL(self, "ID_SERIES_ROOT")
         self._seriesBtn = xrc.XRCCTRL(self, "ID_SERIES_BROWSE")
 
         self._playerPath.SetValue(appcfg.options[appcfg.CFG_PLAYER_PATH])
+        self._playerArgs.SetValue(appcfg.options[appcfg.CFG_PLAYER_ARGS])
         self._seriesPath.SetValue(appcfg.options[appcfg.CFG_SERIES_PATH])
         
         self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
@@ -48,7 +50,7 @@ class OptionsDlg(wx.Dialog):
         dlg = wx.FileDialog(self, "Select the player executable", os.path.dirname(self._playerPath.GetValue()), 
                             "", wildcard, wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
-            self._playerPath.SetValue(dlg.GetPath() + " %file%")
+            self._playerPath.SetValue(dlg.GetPath())
       
             
     def _browseSeries(self, event):
@@ -68,6 +70,7 @@ class OptionsDlg(wx.Dialog):
         appcfg.options[appcfg.CFG_LAYOUT_SCREEN] = self._layout.GetClientData(self._layout.GetSelection())
         appcfg.options[appcfg.CFG_PLAYER_PATH] = self._playerPath.GetValue()
         appcfg.options[appcfg.CFG_SERIES_PATH] = self._seriesPath.GetValue()
+        appcfg.options[appcfg.CFG_PLAYER_ARGS] = self._playerArgs.GetValue()
         
         event.Skip()
 

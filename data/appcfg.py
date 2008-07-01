@@ -51,6 +51,7 @@ CFG_TRAY_MINIMIZE       = 'window/minimized'
 CFG_LAYOUT_SCREEN       = 'webserver/layout'
 CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
 CFG_PLAYER_PATH         = 'webserver/playerpath'
+CFG_PLAYER_ARGS         = 'webserver/playerargs'
 CFG_SERIES_PATH         = 'webserver/seriespath'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
@@ -72,6 +73,7 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_SCREEN,         'i', LAYOUT_SCREEN),
             (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
             (CFG_PLAYER_PATH,           's', ''),
+            (CFG_PLAYER_ARGS,           's', '%file%'),
             (CFG_SERIES_PATH,           's', '')
         ]
 
