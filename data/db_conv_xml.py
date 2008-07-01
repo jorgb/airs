@@ -211,8 +211,8 @@ def get_episode_list(series_id):
                 for epobj in epfiles:
                     
                     filenode = libxml2.newNode("file")
-                    filenode.setProp("filepath", epobj.filepath)
-                    filenode.setProp("filename", epobj.filename)
+                    filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
+                    filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
                     filesnode.addChild(filenode)
                     
                 # remove from season dict
