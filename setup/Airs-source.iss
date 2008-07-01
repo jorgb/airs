@@ -7,6 +7,9 @@ Source: ..\data\*.py; DestDir: {app}\data
 Source: ..\gui\images\*.png; DestDir: {app}\gui\images
 Source: ..\gui\images\*.py; DestDir: {app}\gui\images
 Source: ..\airs.ico; DestDir: {app}
+Source: ..\xslt\*.*; DestDir: {app}\xslt
+Source: ..\www\*.*; DestDir: {app}\www; Flags: recursesubdirs
+
 [Setup]
 OutputDir=.
 SourceDir=.\

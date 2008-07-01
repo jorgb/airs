@@ -3,6 +3,9 @@ Source: ..\dist\*.*; DestDir: {app}
 Source: ..\gui\*.xrc; DestDir: {app}\gui
 Source: ..\gui\images\*.png; DestDir: {app}\gui\images
 Source: ..\airs.ico; DestDir: {app}
+Source: ..\xslt\*.*; DestDir: {app}\xslt
+Source: ..\www\*.*; DestDir: {app}\www; Flags: recursesubdirs
+
 [Setup]
 OutputDir=..\setup
 SourceDir=..\dist
