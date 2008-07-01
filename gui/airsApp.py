@@ -34,10 +34,10 @@ class AirsApp(wx.App):
             
         if db.init(appcfg.dbpath, False) == db.UPGRADE_NEEDED:
             res = wx.MessageBox("The database needs upgrading. Please backup the file:\n" + \
-                                dbfile + "\n" + "And press YES to upgrade, NO to close the application",
+                                appcfg.dbpath + "\n" + "And press YES to upgrade, NO to close the application",
                                 "Warning", wx.ICON_WARNING | wx.YES_NO)
             if res == wx.YES:
-                if db.init(dbfile, True) == db.UPGRADE_FAILED:
+                if db.init(appcfg.dbpath, True) == db.UPGRADE_FAILED:
                     wx.MessageBox("Somehow the upgrade failed. Contact me for help!", "Error" , wx.ICON_HAND)
                     return 0
             else:
