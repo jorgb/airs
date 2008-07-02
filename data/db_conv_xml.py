@@ -40,6 +40,11 @@ def _createOptionsNode():
     return options 
         
 
+m1 = re.compile("(.*?)S(?P<season>[0-9]+)[ ]*E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+m2 = re.compile("(?P<season>[1-9]{1})(?P<episode>[0-9]{2})(.*?)")
+m3 = re.compile("(.*?)\.(?P<season>[0-9]{1})(?P<episode>[0-9]{2})\.(.*?)")
+m4 = re.compile("(.*?)(?P<season>[0-9]+)x(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+
 def _collectEpisodeFiles(series_path):
     """ Returns all the episodes recursively, searches for a season mask and if found
         indexes them. All unindexed files which are still media files will be returned 
@@ -47,10 +52,10 @@ def _collectEpisodeFiles(series_path):
     epfiles = dict()
     ucat = list()
     
-    m1 = re.compile("(.*?)S(?P<season>[0-9]+)E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
-    m2 = re.compile("(?P<season>[1-9]{1})(?P<episode>[0-9]{2})(.*?)")
     matches = [ m1, 
-                m2 ]
+                m2,
+                m3,
+                m4 ]
 
     for root, dirs, files in os.walk(series_path):
         
@@ -68,10 +73,10 @@ def _collectEpisodeFiles(series_path):
                     result = m.match(fn)
                 
                     if result is not None:
-                        sstr = result.group("season")
-                        if len(sstr) == 1:
-                            sstr = "0" + sstr
-                        season = "S%sE%s" % (sstr, result.group("episode"))
+                        seas_str = result.group("season")
+                        ep_str = result.group("episode")
+                        
+                        season = "S%02iE%02i" % (int(seas_str), int(ep_str))
                         
                         if season in epfiles:
                             epfiles[season].append(item)
