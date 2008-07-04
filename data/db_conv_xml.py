@@ -70,7 +70,7 @@ def _collectEpisodeFiles(series_path):
                     item.filename = fn
                     item.filepath = os.path.join(root, fn)
                     try:
-                        item.size = os.stat(filepath)[6] / 1048576.0
+                        item.size = os.stat(item.filepath)[6] / 1048576.0
                     except OSError:
                         item.size = 0
     
@@ -237,7 +237,7 @@ def get_episode_list(series_id):
                         filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
                         filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
                         if epobj.size > 1024:
-                            filenode.setProp("size", str("%.02f" % epobj.size / 1024))
+                            filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
                             filenode.setProp("unit", "Gb")
                         else:
                             filenode.setProp("size", str("%.02f" % epobj.size))

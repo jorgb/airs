@@ -91,7 +91,7 @@ def archiveFile(cmd, args):
     thefile = args["file"]
     head, tail = os.path.split(thefile)
     
-    head += appcfg.AIRS_ARCHIVED_PATH
+    head = os.path.join(head, appcfg.AIRS_ARCHIVED_PATH) 
     if not os.path.exists(head):
         try:
             os.makedirs(head)
