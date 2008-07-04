@@ -29,7 +29,7 @@ APP_AUTHOR          = 'Jorgen Bodde'
 APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
-FILE_DELETE_EXT = ".seen"
+AIRS_ARCHIVED_PATH = "Seen-Airs"
 
 # configuration values
 CFG_LAYOUT_DEFAULT      = 'window/default_layout'       # default layout upon saving (saved one time only)

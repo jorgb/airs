@@ -11,6 +11,7 @@ class EpisodeFile(object):
     def __init__(self):
         self.filename = ''
         self.filepath = ''
+        self.size = 0
         
 def _getMediaCount(series_path):
     """ Returns number of files in directory which have a valid media extension """
@@ -59,38 +60,43 @@ def _collectEpisodeFiles(series_path):
 
     for root, dirs, files in os.walk(series_path):
         
-        for fn in files:
-            fnroot, fnext = os.path.splitext(fn)
-            if fnext.lower().lstrip(".") in _media_extensions:
-
-                item = EpisodeFile()
-                item.filename = fn
-                item.filepath = os.path.join(root, fn)
-
-                orphan = True
-                result = None
-                for m in matches:
-                    result = m.match(fn)
-                
-                    if result is not None:
-                        seas_str = result.group("season")
-                        ep_str = result.group("episode")
-                        
-                        season = "S%02iE%02i" % (int(seas_str), int(ep_str))
-                        
-                        if season in epfiles:
-                            epfiles[season].append(item)
-                        else:
-                            l = list()
-                            l.append(item)
-                            epfiles[season] = l
-                        
-                        orphan = False
-                        break
+        # only scan paths that do not end with "Seen-Airs"
+        if os.path.split(root)[1] != appcfg.AIRS_ARCHIVED_PATH:
+            for fn in files:
+                fnroot, fnext = os.path.splitext(fn)
+                if fnext.lower().lstrip(".") in _media_extensions:
+    
+                    item = EpisodeFile()
+                    item.filename = fn
+                    item.filepath = os.path.join(root, fn)
+                    try:
+                        item.size = os.stat(item.filepath)[6] / 1048576.0
+                    except OSError:
+                        item.size = 0
+    
+                    orphan = True
+                    result = None
+                    for m in matches:
+                        result = m.match(fn)
                     
-                if orphan:
-                    ucat.append(item)
-
+                        if result is not None:
+                            seas_str = result.group("season")
+                            ep_str = result.group("episode")
+                            
+                            season = "S%02iE%02i" % (int(seas_str), int(ep_str))
+                            
+                            if season in epfiles:
+                                epfiles[season].append(item)
+                            else:
+                                l = list()
+                                l.append(item)
+                                epfiles[season] = l
+                            
+                            orphan = False
+                            break
+                        
+                    if orphan:
+                        ucat.append(item)
 
     # store all not categorised items here, leave '_' as key
     # for sorting properly later on
@@ -113,6 +119,15 @@ def _sortOrphans(a, b):
         return 1
     
     return 0
+
+
+def _sortEpisodeFiles(a, b):
+    if a.size > b.size:
+        return -1
+    elif a.size < b.size:
+        return 1
+    return a.filename < b.filename
+
 
 def get_series_xml():
     """
@@ -213,12 +228,22 @@ def get_episode_list(series_id):
         if len(sstr) > 3:
             if sstr in sfiles:
                 epfiles = sfiles[sstr]
+                epfiles.sort(_sortEpisodeFiles)
+                
                 for epobj in epfiles:
                     
-                    filenode = libxml2.newNode("file")
-                    filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
-                    filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
-                    filesnode.addChild(filenode)
+                    if epobj.size > 0:
+                        filenode = libxml2.newNode("file")
+                        filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
+                        filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
+                        if epobj.size > 1024:
+                            filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
+                            filenode.setProp("unit", "Gb")
+                        else:
+                            filenode.setProp("size", str("%.02f" % epobj.size))
+                            filenode.setProp("unit", "Mb")
+                        
+                        filesnode.addChild(filenode)
                     
                 # remove from season dict
                 del sfiles[sstr]

@@ -89,14 +89,22 @@ def playFile(cmd, args):
 def archiveFile(cmd, args):
         
     thefile = args["file"]
-    fnbase, fnext = os.path.splitext(thefile)
-    if fnext != appcfg.FILE_DELETE_EXT:
-        destfile = thefile + appcfg.FILE_DELETE_EXT
+    head, tail = os.path.split(thefile)
+    
+    head = os.path.join(head, appcfg.AIRS_ARCHIVED_PATH) 
+    if not os.path.exists(head):
         try:
-            os.rename(thefile, destfile) 
+            os.makedirs(head)
         except OSError:
-            cmd.html = "<h1>Error archiving file</h1></br>" + thefile
+            cmd.html = "<h1>Error creating archive directory</h1></br>" + head
             return
+    
+    dstfile = os.path.join(head, tail)
+    try:
+        os.rename(thefile, dstfile) 
+    except OSError:
+        cmd.html = "<h1>Error archiving file</h1></br>" + thefile
+        return
         
     cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
     cmd.html = ""
