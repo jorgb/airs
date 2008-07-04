@@ -538,7 +538,8 @@ class AirsFrame(wx.Frame):
         Event that sets or clears the minimize to tray option
         """
         opt = not appcfg.options[appcfg.CFG_TRAY_MINIMIZE]
-        appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt   
+        appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt 
+        appcfg.Write()  
 
 
     def _callbackTrayIcon(self, kind):
