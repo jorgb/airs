@@ -24,7 +24,7 @@
                                     <flag>wxALIGN_LEFT|wxALL</flag>
                                     <border>5</border>
                                     <object class="wxStaticText" name="wxID_STATIC">
-                                        <label>Enter movie player full path (use %file% for filename)</label>
+                                        <label>Enter movie player full path</label>
                                     </object>
                                 </object>
                                 <object class="sizeritem">
@@ -53,7 +53,21 @@
                                     <flag>wxALIGN_LEFT|wxALL</flag>
                                     <border>5</border>
                                     <object class="wxStaticText" name="wxID_STATIC">
-                                        <label>Enter absolute path for your series</label>
+                                        <label>Enter player arguments (use %file% for file to play)</label>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <border>5</border>
+                                    <option>1</option>
+                                    <object class="wxTextCtrl" name="ID_PLAYER_ARGS">
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticText" name="wxID_STATIC">
+                                        <label>Enter root path for your series (optional)</label>
                                     </object>
                                 </object>
                                 <object class="sizeritem">

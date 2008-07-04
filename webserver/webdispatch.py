@@ -1,6 +1,8 @@
 import os
+import subprocess
 import libxml2
 import libxslt
+import platform
 
 import synccmd
 from data import viewmgr
@@ -45,8 +47,7 @@ def episodeList(cmd, args):
         styleDoc = libxml2.parseFile(_getXSLTpath("episodelist.xsl"))
     except libxml2.parserError, msg:
         raise WebDispatchError, "Parser error occured: %s" % str(msg)
-    
-    
+        
     style = libxslt.parseStylesheetDoc(styleDoc)
 
     result = style.applyStylesheet(xml, None)
@@ -61,13 +62,51 @@ def markSeen(cmd, args):
         db.store.commit()
     
         # redirect to episode list
-        cmd.html = """<html><head><meta http-equiv="Refresh" content="0; url=127.0.0.1/series/cmd_get_series=%i</head>
-<body>Please wait!</body></html>""" % episode.series_id        
+        #args["id"] = episode.series_id
+        #return episodeList(cmd, args)
         
+        cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % episode.series_id
+        cmd.html = ''
+        
+
+def playFile(cmd, args):
+        
+    argstr = list()
+    for arg in appcfg.options[appcfg.CFG_PLAYER_ARGS].split():
+        argstr.append(arg.replace("%file%", args["file"]))
+    argstr.insert(0, appcfg.options[appcfg.CFG_PLAYER_PATH])
+    
+    try:
+        subprocess.Popen( argstr )
+    except OSError:
+        cmd.html = "<h1>Can't play file</h1></br>" + args["file"]
+        return
+
+    cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
+    cmd.html = ""
+ 
+        
+def archiveFile(cmd, args):
+        
+    thefile = args["file"]
+    fnbase, fnext = os.path.splitext(thefile)
+    if fnext != appcfg.FILE_DELETE_EXT:
+        destfile = thefile + appcfg.FILE_DELETE_EXT
+        try:
+            os.rename(thefile, destfile) 
+        except OSError:
+            cmd.html = "<h1>Error archiving file</h1></br>" + thefile
+            return
+        
+    cmd.redirect = "http://127.0.0.1:8000/series?cmd_get_series=%i" % args["id"]
+    cmd.html = ""
+ 
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,
                     "get_episodes": episodeList,
-                    "mark_seen": markSeen}
+                    "mark_seen": markSeen,
+                    "play_file": playFile,
+                    "archive_file": archiveFile }
 
 def execute(cmd, id, args):
     cb = synccmd.SyncCommand(id)

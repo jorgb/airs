@@ -1,4 +1,5 @@
 import libxml2
+import datetime
 from data import series_list
 from data import db, appcfg
 import re
@@ -11,12 +12,22 @@ class EpisodeFile(object):
         self.filename = ''
         self.filepath = ''
         
-
+def _getMediaCount(series_path):
+    """ Returns number of files in directory which have a valid media extension """
+    count = 0
+    for root, dirs, files in os.walk(series_path):     
+        for fn in files:
+            fnroot, fnext = os.path.splitext(fn)
+            if fnext.lower().lstrip(".") in _media_extensions:
+                count += 1
+    return count
+        
 def _createOptionsNode():
     """ Creates a node with in there some options that the XSLT engine
     might want to alter the output """
     
     options = libxml2.newNode("options")
+    options.setProp("today", datetime.date.today().strftime("%Y%m%d"))
     
     layout = libxml2.newNode("layout")
     options.addChild(layout)
@@ -25,9 +36,14 @@ def _createOptionsNode():
     if appcfg.options[appcfg.CFG_LAYOUT_SCREEN] == appcfg.LAYOUT_TV:
         s = "tv"
     layout.setContent(s)
-    
+        
     return options 
         
+
+m1 = re.compile("(.*?)S(?P<season>[0-9]+)[ ]*E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+m2 = re.compile("(?P<season>[1-9]{1})(?P<episode>[0-9]{2})(.*?)")
+m3 = re.compile("(.*?)\.(?P<season>[0-9]{1})(?P<episode>[0-9]{2})\.(.*?)")
+m4 = re.compile("(.*?)(?P<season>[0-9]+)x(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
 
 def _collectEpisodeFiles(series_path):
     """ Returns all the episodes recursively, searches for a season mask and if found
@@ -36,7 +52,11 @@ def _collectEpisodeFiles(series_path):
     epfiles = dict()
     ucat = list()
     
-    m = re.compile("(.*?)S(?P<season>[0-9]+)E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
+    matches = [ m1, 
+                m2,
+                m3,
+                m4 ]
+
     for root, dirs, files in os.walk(series_path):
         
         for fn in files:
@@ -47,19 +67,30 @@ def _collectEpisodeFiles(series_path):
                 item.filename = fn
                 item.filepath = os.path.join(root, fn)
 
-                result = m.match(fn)
-                if result is not None:
-                    season = "S%sE%s" % (result.group("season"), result.group("episode"))
-                    
-                    if season in epfiles:
-                        epfiles[season].append(item)
-                    else:
-                        l = list()
-                        l.append(item)
-                        epfiles[season] = l
+                orphan = True
+                result = None
+                for m in matches:
+                    result = m.match(fn)
+                
+                    if result is not None:
+                        seas_str = result.group("season")
+                        ep_str = result.group("episode")
                         
-                else:
+                        season = "S%02iE%02i" % (int(seas_str), int(ep_str))
+                        
+                        if season in epfiles:
+                            epfiles[season].append(item)
+                        else:
+                            l = list()
+                            l.append(item)
+                            epfiles[season] = l
+                        
+                        orphan = False
+                        break
+                    
+                if orphan:
                     ucat.append(item)
+
 
     # store all not categorised items here, leave '_' as key
     # for sorting properly later on
@@ -110,7 +141,10 @@ def get_series_xml():
         serie.setProp("id", str(item.id))
         serie.setProp("cancelled", str(item.postponed))
         serie.setProp("folder", item.folder)
-
+        
+        seriespath = series_list.get_series_path(item)
+        serie.setProp("mediacount", str(_getMediaCount(seriespath)))
+        
         # report total number of episodes and the 
         # episodes already seen
         c = db.store.execute("select count(*) from episode where series_id = %i" % item.id)
@@ -155,7 +189,7 @@ def get_episode_list(series_id):
     episodes = [episode for episode in result]
     
     if series.folder != '':
-        sfiles = _collectEpisodeFiles(series.folder)
+        sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
     else:
         sfiles = dict()
     
@@ -182,8 +216,8 @@ def get_episode_list(series_id):
                 for epobj in epfiles:
                     
                     filenode = libxml2.newNode("file")
-                    filenode.setProp("filepath", epobj.filepath)
-                    filenode.setProp("filename", epobj.filename)
+                    filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
+                    filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
                     filesnode.addChild(filenode)
                     
                 # remove from season dict

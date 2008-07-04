@@ -29,6 +29,8 @@ APP_AUTHOR          = 'Jorgen Bodde'
 APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
+FILE_DELETE_EXT = ".seen"
+
 # configuration values
 CFG_LAYOUT_DEFAULT      = 'window/default_layout'       # default layout upon saving (saved one time only)
 CFG_LAYOUT_LAST         = 'window/last_layout'          # last layout when closing window
@@ -48,6 +50,9 @@ CFG_LAYOUT_HIDDEN       = 'window/hidden'
 CFG_TRAY_MINIMIZE       = 'window/minimized'
 CFG_LAYOUT_SCREEN       = 'webserver/layout'
 CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
+CFG_PLAYER_PATH         = 'webserver/playerpath'
+CFG_PLAYER_ARGS         = 'webserver/playerargs'
+CFG_SERIES_PATH         = 'webserver/seriespath'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -66,7 +71,10 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_HIDDEN,         'b', False),
             (CFG_TRAY_MINIMIZE,         'b', False),
             (CFG_LAYOUT_SCREEN,         'i', LAYOUT_SCREEN),
-            (CFG_WEBSERVER_HIDE_SEEN,   'b', True)
+            (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
+            (CFG_PLAYER_PATH,           's', ''),
+            (CFG_PLAYER_ARGS,           's', '%file%'),
+            (CFG_SERIES_PATH,           's', '')
         ]
 
 # max files in the file history

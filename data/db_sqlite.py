@@ -10,7 +10,7 @@ import os.path
 import datetime
 from data import series_list
 
-VERSION = 3
+VERSION = 5
 
 # main script that initializes the database
 _main_sql = """\
@@ -25,7 +25,6 @@ CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHA
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
 create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
 create table options (id integer primary key, name varchar, value varchar);
-update version set version=4, updated_on="%(date)s" where id=1;
 insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("NzbIndex", "http://www.nzbindex.nl/?go=search&new=1&searchitem=@series@+@season_nr@+@episode_nr@", "", "", 0);
@@ -58,7 +57,6 @@ update version set version=3, updated_on="%(date)s" where id=1;
 upgr_v3_v4 = """\
 create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
 create table options (id integer primary key, name varchar, value varchar);
-update version set version=4, updated_on="%(date)s" where id=1;
 insert into searches (name, url, options, defoptions, show) values ("Newzleech", "http://www.newzleech.com/?mode=usenet&q=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("NzbIndex", "http://www.nzbindex.nl/?go=search&new=1&searchitem=@series@+@season_nr@+@episode_nr@", "", "", 0);
@@ -67,6 +65,7 @@ alter table series add notes VARCHAR;
 alter table episode add seen INTEGER;
 update series set notes="";
 update episode set seen=0;
+update version set version=4, updated_on="%(date)s" where id=1;
 """
 
 #-------------------------------------------------------------------------------
@@ -81,6 +80,7 @@ update episode set prio_entries="";
 update episode set new = 1;
 update episode set locked=0;
 update series set folder="";
+update version set version=5, updated_on="%(date)s" where id=1;
 """
 
 # NOTE: episode.seen is obsolete, and should be removed upon a new creation
@@ -196,9 +196,11 @@ def create(dbfile):
 #-------------------------------------------------------------------------------
 
 # upgrade directory
+# upgrade FROM version TO one higher
 _upgrade_list = { 1: (None,        upgr_v1_v2, None),
                   2: (upgr_pre_v3, upgr_v2_v3, None),
-                  3: (None,        upgr_v3_v4, None) }
+                  3: (None,        upgr_v3_v4, None),
+                  4: (None,        upgr_v4_v5, None) }
 
 def upgrade(dbfile):
 
