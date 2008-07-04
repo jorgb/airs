@@ -60,41 +60,43 @@ def _collectEpisodeFiles(series_path):
 
     for root, dirs, files in os.walk(series_path):
         
-        for fn in files:
-            fnroot, fnext = os.path.splitext(fn)
-            if fnext.lower().lstrip(".") in _media_extensions:
-
-                item = EpisodeFile()
-                item.filename = fn
-                item.filepath = os.path.join(root, fn)
-                try:
-                    item.size = os.stat(filepath)[6] / 1048576.0
-                except OSError:
-                    item.size = 0
-
-                orphan = True
-                result = None
-                for m in matches:
-                    result = m.match(fn)
-                
-                    if result is not None:
-                        seas_str = result.group("season")
-                        ep_str = result.group("episode")
-                        
-                        season = "S%02iE%02i" % (int(seas_str), int(ep_str))
-                        
-                        if season in epfiles:
-                            epfiles[season].append(item)
-                        else:
-                            l = list()
-                            l.append(item)
-                            epfiles[season] = l
-                        
-                        orphan = False
-                        break
+        # only scan paths that do not end with "Seen-Airs"
+        if os.path.split(root)[1] != appcfg.AIRS_ARCHIVED_PATH:
+            for fn in files:
+                fnroot, fnext = os.path.splitext(fn)
+                if fnext.lower().lstrip(".") in _media_extensions:
+    
+                    item = EpisodeFile()
+                    item.filename = fn
+                    item.filepath = os.path.join(root, fn)
+                    try:
+                        item.size = os.stat(filepath)[6] / 1048576.0
+                    except OSError:
+                        item.size = 0
+    
+                    orphan = True
+                    result = None
+                    for m in matches:
+                        result = m.match(fn)
                     
-                if orphan:
-                    ucat.append(item)
+                        if result is not None:
+                            seas_str = result.group("season")
+                            ep_str = result.group("episode")
+                            
+                            season = "S%02iE%02i" % (int(seas_str), int(ep_str))
+                            
+                            if season in epfiles:
+                                epfiles[season].append(item)
+                            else:
+                                l = list()
+                                l.append(item)
+                                epfiles[season] = l
+                            
+                            orphan = False
+                            break
+                        
+                    if orphan:
+                        ucat.append(item)
 
     # store all not categorised items here, leave '_' as key
     # for sorting properly later on
