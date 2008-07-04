@@ -1,4 +1,4 @@
-﻿<xsl:stylesheet version = '1.0'
+<xsl:stylesheet version = '1.0'
      xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
 
 <!-- ###################################################################### -->
@@ -81,7 +81,7 @@
                                   <!-- <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute> -->
                                   <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
                                   <xsl:attribute name="class">playfile</xsl:attribute>
-                                  <xsl:value-of select="@filename"/>
+                                  <xsl:value-of select="@filename"/><xsl:text>  [</xsl:text><xsl:value-of select="@size" /><xsl:text> </xsl:text><xsl:value-of select="@unit" /><xsl:text>]</xsl:text>
                                 </a>
                               </td>
                               <td>

@@ -45,7 +45,7 @@ class AirsApp(wx.App):
 
         self._frame = AirsFrame(None, -1, appcfg.APP_TITLE)
         self.SetTopWindow(self._frame)
-        self._frame.Show(not appcfg.options[appcfg.CFG_LAYOUT_HIDDEN])
+        self._frame.Show(not appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
         return 1
 
 

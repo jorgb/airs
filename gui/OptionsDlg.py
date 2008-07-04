@@ -63,14 +63,11 @@ class OptionsDlg(wx.Dialog):
     def __OnOK(self, event): 
         """ Press OK, verify the path and notify if the path is not valid """
         
-        # TODO: Verify the controls and put them in the appcfg.options dictionary
-        
-        # TODO: return from this function without event.Skip if not correct        
-
         appcfg.options[appcfg.CFG_LAYOUT_SCREEN] = self._layout.GetClientData(self._layout.GetSelection())
         appcfg.options[appcfg.CFG_PLAYER_PATH] = self._playerPath.GetValue()
         appcfg.options[appcfg.CFG_SERIES_PATH] = self._seriesPath.GetValue()
         appcfg.options[appcfg.CFG_PLAYER_ARGS] = self._playerArgs.GetValue()
+        appcfg.Write()
         
         event.Skip()
 
