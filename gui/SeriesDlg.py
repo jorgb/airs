@@ -89,8 +89,8 @@ class SeriesDlg(wx.Dialog):
         
         series_name = self._series_id.GetValue().strip()
         series_link = self._series_link.GetValue().strip()
-        if not series_link or not series_name:
-            wx.MessageBox("Please enter a valid URL or series name", "Error", wx.ICON_ERROR)
+        if not series_name:
+            wx.MessageBox("Please enter a valid series name", "Error", wx.ICON_ERROR)
             return
 
         if not self._editing:
