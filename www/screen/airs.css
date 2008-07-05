@@ -94,7 +94,8 @@ a.search
     background-color: #0b2c68; 
     color: #ffffff;
     border: 1px solid #748AAA;
-    padding: 0.25em;    
+    padding: 0.25em;  
+    margin-right: 3pt;  
 }
 
 td.search
@@ -106,7 +107,7 @@ td.search
 {
   margin-top: 5pt;
   margin-left: 10pt;
-  margin-bottom: 5pt;
+  margin-bottom: 10pt;
 }
 
 #epaired 
