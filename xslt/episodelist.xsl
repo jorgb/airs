@@ -107,10 +107,11 @@
                                 <td></td>
                                 <td colspan="2" class="search">
                                   <div id="searchblock">
-                                    <xsl:for-each select="/airs/engines/engine">
+                                    <xsl:for-each select="engines/engine">
                                       <a>
-                                        <xsl:attribute name="href">series?cmd_search_eng=<xsl:value-of select="@sid"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/><xsl:text>&amp;</xsl:text>episode=<xsl:value-of select="@search_id" /></xsl:attribute>
+                                        <xsl:attribute name="href"><xsl:value-of select="@url"/></xsl:attribute>
                                         <xsl:attribute name="class">search</xsl:attribute>
+                                        <xsl:attribute name="target">_blank</xsl:attribute>
                                         <xsl:text>  </xsl:text><xsl:value-of select="@name"/><xsl:text>  </xsl:text>
                                       </a>
                                       <xsl:text>   </xsl:text>

@@ -16,6 +16,8 @@ from data import appcfg, viewmgr, signals
 from data import series_list, db, series_filter
 from webserver import synccmd, reactor
 
+import menu
+
 # gui elements
 import ViewSelectPanel
 import StatisticsPanel
@@ -28,11 +30,6 @@ import OptionsDlg
 
 # images
 from images import icon_main, icon_about
-from images import icon_home, icon_help, \
-     icon_visit_site, icon_searches
-from images import icon_default_layout
-from images import icon_add, icon_delete, icon_edit
-from images import icon_preferences 
 
 from webserver import webdispatch
 
@@ -46,9 +43,35 @@ class AirsFrame(wx.Frame):
 
         self._connectSignals()
 
-        # instantiate the GUI
-        self._createMenu()
-        self._createToolbar()
+        # instantiate the GUI        
+
+        bindEvents = [ 
+            ("exit",         self._onGuiExit),
+            ("add_series",   self._onGuiAddNew),
+            ("edit_series",  self._onGuiEdit),
+            ("del_series",   self._onGuiDelete),
+            ("preferences",  self._onGuiShowOptions),
+            ("clear_cache",  self._onClearCache),
+            ("select_all",   self._onSelectAll), 
+            ("edit_episode", self._onGuiEdit), 
+            ("searches",     self._onEditSearchEngines),
+            ("restore",      self._onGuiRestoreLayout), 
+            ("toggle_sel",   self._onGuiToggleWindow),
+            ("toggle_prog",  self._onGuiToggleWindow),
+            ("toggle_stat",  self._onGuiToggleWindow), 
+            ("to_tray",      self._onGuiMinimizeToTray),
+            ("help",         self._onGuiVisitSite),
+            ("visit_site",   self._onGuiVisitSite), 
+            ("about",        self._onGuiAbout)
+        ]        
+
+        menu.create(self, bindEvents)
+                
+        self._toggleWindowLookup = {}
+        self._toggleWindowLookup["toggle_sel"] = "viewselectpanel"
+        self._toggleWindowLookup["toggle_prog"] = "progresslogpanel"
+        self._toggleWindowLookup["toggle_stat"] = "statisticspanel"
+        
         self._createWindows()
         self._createTrayIcon()
         self._createStatusBar()
@@ -83,190 +106,6 @@ class AirsFrame(wx.Frame):
         Creates the tray icon for this application
         """
         self._trayIcon = AirsTrayIcon.AirsTrayIcon(self)
-
-
-    def _createToolbar(self):
-        """
-        Sets up and creates the toolbar of the application
-        """
-        TBFLAGS = (   wx.TB_HORIZONTAL
-                      | wx.NO_BORDER
-                      | wx.TB_FLAT
-                      )
-
-        tb = self.CreateToolBar( TBFLAGS )
-
-        tsize = (16,16)
-
-        tb.SetToolBitmapSize(tsize)
-        tb.AddLabelTool(10, "Home", icon_home.getBitmap(),
-                        shortHelp="Home", longHelp="Goto Main View")
-
-        tb.AddSeparator()
-        tb.AddLabelTool(30, "Add", icon_add.getBitmap(),
-                        shortHelp="Add", longHelp="Add _cvl_ITEM_")
-        tb.AddLabelTool(31, "Edit", icon_edit.getBitmap(),
-                        shortHelp="Edit", longHelp="Edit _cvl_ITEM_")
-        tb.AddLabelTool(32, "Delete", icon_delete.getBitmap(),
-                        shortHelp="Delete", longHelp="Add _cvl_ITEM_")
-
-
-        # Final thing to do for a toolbar is call the Realize() method. This
-        # causes it to render (more or less, that is).
-        tb.Realize()
-
-
-    def _createMenu(self):
-        """
-        Creates the menu system for the application, and initializes the
-        event handlers for it.
-        """
-
-        self._toggleWindowLookup = {}
-
-        # create menu
-        self._menuBar = wx.MenuBar()
-        self.SetMenuBar(self._menuBar)
-
-        # file menu
-        filemnu = wx.Menu()
-
-        self._menuOptions = wx.MenuItem(filemnu, wx.NewId(), "&Preferences ...", 
-                                        "Open the application preferences", wx.ITEM_NORMAL)
-        self._menuOptions.SetBitmap(icon_preferences.getBitmap())
-        filemnu.AppendItem(self._menuOptions)
-
-        filemnu.AppendSeparator()
-        self._menuExit = wx.MenuItem(filemnu, wx.NewId(), "E&xit", 
-                                     "Exit the application", wx.ITEM_NORMAL)
-        filemnu.AppendItem(self._menuExit)
-        
-        self._menuBar.Append(filemnu, "&File")
-
-        # Series menu
-        mnu = wx.Menu()
-        self._menuAddNew = wx.MenuItem(mnu, wx.NewId(), "&Add ...\tCtrl+N", 
-                                       "Add a new Series", wx.ITEM_NORMAL)
-        self._menuAddNew.SetBitmap(icon_add.getBitmap())
-        mnu.AppendItem(self._menuAddNew)
-    
-        self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", 
-                                     "Edit Series properties", wx.ITEM_NORMAL)
-        self._menuEdit.SetBitmap(icon_edit.getBitmap())
-        mnu.AppendItem(self._menuEdit)
-    
-        self._menuDelete = wx.MenuItem(mnu, wx.NewId(), "&Delete\tCtrl+D", 
-                                       "Delete this Series", wx.ITEM_NORMAL)
-        self._menuDelete.SetBitmap(icon_delete.getBitmap())
-        mnu.AppendItem(self._menuDelete)    
-    
-        mnu.AppendSeparator()
-        self._menuClearCache = wx.MenuItem(mnu, wx.NewId(), "&Clear Cache", 
-                                           "Clear cache of one or all series", wx.ITEM_NORMAL)
-        mnu.AppendItem(self._menuClearCache)    
-        self._menuBar.Append(mnu, "&Series")
-    
-        # Episode menu
-        mnu = wx.Menu()
-        self._menuSelectAll = wx.MenuItem(mnu, wx.NewId(), "&Select All\tCtrl+A", 
-                                          "Select all episodes", wx.ITEM_NORMAL)
-        mnu.AppendItem(self._menuSelectAll)
-        #self._menuEditSe = wx.MenuItem(mnu, wx.NewId(), "&Edit ...", 
-        #                                  "Edit Episode", wx.ITEM_NORMAL)
-        #mnu.AppendItem(self._menuSelectAll)
-    
-        mnu.AppendSeparator()
-    
-        self._menuEditSearches = wx.MenuItem(mnu, wx.NewId(), "Search &Engines ...",
-                                             "Edit Search Engines", wx.ITEM_NORMAL)
-        self._menuEditSearches.SetBitmap(icon_searches.getBitmap())
-        mnu.AppendItem(self._menuEditSearches)
-    
-        #self._menuEdit = wx.MenuItem(mnu, wx.NewId(), "&Edit ...\tCtrl+E", 
-        #                             "Edit Series properties", wx.ITEM_NORMAL)
-        #self._menuEdit.SetBitmap(icon_edit.getBitmap())
-        #mnu.AppendItem(self._menuEdit)
-    
-        #self._menuDelete = wx.MenuItem(mnu, wx.NewId(), "&Delete\tCtrl+D", 
-        #                               "Delete this Series", wx.ITEM_NORMAL)
-        #self._menuDelete.SetBitmap(icon_delete.getBitmap())
-        #mnu.AppendItem(self._menuDelete)    
-    
-        #mnu.AppendSeparator()
-        #self._menuClearCache = wx.MenuItem(mnu, wx.NewId(), "&Clear Cache", 
-        #                                   "Clear cache of one or all series", wx.ITEM_NORMAL)
-        #mnu.AppendItem(self._menuClearCache)    
-        self._menuBar.Append(mnu, "&Episode")
-    
-        # window layout menu
-        mnu = wx.Menu()                          
-        self._menuRestoreLayout = wx.MenuItem(mnu, wx.NewId(), "&Restore Default Layout", 
-                                              "Restore default layout of windows", wx.ITEM_NORMAL)
-        self._menuRestoreLayout.SetBitmap(icon_default_layout.getBitmap())
-        mnu.AppendItem(self._menuRestoreLayout)
-        mnu.AppendSeparator()
-    
-        self._menuToggleLeft = wx.MenuItem(mnu, wx.NewId(), "Toggle View Selector", 
-                                           "Hide or show View Selector window", wx.ITEM_CHECK)
-        mnu.AppendItem(self._menuToggleLeft)
-        self._toggleWindowLookup[self._menuToggleLeft.GetId()] = "viewselectpanel"
-    
-        self._menuToggleBottom = wx.MenuItem(mnu, wx.NewId(), "Toggle Progress Log", 
-                                             "Hide or show Progress Log window", wx.ITEM_CHECK)
-        mnu.AppendItem(self._menuToggleBottom)
-        self._toggleWindowLookup[self._menuToggleBottom.GetId()] = "progresslogpanel"
-    
-        self._menuToggleStat = wx.MenuItem(mnu, wx.NewId(), "Toggle Statistics Window", 
-                                           "Hide or show Progress Statistics window", wx.ITEM_CHECK)
-        mnu.AppendItem(self._menuToggleStat)
-        self._toggleWindowLookup[self._menuToggleStat.GetId()] = "statisticspanel"
-    
-        mnu.AppendSeparator()
-        self._menuTrayMinimize = wx.MenuItem(mnu, wx.NewId(), "Minimize to tray", 
-                                             "Upon minimize, hide in system tray", wx.ITEM_CHECK)
-        mnu.AppendItem(self._menuTrayMinimize)
-    
-        self._menuBar.Append(mnu, "&Window")
-    
-        # help menu
-        mnu = wx.Menu()
-        self._menuHelp = wx.MenuItem(mnu, wx.NewId(), "&Help ... ", 
-                                     "Show the application help", wx.ITEM_NORMAL)
-        self._menuHelp.SetBitmap(icon_help.getBitmap())
-        mnu.AppendItem(self._menuHelp)
-    
-        self._menuHelpVisitSite = wx.MenuItem(mnu, wx.NewId(), "&Visit Site ... ", 
-                                              "Visit the project site", wx.ITEM_NORMAL)
-        self._menuHelpVisitSite.SetBitmap(icon_visit_site.getBitmap())
-        mnu.AppendItem(self._menuHelpVisitSite)
-        mnu.AppendSeparator()
-    
-        self._menuHelpAbout = wx.MenuItem(mnu, wx.NewId(), "&About ...", 
-                                          "Show the about dialog", wx.ITEM_NORMAL)
-        mnu.AppendItem(self._menuHelpAbout)
-        self._menuBar.Append(mnu, "&Help")
-    
-    
-        # initialize menu event handlers
-        self.Bind(wx.EVT_MENU, self._onGuiAbout, self._menuHelpAbout)
-        self.Bind(wx.EVT_MENU, self._onGuiExit, self._menuExit)
-        self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelpVisitSite)
-        self.Bind(wx.EVT_MENU, self._onGuiVisitSite, self._menuHelp)
-        self.Bind(wx.EVT_MENU, self._onGuiShowOptions, self._menuOptions)
-        self.Bind(wx.EVT_MENU, self._onGuiMinimizeToTray, self._menuTrayMinimize)
-
-        self.Bind(wx.EVT_MENU, self._onGuiRestoreLayout, self._menuRestoreLayout)
-    
-        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleBottom)
-        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleLeft)
-        self.Bind(wx.EVT_MENU, self._onGuiToggleWindow, self._menuToggleStat)
-    
-        self.Bind(wx.EVT_MENU, self._onGuiAddNew, self._menuAddNew)
-        self.Bind(wx.EVT_MENU, self._onGuiEdit, self._menuEdit)
-        self.Bind(wx.EVT_MENU, self._onGuiDelete, self._menuDelete)
-        self.Bind(wx.EVT_MENU, self._onClearCache, self._menuClearCache)
-        self.Bind(wx.EVT_MENU, self._onSelectAll, self._menuSelectAll)
-        self.Bind(wx.EVT_MENU, self._onEditSearchEngines, self._menuEditSearches)
 
     def _createWindows(self):
         """
@@ -434,8 +273,9 @@ class AirsFrame(wx.Frame):
 
 
     def _onGuiToggleWindow(self, event):
-        if event.GetId() in self._toggleWindowLookup:
-            pane = self._aui.GetPane(self._toggleWindowLookup[event.GetId()])
+        str = menu.getmenu(event.GetId())
+        if str is not None:
+            pane = self._aui.GetPane(self._toggleWindowLookup[str])
             if pane:
                 pane.Show(not pane.IsShown())
         self._aui.Update()
@@ -449,20 +289,25 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
 
-        self._menuBar.Check(self._menuTrayMinimize.GetId(), 
-                            appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
+        menu.check(self, "to_tray", appcfg.options[appcfg.CFG_TRAY_MINIMIZE]) 
 
         # sync the checkbox view based upon the view state of the panels
         for menu_id in self._toggleWindowLookup.iterkeys():
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
-            self._menuBar.Check(menu_id, pane.IsShown())
+            menu.check(self, menu_id, pane.IsShown())
 
-        enabled = viewmgr._series_sel._selected_series_id != -1
-        self._menuEdit.Enable(enabled)
-        self._menuDelete.Enable(enabled)
-        self._menuClearCache.Enable(enabled)
-
-
+        menu.enable(self, ["edit_series", 
+                           "del_series", 
+                           "clear_cache"], viewmgr.appstate["series_id"] != -1)
+        
+        menu.enable(self, ["s_todownload", 
+                           "s_download", 
+                           "s_downloaded", 
+                           "s_ready", 
+                           "s_seen"], viewmgr.appstate["epcount"] > 0)
+        
+        menu.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
+                 
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
@@ -584,7 +429,7 @@ class AirsFrame(wx.Frame):
         the closing of the window is decoupled from the rest of 
         the code
         """
-        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, self._menuExit.GetId())
+        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menu.menuLookup["exit"])
         wx.PostEvent(self, evt)
 
 

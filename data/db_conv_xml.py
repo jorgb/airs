@@ -191,15 +191,15 @@ def get_episode_list(series_id):
     options = _createOptionsNode()
     root.addChild(options)
         
-    searchnode = libxml2.newNode("engines")
-    root.addChild(searchnode)
+    #searchnode = libxml2.newNode("engines")
+    #root.addChild(searchnode)
 
-    engines = db.store.find(searches.Searches)
-    for engine in engines:
-        se = libxml2.newNode("engine")
-        se.setProp("name", engine.name.encode('ascii', 'replace'))
-        se.setProp("sid", str(engine.id))
-        searchnode.addChild(se)
+    #engines = db.store.find(searches.Searches)
+    #for engine in engines:
+    #    se = libxml2.newNode("engine")
+    #    se.setProp("name", engine.name.encode('ascii', 'replace'))
+    #    se.setProp("sid", str(engine.id))
+    #    searchnode.addChild(se)
     
     series = db.store.find(series_list.Series, series_list.Series.id == series_id).one()
     if series is None:
@@ -218,7 +218,7 @@ def get_episode_list(series_id):
     else:
         sfiles = dict()
     
-    # TODO: Sort them by season string and then by episode nr
+    engines = db.store.find(searches.Searches)
     
     for item in episodes:
         episode = libxml2.newNode("item")
@@ -236,6 +236,7 @@ def get_episode_list(series_id):
         filesnode = libxml2.newNode("files")
         episode.addChild(filesnode)
     
+        files_added = False
         if len(sstr) > 3:
             if sstr in sfiles:
                 epfiles = sfiles[sstr]
@@ -244,6 +245,7 @@ def get_episode_list(series_id):
                 for epobj in epfiles:
                     
                     if epobj.size > 0:
+                        files_added = True
                         filenode = libxml2.newNode("file")
                         filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
                         filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
@@ -258,7 +260,17 @@ def get_episode_list(series_id):
                     
                 # remove from season dict
                 del sfiles[sstr]
-                    
+        
+        if not files_added:
+            searchnode = libxml2.newNode("engines")
+            episode.addChild(searchnode)
+            
+            for engine in engines:
+                se = libxml2.newNode("engine")
+                se.setProp("name", engine.name.encode('ascii', 'replace'))
+                se.setProp("url", engine.getSearchURL(item, series))
+                searchnode.addChild(se)
+            
         items.addChild(episode)
         
     # now check what files we have left that are not yet linked to an episode

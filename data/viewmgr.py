@@ -29,6 +29,19 @@ retriever = None
 server = None
 _series_sel = SeriesSelectionList()
 
+# generic application state dictionary,
+# used to set states in when parts of the GUI
+# need to act upon other parts on the GUI
+_pstates = [ 
+             ("series_id",   -1),                     # id of selected series
+             ("epcount",      0),                     # number of episodes selected  
+             ("lstcount",     0)                      # number of episodes in list
+           ]
+
+appstate = dict()
+for pstate in _pstates:
+    appstate[pstate[0]] = pstate[1]
+
 #===============================================================================
 
 # All actions that the viewmanager can do are defined here. These actions can
@@ -100,6 +113,8 @@ def set_view(viewtype):
     and trigger a new update
     """
     _series_sel.setView(viewtype)
+    if viewtype != series_filter.VIEW_SERIES:
+        appstate["series_id"] = -1
     Publisher().sendMessage(signals.SET_VIEW, viewtype)
 
     
@@ -151,13 +166,16 @@ def set_selection(series):
     """
     Publisher().sendMessage(signals.SERIES_SELECT, series)
     if series:
+        appstate["series_id"] = series.id
         if _series_sel._view_type != series_filter.VIEW_SERIES:
             Publisher().sendMessage(signals.SET_VIEW, series_filter.VIEW_SERIES)
             _series_sel.setSelection(series.id)            
             _series_sel.setView(series_filter.VIEW_SERIES)
         else:
             _series_sel.setSelection(series.id)            
-            
+    else:
+        appstate["series_id"] = -1
+        
             
 def app_restore():
     """
