@@ -1,7 +1,7 @@
 import libxml2
 import datetime
 from data import series_list
-from data import db, appcfg
+from data import db, appcfg, searches
 import re
 import os
 
@@ -191,6 +191,16 @@ def get_episode_list(series_id):
     options = _createOptionsNode()
     root.addChild(options)
         
+    searchnode = libxml2.newNode("engines")
+    root.addChild(searchnode)
+
+    engines = db.store.find(searches.Searches)
+    for engine in engines:
+        se = libxml2.newNode("engine")
+        se.setProp("name", engine.name.encode('ascii', 'replace'))
+        se.setProp("sid", str(engine.id))
+        searchnode.addChild(se)
+    
     series = db.store.find(series_list.Series, series_list.Series.id == series_id).one()
     if series is None:
         return dom
@@ -215,6 +225,7 @@ def get_episode_list(series_id):
 
         episode.setProp("number", str(item.number))
         episode.setProp("id", str(item.id))
+        episode.setProp("search_id", str(item.id))
         episode.setProp("title", item.title.encode('ascii', 'replace'))        
         sstr = item.season.upper()
         episode.setProp("season", sstr)

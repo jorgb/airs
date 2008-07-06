@@ -84,6 +84,31 @@ a.playfile
     color: #c4c4c4;
 }
 
+
+a.search
+{
+    font-size: 110%;
+    font-style: italic;
+    border-margin: 4px;
+    border-style: none;
+    background-color: #0b2c68; 
+    color: #ffffff;
+    border: 1px solid #748AAA;
+    padding: 0.25em;    
+}
+
+td.search
+{
+    text-align: right;
+}
+
+#searchblock
+{
+  margin-top: 5pt;
+  margin-left: 10pt;
+  margin-bottom: 5pt;
+}
+
 #epaired 
 {
     color: #d6d66e;

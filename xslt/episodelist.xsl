@@ -27,6 +27,11 @@
                   </tr>
                   
                   <xsl:for-each select="airs/episodes/item">
+
+                    <xsl:variable name="episode_id">
+                        <xsl:value-of select="@id" />
+                    </xsl:variable>
+                    
                     <xsl:if test="@status != 4">
                         <tr>
                           <!-- Alternating table color cosmetics -->
@@ -47,7 +52,7 @@
                               <xsl:otherwise>yes</xsl:otherwise>
                             </xsl:choose>
                           </xsl:variable>
-                                      
+                                 
                           <!-- Change the style of unaired items -->      
                           <xsl:variable name="epstyle">
                             <xsl:choose>               
@@ -72,29 +77,51 @@
                           </td>
                         </tr>
                         <!-- If we have files to display prepare a table and list them -->
-                        <xsl:if test="count(files/file) &gt; 0">
-                          <xsl:for-each select="files/file">
-                            <tr>
-                              <td></td>
-                              <td colspan="2">
-                                <a>
-                                  <!-- <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute> -->
-                                  <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
-                                  <xsl:attribute name="class">playfile</xsl:attribute>
-                                  <xsl:value-of select="@filename"/><xsl:text>  [</xsl:text><xsl:value-of select="@size" /><xsl:text> </xsl:text><xsl:value-of select="@unit" /><xsl:text>]</xsl:text>
-                                </a>
-                              </td>
-                              <td>
-                                <a>
-                                  <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
-                                  <img src="www/screen/icon_delete.png" />
-                                </a>
-                              </td>
-                              <td>
-                              </td>                          
-                            </tr>
-                          </xsl:for-each>
-                        </xsl:if>       <!-- <xsl:if test="count(files/file) &gt; 0"> -->
+                        <xsl:choose>
+                          <xsl:when test="count(files/file) &gt; 0">
+                            <xsl:for-each select="files/file">
+                              <tr>
+                                <td></td>
+                                <td colspan="2">
+                                  <a>
+                                    <!-- <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/></xsl:attribute> -->
+                                    <xsl:attribute name="href">series?cmd_play_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
+                                    <xsl:attribute name="class">playfile</xsl:attribute>
+                                    <xsl:value-of select="@filename"/><xsl:text>  [</xsl:text><xsl:value-of select="@size" /><xsl:text> </xsl:text><xsl:value-of select="@unit" /><xsl:text>]</xsl:text>
+                                  </a>
+                                </td>
+                                <td>
+                                  <a>
+                                    <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
+                                    <img src="www/screen/icon_delete.png" />
+                                  </a>
+                                </td>
+                                <td>
+                                </td>                          
+                              </tr>
+                            </xsl:for-each>
+                          </xsl:when>       <!-- <xsl:if test="count(files/file) &gt; 0"> -->
+                          <xsl:when test="count(files/file) = 0">
+                              <!-- Display search engine links -->
+                              <tr>
+                                <td></td>
+                                <td colspan="2" class="search">
+                                  <div id="searchblock">
+                                    <xsl:for-each select="/airs/engines/engine">
+                                      <a>
+                                        <xsl:attribute name="href">series?cmd_search_eng=<xsl:value-of select="@sid"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/><xsl:text>&amp;</xsl:text>episode=<xsl:value-of select="@search_id" /></xsl:attribute>
+                                        <xsl:attribute name="class">search</xsl:attribute>
+                                        <xsl:text>  </xsl:text><xsl:value-of select="@name"/><xsl:text>  </xsl:text>
+                                      </a>
+                                      <xsl:text>   </xsl:text>
+                                    </xsl:for-each>
+                                  </div> 
+                                </td>
+                                <td></td>
+                                <td></td>                          
+                              </tr>                                
+                          </xsl:when>       <!-- <xsl:when test="count(files/file) = 0"> -->  
+                        </xsl:choose>
                       </xsl:if>           <!-- <xsl:if test="@status != 4"> -->
                   </xsl:for-each>
                   <tr>

@@ -193,6 +193,10 @@ def get_all_series(manual = False):
             ignored += 1
             continue
         
+        # empty URL's are allowed, but not processed
+        if series.url.strip() == '':
+            continue
+        
         allow = True
         d = series.getLastUpdate()        
         if not manual and d != None:            
@@ -229,8 +233,8 @@ def get_all_series(manual = False):
                     allow = (d + datetime.timedelta(weeks=weeks) <= td)
             else:
                 allow = (d + datetime.timedelta(days=upd) <= td)
-                
-        if allow:
+                        
+        if allow:            
             sent += 1
             item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split('\n'))
             item.manual = manual
@@ -363,7 +367,7 @@ def get_selected_series():
     Determine selected series, get that one or else get all
     """
     series = db.store.get(series_list.Series, _series_sel._selected_series_id)
-    if series:
+    if series and series.url.strip() != '':
         item = series_queue.SeriesQueueItem(series.id, series.name, series.url.split("\n"))
         item.manual = True
         retriever.in_queue.put(item)
