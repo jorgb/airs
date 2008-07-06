@@ -11,136 +11,196 @@ from images import icon_preferences ,to_download, downloading, \
 NORMAL  = 1
 CHECK   = 2
 
-def create(parent):        
+menuItems = dict()
+mainMenuLookup = dict()
+mainToolLookup = dict()
+        
+parent = None
+
+TBFLAGS = ( wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT )
+TBSIZE  = (16, 16)
+
+def _createSubMenu(mnu, menulst, extramenus = None):
+    menuIdLookup = dict()
+    if extramenus is None:
+        extramenus = dict()
+    
+    for submenu in menulst:
+        if isinstance(submenu, tuple):
+            smenu = wx.Menu()
+            d = _createSubMenu(smenu, submenu[1], extramenus)
+            menuIdLookup.update(d)
+            mnu.AppendMenu(wx.NewId(), submenu[0], smenu)
+        elif submenu == "-":
+            mnu.AppendSeparator()
+        else:
+            if submenu in mainMenuLookup:
+                id = mainMenuLookup[submenu]
+            else:
+                id = wx.NewId()
+            if submenu in menuItems:
+                ml = menuItems[submenu]
+            else:
+                ml = extramenus[submenu]
+                
+            if ml[4] == CHECK:
+                mt = wx.ITEM_CHECK
+            else:
+                mt = wx.ITEM_NORMAL
+            
+            smenu = wx.MenuItem(mnu, id, ml[0], ml[2], mt)
+            if ml[3]:
+                smenu.SetBitmap(ml[3])
+                    
+            menuIdLookup[submenu] = id                
+            mnu.AppendItem(smenu)
+            
+    return menuIdLookup
+                
+
+def _createMainMenu(menulst, menuBar):
+    global mainMenuLookup
+    
+    for mainmenu in menulst:
+        mnu = wx.Menu()
+        d = _createSubMenu(mnu, mainmenu[1])
+        mainMenuLookup.update(d)
+        menuBar.Append(mnu, mainmenu[0])
+
+        
+def _createToolBar(menulst, tb):
+    global mainToolLookup
+             
+    for submenu in menulst:
+        if submenu == "-":
+            tb.AddSeparator()
+        else:
+            tid = wx.NewId()
+            ml = menuItems[submenu]
+            if ml[3]:
+                bmp = ml[3]
+            else:
+                bmp = wx.NullBitmap
+            if ml[4] == CHECK:
+                tb.AddCheckLabelTool(tid, ml[1], bmp, shortHelp = ml[1], longHelp = ml[2])
+            else:
+                tb.AddLabelTool(tid, ml[1], bmp, shortHelp = ml[1], longHelp = ml[2])
+        
+            mainToolLookup[submenu] = tid
+
+    
+def create(parent, bindEvents):        
     """
     Creates the menu system for the application, and initializes the
     event handlers for it.
     """
-
-    menuitems = { 
-        "exit":         ("E&xit", "Exit", "Exit the application",
-                         None, parent._onGuiExit, "Exit", NORMAL),
-        "add_series":   ("&Add ...\tCtrl+N", "Add", "Add a new series",
-                         icon_add.getBitmap(), parent._onGuiAddNew, "AddNew", NORMAL),
-        "del_series":   ("&Edit ...\tCtrl+E", "Edit", "Edit Series properties", 
-                         icon_edit.getBitmap(), parent._onGuiEdit, "Edit", NORMAL),
-        "edit_series":  ("&Delete\tCtrl+D", "Delete", "Delete Series",          
-                         icon_delete.getBitmap(), parent._onGuiDelete, "Delete", NORMAL),
-        "preferences":  ("&Preferences ...", "Preferences", "Open the application preferences",
-                         icon_preferences.getBitmap(), parent._onGuiShowOptions, "Options", NORMAL ),
-        "clear_cache":  ("&Clear Cache", "Clear Cache", "Clear cache of one or all series",
-                         None, parent._onClearCache, "ClearCache", NORMAL),
-        "select_all":   ("&Select All\tCtrl+A", "Select All", "Select all episodes",
-                         None, parent._onSelectAll, "SelectAll", NORMAL),
-        "edit_episode": ("&Edit ...", "Edit Episode", "Edit selected episode",
-                         None, parent._onGuiEdit, "EditEpisode", NORMAL),
-        "searches":     ("Search &Engines ...", "Edit Search Engines", "Edit Search Engine properties",
-                         icon_searches.getBitmap(), parent._onEditSearchEngines, "EditSearches", NORMAL),
-        "restore":      ("&Restore Default Layout", "Restore Default Layout", "Restore default layout of windows",
-                         icon_default_layout.getBitmap(), parent._onGuiRestoreLayout, "RestoreLayout", NORMAL),
-        "toggle_sel":   ("Toggle View Selector", "Toggle View Selector", "Toggle View Selector",
-                         None, parent._onGuiToggleWindow, "ToggleLeft", CHECK),
-        "toggle_prog":  ("Toggle Progress Log", "Toggle Progress Log", "Hide or show Progress Log window",
-                         None, parent._onGuiToggleWindow, "ToggleBottom", CHECK),
-        "toggle_stat":  ("Toggle Statistics Window", "Toggle Statistics Window", "Hide or show Progress Statistics window",
-                         None, parent._onGuiToggleWindow, "ToggleStat", CHECK),
-        "to_tray":      ("Minimize to tray", "Minimize to tray", "Upon minimize, hide in system tray",
-                         None, parent._onGuiMinimizeToTray, "TrayMinimize", CHECK),
-        "help":         ("&Help ... ", "Help", "Show the application help",
-                         icon_help.getBitmap(), parent._onGuiVisitSite, "", NORMAL),
-        "visit_site":   ("&Visit Site ... ", "Visit Site", "Visit Project Site", 
-                         icon_visit_site.getBitmap(), parent._onGuiVisitSite, "", NORMAL),
-        "about":        ("&About ...", "About", "Show the about dialog",
-                         None, parent._onGuiAbout, None, NORMAL),
-        "s_todownload": ("&To Download", "Mark as To Download", "Mark as To Download",
-                         to_download.getBitmap(), None, None, NORMAL),
-        "s_download":   ("&Downloading", "Mark as Downloading", "Mark as Downloading",
-                         downloading.getBitmap(), None, None, NORMAL),
-        "s_downloaded": ("&Downloaded", "Mark as Downloaded", "Mark as Downloaded",
-                         icon_downloaded.getBitmap(), None, None, NORMAL),
-        "s_ready":      ("&Ready", "Mark as Ready", "Mark as Ready",
-                         icon_ready.getBitmap(), None, None, NORMAL),
-        "s_seen":       ("&Seen", "Mark as Seen", "Mark as Seen",
-                         icon_processed.getBitmap(), None, None, NORMAL)
+    global menuItems
+    menuItems = { 
+        "exit":          ("E&xit", "Exit", "Exit the application", None, NORMAL),
+        "add_series":    ("&Add Series...\tCtrl+N", "Add", "Add a new series", icon_add.getBitmap(), NORMAL),
+        "edit_series":   ("&Edit Series...\tCtrl+E", "Edit", "Edit Series properties", icon_edit.getBitmap(), NORMAL),
+        "del_series":    ("&Delete Series\tCtrl+D", "Delete", "Delete Series", icon_delete.getBitmap(), NORMAL),
+        "preferences":   ("&Preferences ...", "Preferences", "Open the application preferences", icon_preferences.getBitmap(), NORMAL ),
+        "clear_cache":   ("&Clear Cache", "Clear Cache", "Clear cache of one or all series", None, NORMAL),
+        "select_all":    ("&Select All\tCtrl+A", "Select All", "Select all episodes", None,  NORMAL),
+        "edit_episode":  ("&Edit Episode...", "Edit Episode", "Edit selected episode", icon_edit.getBitmap(), NORMAL),
+        "searches":      ("Search &Engines ...", "Edit Search Engines", "Edit Search Engine properties", icon_searches.getBitmap(),  NORMAL),
+        "restore":       ("&Restore Default Layout", "Restore Default Layout", "Restore default window layout", icon_default_layout.getBitmap(), NORMAL),
+        "toggle_sel":    ("Toggle View Selector", "Toggle View Selector", "Toggle View Selector", None,  CHECK),
+        "toggle_prog":   ("Toggle Progress Log", "Toggle Progress Log", "Hide or show Progress Log window", None, CHECK),
+        "toggle_stat":   ("Toggle Statistics Window", "Toggle Statistics Window", "Hide or show Progress Statistics window", None, CHECK),
+        "to_tray":       ("Minimize to tray", "Minimize to tray", "Upon minimize, hide in system tray", None, CHECK),
+        "help":          ("&Help ... ", "Help", "Show the application help", icon_help.getBitmap(), NORMAL),
+        "visit_site":    ("&Visit Site ... ", "Visit Site", "Visit Project Site", icon_visit_site.getBitmap(), NORMAL),
+        "about":         ("&About ...", "About", "Show the about dialog", None,  NORMAL),
+        "s_todownload":  ("&To Download", "Mark as To Download", "Mark as To Download", to_download.getBitmap(), NORMAL),
+        "s_download":    ("&Downloading", "Mark as Downloading", "Mark as Downloading", downloading.getBitmap(), NORMAL),
+        "s_downloaded":  ("Down&loaded", "Mark as Downloaded", "Mark as Downloaded", icon_downloaded.getBitmap(), NORMAL),
+        "s_ready":       ("&Ready", "Mark as Ready", "Mark as Ready", icon_ready.getBitmap(), NORMAL),
+        "s_seen":        ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL)        
       }
     
-    
-    menutree = [ ("&File",    [ "preferences", "-", "exit" ] ),
+    mainmenu = [ ("&File",    [ "preferences", "-", "exit" ] ),
                  ("&Series",  [ "add_series", "edit_series", "del_series", "-", "clear_cache" ] ),
-                 ("&Episode", [ "select_all", "searches" ] ),
+                 ("&Episode", [ "select_all", "searches", "-", 
+                                   ( "&Mark Status As", [ "s_todownload", "s_download", 
+                                                          "s_downloaded", "s_ready", "s_seen"] ) 
+                              ] ),
                  ("&Window",  [ "restore", "toggle_sel", "toggle_prog", "toggle_stat", "-", "to_tray" ] ),
                  ("&Help",    [ "help", "visit_site", "-", "about" ] )
                ]
     
- 
-    menutb = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
+    toolmenu = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
                "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen" 
              ]
     
     
     # create menu
-    parent._menuBar = wx.MenuBar()
-
-    for mainmenu in menutree:
-        mnu = wx.Menu()
-        for submenu in mainmenu[1]:
-            if submenu == "-":
-                mnu.AppendSeparator()
-            else:
-                id = wx.NewId()
-                ml = menuitems[submenu]
-                if ml[6] == CHECK:
-                    mt = wx.ITEM_CHECK
-                else:
-                    mt = wx.ITEM_NORMAL
-                
-                smenu = wx.MenuItem(mnu, id, ml[0], ml[2], mt)
-                if ml[3]:
-                    smenu.SetBitmap(ml[3])
-                
-                if ml[4]:
-                    parent.Bind(wx.EVT_MENU, ml[4], smenu)
-                    
-                if ml[5] != "" and ml[5] is not None:
-                    parent.__dict__["_menu"+ml[5]] = smenu
-                mnu.AppendItem(smenu)
-            
-        parent._menuBar.Append(mnu, mainmenu[0])
-
-    parent.SetMenuBar(parent._menuBar)
+    mb = wx.MenuBar()
+    _createMainMenu(mainmenu, mb) 
+    parent.SetMenuBar(mb)
                         
-    parent._toggleWindowLookup = {}
-    parent._toggleWindowLookup[parent._menuToggleLeft.GetId()] = "viewselectpanel"
-    parent._toggleWindowLookup[parent._menuToggleBottom.GetId()] = "progresslogpanel"
-    parent._toggleWindowLookup[parent._menuToggleStat.GetId()] = "statisticspanel"
-      
-    TBFLAGS = (   wx.TB_HORIZONTAL
-                  | wx.NO_BORDER
-                  | wx.TB_FLAT
-                  )
-     
+    # create toolbar
     tb = parent.CreateToolBar( TBFLAGS )
-    tsize = (16,16)
-    
-    tb.SetToolBitmapSize(tsize)
-    
-    parent._toolLookup = dict()
-    for submenu in menutb:
-        if submenu == "-":
-            tb.AddSeparator()
-        else:
-            tid = wx.NewId()
-            ml = menuitems[submenu]
-            if ml[3]:
-                bmp = ml[3]
-            else:
-                bmp = wx.NullBitmap
-            if ml[6] == CHECK:
-                tb.AddCheckLabelTool(tid, ml[1], bmp, shortHelp = ml[1], longHelp = ml[2])
-            else:
-                tb.AddLabelTool(tid, ml[1], bmp, shortHelp = ml[1], longHelp = ml[2])
-            if ml[4]:
-                parent.Bind(wx.EVT_TOOL, ml[4], id = tid)
-        
-            parent._toolLookup[submenu] = tid
+    tb.SetToolBitmapSize( TBSIZE )
+    _createToolBar(toolmenu, tb)
     tb.Realize()
+    
+    # bind all events
+    for evtid, evthnd in bindEvents:
+        if evtid in mainMenuLookup:
+            parent.Bind(wx.EVT_MENU, evthnd, id = mainMenuLookup[evtid])
+        if evtid in mainToolLookup:
+            parent.Bind(wx.EVT_TOOL, evthnd, id = mainToolLookup[evtid])
+            
+
+def populate(mnu, menulst, extramenus):
+    """ Populates a submenu with a given definition list. If the 
+        items in this list are known by the submenu, they will get
+        the same ID so that e.g. popup menu's can trigger the same
+        handler as the main menu can """
+    return _createSubMenu(mnu, menulst, extramenus)
+
+
+def enable(parent, menu, enabled):
+    """ Enables or disables a menu item by reference. menu can be a list or a 
+        single string """
+    
+    tb = parent.GetToolBar()
+    mb = parent.GetMenuBar()
+    
+    if isinstance(menu, list):
+        for id in menu:
+            if id in mainToolLookup:
+                tb.EnableTool(mainToolLookup[id], enabled)
+            if id in mainMenuLookup:
+                mb.Enable(mainMenuLookup[id], enabled)
+    else:
+        if menu in mainToolLookup:
+            tb.EnableTool(mainToolLookup[menu], enabled)
+        if menu in mainMenuLookup:
+            mb.Enable(mainMenuLookup[menu], enabled)
+            
+        
+def check(parent, id, value):
+    """ Checks or unchecks a menu item """
+    
+    if id in mainToolLookup:
+        tb = parent.GetToolBar()
+        tb.ToggleTool(mainToolLookup[id], value)
+        
+    if id in mainMenuLookup:
+        mb = parent.GetMenuBar()
+        mb.Check(mainMenuLookup[id], value)
+    
+def getmenu(id):
+    """ Returns the string by this menu item. The ID must be unique """
+    
+    for menu in mainMenuLookup.iterkeys():
+        if mainMenuLookup[menu] == id:
+            return menu
+    for menu in mainToolLookup.iterkeys():
+        if mainToolLookup[menu] == id:
+            return menu
+    return None
+        

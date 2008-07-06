@@ -44,7 +44,33 @@ class AirsFrame(wx.Frame):
         self._connectSignals()
 
         # instantiate the GUI        
-        menu.create(self)
+
+        bindEvents = [ 
+            ("exit",         self._onGuiExit),
+            ("add_series",   self._onGuiAddNew),
+            ("edit_series",  self._onGuiEdit),
+            ("del_series",   self._onGuiDelete),
+            ("preferences",  self._onGuiShowOptions),
+            ("clear_cache",  self._onClearCache),
+            ("select_all",   self._onSelectAll), 
+            ("edit_episode", self._onGuiEdit), 
+            ("searches",     self._onEditSearchEngines),
+            ("restore",      self._onGuiRestoreLayout), 
+            ("toggle_sel",   self._onGuiToggleWindow),
+            ("toggle_prog",  self._onGuiToggleWindow),
+            ("toggle_stat",  self._onGuiToggleWindow), 
+            ("to_tray",      self._onGuiMinimizeToTray),
+            ("help",         self._onGuiVisitSite),
+            ("visit_site",   self._onGuiVisitSite), 
+            ("about",        self._onGuiAbout)
+        ]        
+
+        menu.create(self, bindEvents)
+                
+        self._toggleWindowLookup = {}
+        self._toggleWindowLookup["toggle_sel"] = "viewselectpanel"
+        self._toggleWindowLookup["toggle_prog"] = "progresslogpanel"
+        self._toggleWindowLookup["toggle_stat"] = "statisticspanel"
         
         self._createWindows()
         self._createTrayIcon()
@@ -247,8 +273,9 @@ class AirsFrame(wx.Frame):
 
 
     def _onGuiToggleWindow(self, event):
-        if event.GetId() in self._toggleWindowLookup:
-            pane = self._aui.GetPane(self._toggleWindowLookup[event.GetId()])
+        str = menu.getmenu(event.GetId())
+        if str is not None:
+            pane = self._aui.GetPane(self._toggleWindowLookup[str])
             if pane:
                 pane.Show(not pane.IsShown())
         self._aui.Update()
@@ -262,20 +289,25 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
 
-        self._menuBar.Check(self._menuTrayMinimize.GetId(), 
-                            appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
+        menu.check(self, "to_tray", appcfg.options[appcfg.CFG_TRAY_MINIMIZE]) 
 
         # sync the checkbox view based upon the view state of the panels
         for menu_id in self._toggleWindowLookup.iterkeys():
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
-            self._menuBar.Check(menu_id, pane.IsShown())
+            menu.check(self, menu_id, pane.IsShown())
 
-        enabled = viewmgr._series_sel._selected_series_id != -1
-        self._menuEdit.Enable(enabled)
-        self._menuDelete.Enable(enabled)
-        self._menuClearCache.Enable(enabled)
-
-
+        menu.enable(self, ["edit_series", 
+                           "del_series", 
+                           "clear_cache"], viewmgr.appstate["series_id"] != -1)
+        
+        menu.enable(self, ["s_todownload", 
+                           "s_download", 
+                           "s_downloaded", 
+                           "s_ready", 
+                           "s_seen"], viewmgr.appstate["epcount"] > 0)
+        
+        menu.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
+                 
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
@@ -397,7 +429,7 @@ class AirsFrame(wx.Frame):
         the closing of the window is decoupled from the rest of 
         the code
         """
-        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, self._menuExit.GetId())
+        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menu.menuLookup["exit"])
         wx.PostEvent(self, evt)
 
 

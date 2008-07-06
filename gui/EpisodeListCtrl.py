@@ -12,13 +12,14 @@ from images import whats_new, to_download, \
                    downloading, icon_processed, icon_ready, icon_new, \
                    icon_downloaded
 
+import menu
+
 from wx.lib.pubsub import Publisher
 import datetime
 
 aired_days    = { 0: 'Today',  1: 'Tomorrow', -1: 'Yesterday' }
 aired_weekday = { 0: 'Monday', 1: 'Tuesday',   2: 'Wednesday', 3: 'Thursday',
                   4: 'Friday', 5: 'Saturday',  6: 'Sunday' }
-
 
 def _sort_updated(a, b):
     """
@@ -121,17 +122,33 @@ class EpisodeListCtrl(wx.ListCtrl):
         Publisher().subscribe(self._onAppClose, signals.APP_CLOSE)
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._onItemActivated)
+	
+	self.Bind(wx.EVT_UPDATE_UI, self._onListChange)
         
 
         # for wxMSW
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._onMenuPopup)
         
-	    # for wxGTK
+	# for wxGTK
         self.Bind(wx.EVT_RIGHT_UP, self._onMenuPopup)
         
         self._syncToday()
 
-    
+	
+    def _onListChange(self, event):
+	self._syncEpisodeCount()
+		
+	
+    def _syncEpisodeCount(self):
+	count = 0
+	idx = self.GetFirstSelected()
+        while idx != wx.NOT_FOUND:
+	    count += 1
+	    idx = self.GetNextSelected(idx)
+        viewmgr.appstate["epcount"] = count
+	viewmgr.appstate["lstcount"] = self.GetItemCount()
+	
+	
     def _onItemActivated(self, event):
         # find search engine to use
         executed = False
@@ -187,98 +204,68 @@ class EpisodeListCtrl(wx.ListCtrl):
         """
         Create popup menu to perform some options
         """
-        if self.GetFirstSelected() != wx.NOT_FOUND:        
-            menu = wx.Menu()
-            
-            st_changed = False
-            st_to_download = False
-            st_downloading = False
-            st_series = False
-	    st_downloaded = False
-            
+	
+	self._se_lookup = dict()
+	if self.GetFirstSelected() != wx.NOT_FOUND:        
+	    se_dict = dict()
+            mnu = wx.Menu()
+
+	    menulst = list()
+	    addsep = False
             if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW or \
                viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_ON:
-                self.Bind(wx.EVT_MENU, self._onSetToDownload, 
-                          menu.Append(wx.NewId(),"Add to Download Queue"))
-                st_changed  = True
-
-            if viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW:
-                self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          menu.Append(wx.NewId(),"Remove from View"))
-                
+		menulst.append("s_todownload")
+		addsep = True
+	   					
             if viewmgr._series_sel._view_type == series_filter.VIEW_TO_DOWNLOAD:
-                self.Bind(wx.EVT_MENU, self._onSetDownloading, 
-                          menu.Append(wx.NewId(),"Add to Downloading"))
-                st_to_download = True
-				
+                menulst.append("s_download")
+		addsep = True
+	    
             if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADING:
-                self.Bind(wx.EVT_MENU, self._onSetDownloaded, 
-                          menu.Append(wx.NewId(),"Add to Downloaded"))
-                st_to_download = True
+                menulst.append("s_downloaded")
+		addsep = True
 		
-            if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADED:
-                self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          menu.Append(wx.NewId(),"Mark as Ready"))
-                st_downloaded = True		
+            if viewmgr._series_sel._view_type == series_filter.VIEW_DOWNLOADED or \
+	       viewmgr._series_sel._view_type == series_filter.VIEW_WHATS_NEW:
+                menulst.append("s_ready")
+		addsep = True
 		
-	    if viewmgr._series_sel._view_type == series_filter.VIEW_SERIES:
-                self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          menu.Append(wx.NewId(),"Set as Ready"))
-                self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          menu.Append(wx.NewId(),"Set as Seen"))
-                st_series = True
-                
-            # show search engine list only with single selection
-            # and if there are any to show.
+	    if addsep:
+		menulst.append("-")
+		
             idx = self.GetFirstSelected()
             if self.GetNextSelected(idx) == wx.NOT_FOUND:
+		
+		se_items = list()
+		                
                 result = db.store.find(searches.Searches)
                 lst = [s for s in result.order_by(searches.Searches.name)]
                 if lst:
-                    menu.AppendSeparator()
-                    searchmenu = wx.Menu()
-                    
-                    self._search_ids = dict()                    
-                    
                     for se in lst:
-                        mnu_id = wx.NewId()
-                        self._search_ids[mnu_id] = se
-                        m = searchmenu.Append(mnu_id, se.name)
-                        self.Bind(wx.EVT_MENU, self._onSearchEntry, m)
-                    menu.AppendMenu(wx.NewId(), "Online Search ...", searchmenu)
-                    
-                self.Bind(wx.EVT_MENU, self._onEditSeries, 
-                          menu.Append(wx.NewId(), "Edit Series ..."))
-                
-		self.Bind(wx.EVT_MENU, self._onEditEpisode, 
-			  menu.Append(wx.NewId(), "Edit Episode ..."))
-                
-            if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
-                menu.AppendSeparator()
-            
-	    statusmenu = wx.Menu()
-	    
-            if not st_changed:
-                self.Bind(wx.EVT_MENU, self._onSetToDownload, 
-                          statusmenu.Append(wx.NewId(), "&To Download"))
-            if not st_to_download:
-                self.Bind(wx.EVT_MENU, self._onSetDownloading, 
-                          statusmenu.Append(wx.NewId(), "&Downloading"))
-            if not st_downloaded:
-                self.Bind(wx.EVT_MENU, self._onSetDownloaded, 
-                          statusmenu.Append(wx.NewId(), "Down&loaded"))
+			se_dict[se.id] = (se.name, se.name, "", None, menu.NORMAL)
+			se_items.append(se.id)
 
-	    if not st_downloaded:
-                self.Bind(wx.EVT_MENU, self._onSetReady, 
-                          statusmenu.Append(wx.NewId(), "&Ready"))
-	    if not st_series:
-		self.Bind(wx.EVT_MENU, self._onSetProcessed, 
-                          statusmenu.Append(wx.NewId(), "&Seen"))
-            
-	    menu.AppendMenu(wx.NewId(), "Mark Episode(s) As ...", statusmenu)
+		    menulst.append( ("&Online Search", se_items) )
 		
-            self.PopupMenu(menu)
-            menu.Destroy()   
+		menulst.append("edit_episode")
+	    
+		if viewmgr.appstate["series_id"] == -1:
+		    menulst.append("edit_series")
+	    
+		if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
+		    menulst.append("-")
+            
+	    menulst.append( ("Mark Episode(s) As ...", [ "s_todownload", "s_download", "s_downloaded", 
+						         "s_ready", "s_seen" ]) )
+	    menu_ids = menu.populate(mnu, menulst, se_dict)
+	    
+	    for id in se_items:
+		self.Bind(wx.EVT_MENU, self._onSearchEntry, id = menu_ids[id])
+		
+	    self.PopupMenu(mnu)
+            mnu.Destroy()   
+	    
+	    self._se_lookup = dict()
                     
            
     def _onEditEpisode(self, event):
@@ -420,7 +407,6 @@ class EpisodeListCtrl(wx.ListCtrl):
             item.SetTextColour(wx.BLACK)
         self.SetItem(item)
         
-
     def _update(self, msg):
         """
         Inserts the episode in the list
@@ -429,8 +415,7 @@ class EpisodeListCtrl(wx.ListCtrl):
         idx = self.FindItemData(-1, ep.id) 
         if idx != wx.NOT_FOUND:     
             self._updateEpisode(idx, ep)
-        
-            
+             
     def _delete(self, msg):
         """
         Respond to a deleted command of an episode
@@ -445,3 +430,4 @@ class EpisodeListCtrl(wx.ListCtrl):
             if idx != wx.NOT_FOUND:
                 self.DeleteItem(idx)
    
+    
