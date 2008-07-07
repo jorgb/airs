@@ -77,7 +77,8 @@ class AirsFrame(wx.Frame):
             ("s_seen",       self._onMarkEpisodes),
             ("restore_wnd",  self._onGuiRestore),
             ("update_all",   self._onUpdateAll),
-            ("update",       self._onUpdateSeries)
+            ("update",       self._onUpdateSeries),
+            ("browser",      self._onStartBrowser)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -165,6 +166,9 @@ class AirsFrame(wx.Frame):
 
 
     # ======================== ITEM MANAGEMENT METHODS =========================
+
+    def _onStartBrowser(self, event):
+        wx.LaunchDefaultBrowser("http://127.0.0.1:8000/series")
 
     def _onUpdateAll(self, event):
         viewmgr.get_all_series()
