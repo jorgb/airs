@@ -20,6 +20,13 @@ parent = None
 TBFLAGS = ( wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT )
 TBSIZE  = (16, 16)
 
+
+class MenuData(object):
+    def __init__(self):
+        self.id = -1
+        self.data = None
+
+
 def _createSubMenu(mnu, menulst, extramenus = None):
     menuIdLookup = dict()
     if extramenus is None:
@@ -35,7 +42,7 @@ def _createSubMenu(mnu, menulst, extramenus = None):
             mnu.AppendSeparator()
         else:
             if submenu in mainMenuLookup:
-                id = mainMenuLookup[submenu]
+                id = mainMenuLookup[submenu].id
             else:
                 id = wx.NewId()
             if submenu in menuItems:
@@ -52,7 +59,14 @@ def _createSubMenu(mnu, menulst, extramenus = None):
             if ml[3]:
                 smenu.SetBitmap(ml[3])
 
-            menuIdLookup[submenu] = id
+            md = MenuData()
+            md.id = id
+            if len(ml) > 4:
+                md.data = ml[5]
+            else:
+                md.data = None
+
+            menuIdLookup[submenu] = md
             mnu.AppendItem(smenu)
 
     return menuIdLookup
@@ -131,7 +145,7 @@ def create(parent, bindEvents):
                ]
 
     toolmenu = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
-               "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen"
+                 "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen"
              ]
 
 
@@ -149,7 +163,7 @@ def create(parent, bindEvents):
     # bind all events
     for evtid, evthnd in bindEvents:
         if evtid in mainMenuLookup:
-            parent.Bind(wx.EVT_MENU, evthnd, id = mainMenuLookup[evtid])
+            parent.Bind(wx.EVT_MENU, evthnd, id = mainMenuLookup[evtid].id)
         if evtid in mainToolLookup:
             parent.Bind(wx.EVT_TOOL, evthnd, id = mainToolLookup[evtid])
 
@@ -174,12 +188,12 @@ def enable(parent, menu, enabled):
             if id in mainToolLookup:
                 tb.EnableTool(mainToolLookup[id], enabled)
             if id in mainMenuLookup:
-                mb.Enable(mainMenuLookup[id], enabled)
+                mb.Enable(mainMenuLookup[id].id, enabled)
     else:
         if menu in mainToolLookup:
             tb.EnableTool(mainToolLookup[menu], enabled)
         if menu in mainMenuLookup:
-            mb.Enable(mainMenuLookup[menu], enabled)
+            mb.Enable(mainMenuLookup[menu].id, enabled)
 
 
 def check(parent, id, value):
@@ -191,15 +205,25 @@ def check(parent, id, value):
 
     if id in mainMenuLookup:
         mb = parent.GetMenuBar()
-        mb.Check(mainMenuLookup[id], value)
+        mb.Check(mainMenuLookup[id].id, value)
 
 def getmenu(id):
     """ Returns the string by this menu item. The ID must be unique """
 
     for menu in mainMenuLookup.iterkeys():
-        if mainMenuLookup[menu] == id:
+        if mainMenuLookup[menu].id == id:
             return menu
     for menu in mainToolLookup.iterkeys():
         if mainToolLookup[menu] == id:
             return menu
     return None
+
+def menuid_to_data(mnuid, menuLookup = None):
+    """ Scans in the menu lookup (or main menu) for the ID returning the
+        data that belongs to it """
+    if menuLookup is None:
+        menuLookup = mainMenuLookup
+    for data in menuLookup.itervalues():
+        if data.id == mnuid:
+            return data.data
+        

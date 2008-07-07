@@ -297,14 +297,14 @@ class AirsFrame(wx.Frame):
             menuhelper.check(self, menu_id, pane.IsShown())
 
         menuhelper.enable(self, ["edit_series",
-                           "del_series",
-                           "clear_cache"], viewmgr.appstate["series_id"] != -1)
+                                 "del_series",
+                                 "clear_cache"], viewmgr.appstate["series_id"] != -1)
 
         menuhelper.enable(self, ["s_todownload",
-                           "s_download",
-                           "s_downloaded",
-                           "s_ready",
-                           "s_seen"], viewmgr.appstate["epcount"] > 0)
+                                 "s_download",
+                                 "s_downloaded",
+                                 "s_ready",
+                                 "s_seen"], viewmgr.appstate["epcount"] > 0)
 
         menuhelper.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
 
@@ -429,12 +429,10 @@ class AirsFrame(wx.Frame):
         the closing of the window is decoupled from the rest of
         the code
         """
-        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menuhelper.mainMenuLookup["exit"])
+        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menuhelper.mainMenuLookup["exit"].id)
         wx.PostEvent(self, evt)
 
-
     # ============================ VARIOUS METHODS =============================
-
 
     def _onWebRequest(self, event):
         """ Handle request of the web browser plugin """

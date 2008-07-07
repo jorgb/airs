@@ -232,7 +232,7 @@ class EpisodeListCtrl(wx.ListCtrl):
                 lst = [s for s in result.order_by(searches.Searches.name)]
                 if lst:
                     for se in lst:
-                        se_dict[se.id] = (se.name, se.name, "", None, menuhelper.NORMAL)
+                        se_dict[se.id] = (se.name, se.name, "", None, menuhelper.NORMAL, se)
                         se_items.append(se.id)
 
                 menulst.append( ("&Online Search", se_items) )
@@ -270,11 +270,9 @@ class EpisodeListCtrl(wx.ListCtrl):
             Publisher().sendMessage(signals.QUERY_EDIT_SERIES, eps[0])
 
     def _onSearchEntry(self, event):
-        try:
-            se = self._search_ids[event.GetId()]
-        except KeyError:
-            return
-        self._doExecuteSearch(se)
+        se = menuhelper.menuid_to_data(event.GetId())
+        if se:
+            self._doExecuteSearch(se)
 
     def __getSelectedEpisodes(self):
         episodes = list()
