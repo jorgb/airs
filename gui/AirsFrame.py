@@ -74,8 +74,10 @@ class AirsFrame(wx.Frame):
             ("s_download",   self._onMarkEpisodes),
             ("s_downloaded", self._onMarkEpisodes),
             ("s_ready",      self._onMarkEpisodes),
-            ("s_seen",       self._onMarkEpisodes)
-
+            ("s_seen",       self._onMarkEpisodes),
+            ("restore_wnd",  self._onGuiRestore),
+            ("update_all",   self._onUpdateAll),
+            ("update",       self._onUpdateSeries)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -164,8 +166,13 @@ class AirsFrame(wx.Frame):
 
     # ======================== ITEM MANAGEMENT METHODS =========================
 
-    def _onMarkEpisodes(self, event):
+    def _onUpdateAll(self, event):
+        viewmgr.get_all_series()
 
+    def _onUpdateSeries(self, event):
+        viewmgr.get_selected_series()
+
+    def _onMarkEpisodes(self, event):
         st = menuhelper.getmenu(event.GetId())
         eps = viewmgr.get_selected_episodes()
         for episode in eps:
@@ -338,6 +345,10 @@ class AirsFrame(wx.Frame):
         menuhelper.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
         menuhelper.enable(self, "edit_episode", viewmgr.appstate["epcount"] == 1)
 
+        view_enabled = viewmgr._series_sel._view_type != -1
+        menuhelper.enable(self, "update_all", not viewmgr.is_busy())
+        menuhelper.enable(self, "update", view_enabled and viewmgr.series_active())
+
 
     def _saveWindowLayout(self):
         """
@@ -424,15 +435,16 @@ class AirsFrame(wx.Frame):
         here, so we can redirect the most important events easier
         """
         if kind == AirsTrayIcon.SHOW_MENU:
+
+            popmenu = [ "browser" ]
+            if not viewmgr.is_busy():
+                popmenu.append("update_all")
+            popmenu += ["-", "restore_wnd", "exit"]
+
             traymenu = wx.Menu()
-            m1 = traymenu.Append(wx.NewId(), "&Restore Window")
-            m1.Enable(self.IsIconized())
+            menu_data = menuhelper.populate(traymenu, popmenu)
 
-            traymenu.AppendSeparator()
-            m2 = traymenu.Append(wx.NewId(), "&Exit")
-
-            self.Bind(wx.EVT_MENU, self._onGuiRestore, m1)
-            self.Bind(wx.EVT_MENU, self._onGuiPreExit, m2)
+            traymenu.Enable(menu_data["restore_wnd"].id, self.IsIconized())
 
             self.PopupMenu(traymenu)
             traymenu.Destroy()

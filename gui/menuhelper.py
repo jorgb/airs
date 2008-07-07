@@ -2,11 +2,14 @@ import wx
 from images import icon_add, icon_delete, icon_edit
 from images import icon_main, icon_about
 from images import icon_home, icon_help, \
-                   icon_visit_site, icon_searches
+                   icon_visit_site, icon_searches, \
+                   icon_browser
 from images import icon_default_layout
 from images import icon_add, icon_delete, icon_edit
 from images import icon_preferences ,to_download, downloading, \
-                   icon_downloaded, icon_ready, icon_processed
+                   icon_downloaded, icon_ready, icon_processed, all_series, \
+                   icon_update, icon_update_all, icon_restore_wnd, \
+                   icon_edit_episode
 
 NORMAL  = 1
 CHECK   = 2
@@ -117,7 +120,7 @@ def create(parent, bindEvents):
         "preferences":   ("&Preferences ...", "Preferences", "Open the application preferences", icon_preferences.getBitmap(), NORMAL ),
         "clear_cache":   ("&Clear Cache", "Clear Cache", "Clear cache of one or all series", None, NORMAL),
         "select_all":    ("&Select All\tCtrl+A", "Select All", "Select all episodes", None,  NORMAL),
-        "edit_episode":  ("&Edit Episode...", "Edit Episode", "Edit selected episode", icon_edit.getBitmap(), NORMAL),
+        "edit_episode":  ("&Edit Episode...", "Edit Episode", "Edit selected episode", icon_edit_episode.getBitmap(), NORMAL),
         "searches":      ("Search &Engines ...", "Edit Search Engines", "Edit Search Engine properties", icon_searches.getBitmap(),  NORMAL),
         "restore":       ("&Restore Default Layout", "Restore Default Layout", "Restore default window layout", icon_default_layout.getBitmap(), NORMAL),
         "toggle_sel":    ("Toggle View Selector", "Toggle View Selector", "Toggle View Selector", None,  CHECK),
@@ -132,11 +135,15 @@ def create(parent, bindEvents):
         "s_downloaded":  ("Down&loaded", "Mark as Downloaded", "Mark as Downloaded", icon_downloaded.getBitmap(), NORMAL),
         "s_ready":       ("&Ready", "Mark as Ready", "Mark as Ready", icon_ready.getBitmap(), NORMAL),
         "s_seen":        ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL),
-        "browser":       ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL)
+        "browser":       ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL),
+        "update_all":    ("&Update All\tCtrl+Shift+U", "Update All", "Update all series", icon_update_all.getBitmap(), NORMAL),
+        "update":        ("Update &Series\tCtrl+U", "Update Series", "Update this series", icon_update.getBitmap(), NORMAL),
+        "restore_wnd":   ("Restore Window", "Restore Window", "Restore this window", icon_restore_wnd.getBitmap(), NORMAL)
       }
 
     mainmenu = [ ("&File",    [ "preferences", "browser", "-", "exit" ] ),
-                 ("&Series",  [ "add_series", "edit_series", "del_series", "-", "clear_cache" ] ),
+                 ("&Series",  [ "add_series", "edit_series", "del_series",
+                                "-", "update", "update_all",  "-", "clear_cache"] ),
                  ("&Episode", [ "select_all", "searches", "-", "edit_episode",
                                    ( "&Mark Status As", [ "s_todownload", "s_download",
                                                           "s_downloaded", "s_ready", "s_seen"] )
@@ -147,7 +154,7 @@ def create(parent, bindEvents):
 
     toolmenu = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
                  "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen", "-",
-                 "browser"
+                 "update", "update_all", "browser"
              ]
 
 
@@ -170,11 +177,13 @@ def create(parent, bindEvents):
             parent.Bind(wx.EVT_TOOL, evthnd, id = mainToolLookup[evtid])
 
 
-def populate(mnu, menulst, extramenus):
+def populate(mnu, menulst, extramenus = None):
     """ Populates a submenu with a given definition list. If the
         items in this list are known by the submenu, they will get
         the same ID so that e.g. popup menu's can trigger the same
         handler as the main menu can """
+    if extramenus is None:
+        extramenus = dict()
     return _createSubMenu(mnu, menulst, extramenus)
 
 
