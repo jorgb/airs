@@ -16,7 +16,7 @@
         <body>
             <div id="overall">
               <div id="title"><xsl:value-of select="airs/episodes/@name" /></div>
-              <a class="subcaption" href="series">Return to episode list</a>
+              <a class="subcaption" href="series">Return to series overview</a>
               <div id="titlespacing" />
               <table class="episodes">                  
                   <xsl:if test="$layout != 'mobile'">

@@ -23,7 +23,7 @@ td.header
 
 table.episodes
 {
-    width: 100%;
+    /* width: 100%; */
 }
 
 td.number
@@ -33,19 +33,19 @@ td.number
 
 #overall
 {
-    width: 80%;
+    /* width: 80%; */
 }
 
 #headertext
 {
     font-style: italic;
-    font-size: 150%;
+    font-size: 100%;
 }
 
 /* the title of the contents */
 #title
 {
-    font-size: 300%;
+    font-size: 150%;
     color: #eae975;
 }
 
@@ -63,23 +63,23 @@ a, a:visited
 
 a.series
 {
-    font-size: 150%;
+    font-size: 100%;
 }
 
 #seriescount
 {
-    font-size: 150%;
+    font-size: 100%;
 }
 
 a.subcaption 
 {
-    font-size: 130%;
+    font-size: 100%;
     font-style: italic;
 }
 
 a.playfile
 {
-    font-size: 130%;
+    font-size: 100%;
     font-style: normal;
     color: #c4c4c4;
 }
@@ -87,7 +87,7 @@ a.playfile
 
 a.search
 {
-    font-size: 110%;
+    font-size: 75%;
     font-style: italic;
     border-margin: 4px;
     border-style: none;
@@ -114,14 +114,14 @@ td.search
 {
     color: #d6d66e;
     font-style: bold;
-    font-size: 180%;
+    font-size: 110%;
 }
 
 #orphaned
 {
     color: #d6d66e;
     font-style: normal;
-    font-size: 180%;
+    font-size: 100%;
 }
 
 
@@ -129,7 +129,7 @@ td.search
 {
     color: #646464;
     font-style: normal;
-    font-size: 180%;
+    font-size: 100%;
 }
 
 #seriestitle
