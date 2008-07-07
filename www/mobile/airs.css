@@ -2,11 +2,22 @@
 /* body of airs pages */
 body 
 {
-    color: #ffffff;
-    background-color: #00005c; 
+    color: #000000;
+    background-color: #ffffff; 
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
+#title
+{
+   font-size: 110%;
+   font-style: bold,underline;
+}
+
+a img 
+{
+    border: 0;
+}
+/*
 tr.oddrow 
 {
     background-color: #00007a;
@@ -42,7 +53,6 @@ td.number
     font-size: 150%;
 }
 
-/* the title of the contents */
 #title
 {
     font-size: 300%;
@@ -143,9 +153,6 @@ td.eprow
     padding-right: 10pt;
     border-collapse:collapse;
     border-width: 0px;
-/*    border-bottom-style: solid; 
-    border-bottom-color: #4b4bff; 
-    border-bottom-width: 1px; */    
 }
 
 tr.eprow2
@@ -153,20 +160,10 @@ tr.eprow2
     vertical-align: center;
 }
 
-
-/* TODO: Fix gap in table */
-
-
-/* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
-
-/* overall div that encapsulates all content */
-
-
 #seriescount
 {
     margin-left: 20pt;
 }
-
 
 a:hover 
 {
@@ -178,5 +175,5 @@ a img
 {
     border: 0;
 }
-
+*/
 

@@ -75,7 +75,6 @@ class AirsFrame(wx.Frame):
             ("s_downloaded", self._onMarkEpisodes),
             ("s_ready",      self._onMarkEpisodes),
             ("s_seen",       self._onMarkEpisodes),
-            ("restore_wnd",  self._onGuiRestore),
             ("update_all",   self._onUpdateAll),
             ("update",       self._onUpdateSeries),
             ("browser",      self._onStartBrowser)
@@ -448,7 +447,9 @@ class AirsFrame(wx.Frame):
             traymenu = wx.Menu()
             menu_data = menuhelper.populate(traymenu, popmenu)
 
-            traymenu.Enable(menu_data["restore_wnd"].id, self.IsIconized())
+            id = menu_data["restore_wnd"].id
+            traymenu.Enable(id, not self.IsShown())
+            self.Bind(wx.EVT_MENU, self._onGuiRestore, id = id)
 
             self.PopupMenu(traymenu)
             traymenu.Destroy()
@@ -462,11 +463,11 @@ class AirsFrame(wx.Frame):
         """
         Restore action for window
         """
-        if self.IsIconized():
-            self.Iconize(False)
         if not self.IsShown():
             self.Show(True)
             appcfg.options[appcfg.CFG_LAYOUT_HIDDEN] = False
+        if self.IsIconized():
+            self.Iconize(False)
         self.Raise()
 
 

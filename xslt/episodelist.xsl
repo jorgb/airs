@@ -4,27 +4,26 @@
 <!-- ###################################################################### -->
 
 <xsl:template match="/">
+    <xsl:variable name="layout">
+      <xsl:value-of select="/airs/options/layout" />
+    </xsl:variable>
+
     <html>
         <head>
             <title><xsl:value-of select="airs/episodes/@name" /></title>
-            <link rel="stylesheet" type="text/css" href="www/screen/airs.css" />
+            <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
         </head>
         <body>
             <div id="overall">
               <div id="title"><xsl:value-of select="airs/episodes/@name" /></div>
               <a class="subcaption" href="series">Return to episode list</a>
               <div id="titlespacing" />
-              <table class="episodes">
-                  <!-- <tr class="captionrow">
-                      <td class="header"><div id="headertext">Number</div></td>
-                      <td class="header"><div id="headertext">Season</div></td>
-                      <td class="header"><div id="headertext">Title</div></td>
-                      <td colspan="2" class="actionheader"><div id="headertext">Actions</div></td>
-                  </tr> -->
-                  
-                  <tr>
-                    <td colspan="5" class="header"><div id="orphaned">Episodes</div></td>
-                  </tr>
+              <table class="episodes">                  
+                  <xsl:if test="$layout != 'mobile'">
+                    <tr>
+                      <td colspan="5" class="header"><div id="orphaned">Episodes</div></td>
+                    </tr>
+                  </xsl:if>
                   
                   <xsl:for-each select="airs/episodes/item">
 
@@ -34,14 +33,6 @@
                     
                     <xsl:if test="@status != 4">
                         <tr>
-                          <!-- Alternating table color cosmetics -->
-                          <!-- <xsl:if test="position() mod 2 =0 ">
-                            <xsl:attribute name="class">evenrow</xsl:attribute>
-                          </xsl:if>
-                          <xsl:if test="position() mod 2 =1 ">
-                            <xsl:attribute name="class">oddrow</xsl:attribute>
-                          </xsl:if> -->
-                          
                           <!-- Variable that determines if an episode is already aired
                                the var 'aired' will contain 'no' if it is not aired, and
                                'yes' if it's aired (or in doubt) -->
@@ -62,7 +53,11 @@
                           </xsl:variable>
                                                     
                           <td class="eprow"><div id="{$epstyle}"><xsl:value-of select="@number"/>.</div></td>
-                          <td class="eprow"><div id="{$epstyle}"><xsl:value-of select="@season"/></div></td>
+                          <td class="eprow"><div id="{$epstyle}">
+                            <xsl:if test="$layout = 'mobile'"><xsl:text> [</xsl:text></xsl:if>
+                            <xsl:value-of select="@season"/>
+                            <xsl:if test="$layout = 'mobile'"><xsl:text>] </xsl:text></xsl:if>
+                          </div></td>
                           <td class="eprow">
                             <div id="{$epstyle}"><xsl:value-of select="@title"/></div>
                           </td>
@@ -71,7 +66,7 @@
                             <!-- <xsl:if test="$aired = 'yes'"> -->
                               <a>
                                 <xsl:attribute name="href">series?cmd_mark_seen=<xsl:value-of select="@id"/></xsl:attribute>
-                                <img src="www/screen/icon_check.png" />
+                                <img src="www/{$layout}/icon_check.png" />
                               </a>
                             <!-- </xsl:if> -->     
                           </td>
@@ -93,7 +88,7 @@
                                 <td>
                                   <a>
                                     <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
-                                    <img src="www/screen/icon_delete.png" />
+                                    <img src="www/{$layout}/icon_delete.png" />
                                   </a>
                                 </td>
                                 <td>
@@ -102,6 +97,7 @@
                             </xsl:for-each>
                           </xsl:when>       <!-- <xsl:if test="count(files/file) &gt; 0"> -->
                           <xsl:when test="count(files/file) = 0">
+                            <xsl:if test="$layout != 'mobile'">                          
                               <!-- Display search engine links -->
                               <tr>
                                 <td></td>
@@ -121,7 +117,8 @@
                                 <td></td>
                                 <td></td>                          
                               </tr>                                
-                          </xsl:when>       <!-- <xsl:when test="count(files/file) = 0"> -->  
+                            </xsl:if>  
+                          </xsl:when>       <!-- <xsl:when test="count(files/file) = 0"> -->
                         </xsl:choose>
                       </xsl:if>           <!-- <xsl:if test="@status != 4"> -->
                   </xsl:for-each>
@@ -145,7 +142,7 @@
                         <td>
                            <a>
                              <xsl:attribute name="href">series?cmd_archive_file=<xsl:value-of select="@filepath"/><xsl:text>&amp;</xsl:text>return=<xsl:value-of select="/airs/episodes/@id"/></xsl:attribute>
-                             <img src="www/screen/icon_delete.png" />
+                             <img src="www/{$layout}/icon_delete.png" />
                            </a>
                         </td>
                         <td>
