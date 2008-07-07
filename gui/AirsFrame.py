@@ -16,7 +16,7 @@ from data import appcfg, viewmgr, signals
 from data import series_list, db, series_filter
 from webserver import synccmd, reactor
 
-import menu
+import menuhelper
 
 # gui elements
 import ViewSelectPanel
@@ -39,39 +39,39 @@ class AirsFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
-        self._trayIcon = None                       
+        self._trayIcon = None
 
         self._connectSignals()
 
-        # instantiate the GUI        
+        # instantiate the GUI
 
-        bindEvents = [ 
+        bindEvents = [
             ("exit",         self._onGuiExit),
             ("add_series",   self._onGuiAddNew),
             ("edit_series",  self._onGuiEdit),
             ("del_series",   self._onGuiDelete),
             ("preferences",  self._onGuiShowOptions),
             ("clear_cache",  self._onClearCache),
-            ("select_all",   self._onSelectAll), 
-            ("edit_episode", self._onGuiEdit), 
+            ("select_all",   self._onSelectAll),
+            ("edit_episode", self._onGuiEdit),
             ("searches",     self._onEditSearchEngines),
-            ("restore",      self._onGuiRestoreLayout), 
+            ("restore",      self._onGuiRestoreLayout),
             ("toggle_sel",   self._onGuiToggleWindow),
             ("toggle_prog",  self._onGuiToggleWindow),
-            ("toggle_stat",  self._onGuiToggleWindow), 
+            ("toggle_stat",  self._onGuiToggleWindow),
             ("to_tray",      self._onGuiMinimizeToTray),
             ("help",         self._onGuiVisitSite),
-            ("visit_site",   self._onGuiVisitSite), 
+            ("visit_site",   self._onGuiVisitSite),
             ("about",        self._onGuiAbout)
-        ]        
+        ]
 
-        menu.create(self, bindEvents)
-                
+        menuhelper.create(self, bindEvents)
+
         self._toggleWindowLookup = {}
         self._toggleWindowLookup["toggle_sel"] = "viewselectpanel"
         self._toggleWindowLookup["toggle_prog"] = "progresslogpanel"
         self._toggleWindowLookup["toggle_stat"] = "statisticspanel"
-        
+
         self._createWindows()
         self._createTrayIcon()
         self._createStatusBar()
@@ -85,7 +85,7 @@ class AirsFrame(wx.Frame):
 
         # setup our application title and icon
         self.SetTitle(appcfg.APP_TITLE)
-        self.SetIcon(wx.Icon(os.path.join(appcfg.appdir, "airs.ico"), wx.BITMAP_TYPE_ICO))        
+        self.SetIcon(wx.Icon(os.path.join(appcfg.appdir, "airs.ico"), wx.BITMAP_TYPE_ICO))
         self.Bind(wx.EVT_ICONIZE, self._onGuiIconize)
 
         # put windows like they were the last time
@@ -146,10 +146,10 @@ class AirsFrame(wx.Frame):
         """
         # specify your statusbar here, add more fields if needed
         self._statusbar = self.CreateStatusBar(2, wx.ST_SIZEGRIP)
-        self._statusbar.SetStatusWidths([-1, -1])            
+        self._statusbar.SetStatusWidths([-1, -1])
 
 
-    # ======================== ITEM MANAGEMENT METHODS ========================= 
+    # ======================== ITEM MANAGEMENT METHODS =========================
 
     def _onGuiAddNew(self, event):
         """ Event handler to add a new Series """
@@ -168,7 +168,7 @@ class AirsFrame(wx.Frame):
             viewmgr.set_selection(series)
 
             # ask if this needs to be scheduled too
-            if wx.MessageBox("Do you wish to run an update for this series?", 
+            if wx.MessageBox("Do you wish to run an update for this series?",
                              "Question", wx.ICON_QUESTION | wx.YES_NO) == wx.YES:
                 viewmgr.get_selected_series()
 
@@ -187,13 +187,13 @@ class AirsFrame(wx.Frame):
         # only edit when a genuine series is selected
         if viewmgr.series_active():
             sel_id = viewmgr._series_sel._selected_series_id
-            if sel_id != -1:        
+            if sel_id != -1:
                 series = db.store.get(series_list.Series, sel_id)
                 self._doEditSeries(series)
 
 
     def _doEditSeries(self, series):
-        if series:        
+        if series:
             dlg = SeriesDlg.SeriesDlg(self)
             dlg._editing = True
 
@@ -215,7 +215,7 @@ class AirsFrame(wx.Frame):
 
                 if wx.MessageBox("Are you sure you want to delete this series?\n" + \
                                  "All gathered episodes will also be lost!", "Warning", wx.ICON_WARNING | wx.YES_NO) == wx.YES:
-                    # delete 
+                    # delete
                     viewmgr.delete_series(series)
 
 
@@ -244,7 +244,7 @@ class AirsFrame(wx.Frame):
     # ============================= CLOSE METHODS ==============================
 
     def _onGuiExit(self, event):
-        """ 
+        """
         Attempt to close the main window
         """
         self.Close()
@@ -273,7 +273,7 @@ class AirsFrame(wx.Frame):
 
 
     def _onGuiToggleWindow(self, event):
-        str = menu.getmenu(event.GetId())
+        str = menuhelper.getmenu(event.GetId())
         if str is not None:
             pane = self._aui.GetPane(self._toggleWindowLookup[str])
             if pane:
@@ -289,25 +289,25 @@ class AirsFrame(wx.Frame):
         menu / toolbar / buttons based upon the internal application state.
         """
 
-        menu.check(self, "to_tray", appcfg.options[appcfg.CFG_TRAY_MINIMIZE]) 
+        menuhelper.check(self, "to_tray", appcfg.options[appcfg.CFG_TRAY_MINIMIZE])
 
         # sync the checkbox view based upon the view state of the panels
         for menu_id in self._toggleWindowLookup.iterkeys():
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
-            menu.check(self, menu_id, pane.IsShown())
+            menuhelper.check(self, menu_id, pane.IsShown())
 
-        menu.enable(self, ["edit_series", 
-                           "del_series", 
+        menuhelper.enable(self, ["edit_series",
+                           "del_series",
                            "clear_cache"], viewmgr.appstate["series_id"] != -1)
-        
-        menu.enable(self, ["s_todownload", 
-                           "s_download", 
-                           "s_downloaded", 
-                           "s_ready", 
+
+        menuhelper.enable(self, ["s_todownload",
+                           "s_download",
+                           "s_downloaded",
+                           "s_ready",
                            "s_seen"], viewmgr.appstate["epcount"] > 0)
-        
-        menu.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
-                 
+
+        menuhelper.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
+
     def _saveWindowLayout(self):
         """
         Saves the window layout for later use
@@ -356,7 +356,7 @@ class AirsFrame(wx.Frame):
         Periodic check function to update various GUI elements.
         We could use OnGUIUpdate but it is sent too sporadically
         """
-        series_title = viewmgr.get_current_title()        
+        series_title = viewmgr.get_current_title()
         if series_title:
             self._statusbar.SetStatusText("Processing: %s" % series_title, 1)
         else:
@@ -370,12 +370,12 @@ class AirsFrame(wx.Frame):
 
     def _onGuiIconize(self, event):
         """
-        Iconize event. When a tray icon is present and the 'minimize to tray' 
-        option is selected, the window is made hidden, which appears it is 
+        Iconize event. When a tray icon is present and the 'minimize to tray'
+        option is selected, the window is made hidden, which appears it is
         minimized to the system tray
         """
         if event.Iconized() and appcfg.options[appcfg.CFG_TRAY_MINIMIZE] == True:
-            self.Show(False)                   
+            self.Show(False)
 
 
     def _onGuiMinimizeToTray(self, event):
@@ -383,13 +383,13 @@ class AirsFrame(wx.Frame):
         Event that sets or clears the minimize to tray option
         """
         opt = not appcfg.options[appcfg.CFG_TRAY_MINIMIZE]
-        appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt 
-        appcfg.Write()  
+        appcfg.options[appcfg.CFG_TRAY_MINIMIZE] = opt
+        appcfg.Write()
 
 
     def _callbackTrayIcon(self, kind):
         """
-        Create the taskbar popup menu, and handle the events 
+        Create the taskbar popup menu, and handle the events
         here, so we can redirect the most important events easier
         """
         if kind == AirsTrayIcon.SHOW_MENU:
@@ -400,7 +400,7 @@ class AirsFrame(wx.Frame):
             traymenu.AppendSeparator()
             m2 = traymenu.Append(wx.NewId(), "&Exit")
 
-            self.Bind(wx.EVT_MENU, self._onGuiRestore, m1)   
+            self.Bind(wx.EVT_MENU, self._onGuiRestore, m1)
             self.Bind(wx.EVT_MENU, self._onGuiPreExit, m2)
 
             self.PopupMenu(traymenu)
@@ -408,7 +408,7 @@ class AirsFrame(wx.Frame):
 
         elif kind == AirsTrayIcon.ACTIVATE_WINDOW:
             evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, -1)
-            self._onGuiRestore(evt)    
+            self._onGuiRestore(evt)
 
 
     def _onGuiRestore(self, event):
@@ -420,16 +420,16 @@ class AirsFrame(wx.Frame):
         if not self.IsShown():
             self.Show(True)
             appcfg.options[appcfg.CFG_LAYOUT_HIDDEN] = False
-        self.Raise()    
+        self.Raise()
 
 
     def _onGuiPreExit(self, event):
         """
-        In this event we post another event to make sure that 
-        the closing of the window is decoupled from the rest of 
+        In this event we post another event to make sure that
+        the closing of the window is decoupled from the rest of
         the code
         """
-        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menu.menuLookup["exit"])
+        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, menuhelper.mainMenuLookup["exit"])
         wx.PostEvent(self, evt)
 
 
@@ -456,9 +456,9 @@ class AirsFrame(wx.Frame):
         Publisher().subscribe(self._onQueryEditSeries, signals.QUERY_EDIT_SERIES)
 
     def _onGuiShowOptions(self, event):
-        """ 
+        """
         Show the options dialog, all options saving is done inside the dialog
-        itself so there is no need for catching the modalresult 
+        itself so there is no need for catching the modalresult
         """
         dlg = OptionsDlg.OptionsDlg(self)
         dlg.Center()
@@ -476,8 +476,8 @@ class AirsFrame(wx.Frame):
 
 
     def _onGuiAbout(self, event):
-        """ 
-        Show the about dialog with information about the application 
+        """
+        Show the about dialog with information about the application
         """
 
         info = wx.AboutDialogInfo()
