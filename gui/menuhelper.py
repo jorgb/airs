@@ -131,10 +131,11 @@ def create(parent, bindEvents):
         "s_download":    ("&Downloading", "Mark as Downloading", "Mark as Downloading", downloading.getBitmap(), NORMAL),
         "s_downloaded":  ("Down&loaded", "Mark as Downloaded", "Mark as Downloaded", icon_downloaded.getBitmap(), NORMAL),
         "s_ready":       ("&Ready", "Mark as Ready", "Mark as Ready", icon_ready.getBitmap(), NORMAL),
-        "s_seen":        ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL)
+        "s_seen":        ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL),
+        "browser":       ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL)
       }
 
-    mainmenu = [ ("&File",    [ "preferences", "-", "exit" ] ),
+    mainmenu = [ ("&File",    [ "preferences", "browser", "-", "exit" ] ),
                  ("&Series",  [ "add_series", "edit_series", "del_series", "-", "clear_cache" ] ),
                  ("&Episode", [ "select_all", "searches", "-", "edit_episode",
                                    ( "&Mark Status As", [ "s_todownload", "s_download",
@@ -145,7 +146,8 @@ def create(parent, bindEvents):
                ]
 
     toolmenu = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
-                 "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen"
+                 "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen", "-",
+                 "browser"
              ]
 
 
