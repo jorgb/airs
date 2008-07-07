@@ -33,6 +33,13 @@ from images import icon_main, icon_about
 
 from webserver import webdispatch
 
+id_to_stat = { "s_todownload":  series_list.EP_TO_DOWNLOAD,
+               "s_download":    series_list.EP_DOWNLOADING,
+               "s_downloaded":  series_list.EP_DOWNLOADED,
+               "s_ready":       series_list.EP_READY,
+               "s_seen":        series_list.EP_SEEN
+            }
+
 class AirsFrame(wx.Frame):
     def __init__(self, *args, **kwds):
 
@@ -53,7 +60,7 @@ class AirsFrame(wx.Frame):
             ("preferences",  self._onGuiShowOptions),
             ("clear_cache",  self._onClearCache),
             ("select_all",   self._onSelectAll),
-            ("edit_episode", self._onGuiEdit),
+            ("edit_episode", self._onEditEpisode),
             ("searches",     self._onEditSearchEngines),
             ("restore",      self._onGuiRestoreLayout),
             ("toggle_sel",   self._onGuiToggleWindow),
@@ -62,7 +69,13 @@ class AirsFrame(wx.Frame):
             ("to_tray",      self._onGuiMinimizeToTray),
             ("help",         self._onGuiVisitSite),
             ("visit_site",   self._onGuiVisitSite),
-            ("about",        self._onGuiAbout)
+            ("about",        self._onGuiAbout),
+            ("s_todownload", self._onMarkEpisodes),
+            ("s_download",   self._onMarkEpisodes),
+            ("s_downloaded", self._onMarkEpisodes),
+            ("s_ready",      self._onMarkEpisodes),
+            ("s_seen",       self._onMarkEpisodes)
+
         ]
 
         menuhelper.create(self, bindEvents)
@@ -150,6 +163,22 @@ class AirsFrame(wx.Frame):
 
 
     # ======================== ITEM MANAGEMENT METHODS =========================
+
+    def _onMarkEpisodes(self, event):
+
+        st = menuhelper.getmenu(event.GetId())
+        eps = viewmgr.get_selected_episodes()
+        for episode in eps:
+            episode.status = id_to_stat[st]
+            episode.changed = 0
+            episode.new = 0
+            db.store.commit()
+            viewmgr.episode_updated(episode)
+
+    def _onEditEpisode(self, event):
+        eps = viewmgr.get_selected_episodes()
+        if len(eps) > 0:
+            viewmgr.edit_episode(eps[0].id)
 
     def _onGuiAddNew(self, event):
         """ Event handler to add a new Series """
@@ -307,6 +336,8 @@ class AirsFrame(wx.Frame):
                                  "s_seen"], viewmgr.appstate["epcount"] > 0)
 
         menuhelper.enable(self, "select_all", viewmgr.appstate["lstcount"] > 0)
+        menuhelper.enable(self, "edit_episode", viewmgr.appstate["epcount"] == 1)
+
 
     def _saveWindowLayout(self):
         """

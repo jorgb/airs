@@ -10,7 +10,7 @@ from data import searches, options
 
 from images import whats_new, to_download, \
                    downloading, icon_processed, icon_ready, icon_new, \
-                   icon_downloaded
+                   icon_downloaded, icon_edit
 
 import menuhelper
 
@@ -93,7 +93,9 @@ class EpisodeListCtrl(wx.ListCtrl):
         self._ep_idx = 0
         self._updating = False
         self.viewID = ''    # kind of view
-        self._search_ids = dict()
+        self._menu_data = dict()
+
+        viewmgr._callbackGetSelectedEpisodes = self.__getSelectedEpisodes
 
         a = appcfg
         self.InsertColumn(0, "Nr.", width = a.options[a.CFG_LAYOUT_COL_NR])
@@ -224,9 +226,9 @@ class EpisodeListCtrl(wx.ListCtrl):
             if addsep:
                 menulst.append("-")
 
+            se_items = list()
             idx = self.GetFirstSelected()
             if self.GetNextSelected(idx) == wx.NOT_FOUND:
-                se_items = list()
 
                 result = db.store.find(searches.Searches)
                 lst = [s for s in result.order_by(searches.Searches.name)]
@@ -235,34 +237,33 @@ class EpisodeListCtrl(wx.ListCtrl):
                         se_dict[se.id] = (se.name, se.name, "", None, menuhelper.NORMAL, se)
                         se_items.append(se.id)
 
-                menulst.append( ("&Online Search", se_items) )
+                menulst.append( ("&Online Search", se_items + ["-", "searches"]) )
 
                 menulst.append("edit_episode")
 
                 if viewmgr.appstate["series_id"] == -1:
-                    menulst.append("edit_series")
+                    se_dict["edit_series_special"] = ("&Edit This Series", "Edit This Series", "Edit This Series",
+                                                      icon_edit.getBitmap(), menuhelper.NORMAL)
+                    menulst.append("edit_series_special")
 
                 if viewmgr._series_sel._view_type != series_filter.VIEW_QUEUES:
                     menulst.append("-")
 
-                menulst.append(("Mark Episode(s) As ...", [ "s_todownload",
-                                                            "s_download",
-                                                            "s_downloaded",
-                                                            "s_ready",
-                                                            "s_seen" ] ))
-        mnu = wx.Menu()
-        menu_ids = menuhelper.populate(mnu, menulst, se_dict)
+            menulst.append(("Mark Episode(s) As ...", [ "s_todownload",
+                                                        "s_download",
+                                                        "s_downloaded",
+                                                        "s_ready",
+                                                        "s_seen" ] ))
+            mnu = wx.Menu()
+            self._menu_data = menuhelper.populate(mnu, menulst, se_dict)
 
-        for id in se_items:
-            self.Bind(wx.EVT_MENU, self._onSearchEntry, id = menu_ids[id])
+            for id in se_items:
+                self.Bind(wx.EVT_MENU, self._onSearchEntry, id = self._menu_data[id].id)
+            if "edit_series_special" in self._menu_data:
+                self.Bind(wx.EVT_MENU, self._onEditSeries, id = self._menu_data["edit_series_special"].id)
 
-        self.PopupMenu(mnu)
-        mnu.Destroy()
-
-    def _onEditEpisode(self, event):
-        eps = self.__getSelectedEpisodes()
-        if eps:
-            viewmgr.edit_episode(eps[0].id)
+            self.PopupMenu(mnu)
+            mnu.Destroy()
 
     def _onEditSeries(self, event):
         eps = self.__getSelectedEpisodes()
@@ -270,8 +271,9 @@ class EpisodeListCtrl(wx.ListCtrl):
             Publisher().sendMessage(signals.QUERY_EDIT_SERIES, eps[0])
 
     def _onSearchEntry(self, event):
-        se = menuhelper.menuid_to_data(event.GetId())
+        se = menuhelper.menuid_to_data(event.GetId(), self._menu_data)
         if se:
+            self._menu_data = dict()
             self._doExecuteSearch(se)
 
     def __getSelectedEpisodes(self):
@@ -283,30 +285,6 @@ class EpisodeListCtrl(wx.ListCtrl):
                 episodes.append(episode)
             idx = self.GetNextSelected(idx)
         return episodes
-
-    def _doSetStatus(self, status):
-        episodes = self.__getSelectedEpisodes()
-        for episode in episodes:
-            episode.status = status
-            episode.changed = 0
-            episode.new = 0
-            db.store.commit()
-            viewmgr.episode_updated(episode)
-
-    def _onSetToDownload(self, event):
-        self._doSetStatus(series_list.EP_TO_DOWNLOAD)
-
-    def _onSetDownloaded(self, event):
-        self._doSetStatus(series_list.EP_DOWNLOADED)
-
-    def _onSetDownloading(self, event):
-        self._doSetStatus(series_list.EP_DOWNLOADING)
-
-    def _onSetReady(self, event):
-        self._doSetStatus(series_list.EP_READY)
-
-    def _onSetProcessed(self, event):
-        self._doSetStatus(series_list.EP_SEEN)
 
     def _add(self, msg):
         """

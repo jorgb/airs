@@ -61,7 +61,7 @@ def _createSubMenu(mnu, menulst, extramenus = None):
 
             md = MenuData()
             md.id = id
-            if len(ml) > 4:
+            if len(ml) > 5:
                 md.data = ml[5]
             else:
                 md.data = None
@@ -136,7 +136,7 @@ def create(parent, bindEvents):
 
     mainmenu = [ ("&File",    [ "preferences", "-", "exit" ] ),
                  ("&Series",  [ "add_series", "edit_series", "del_series", "-", "clear_cache" ] ),
-                 ("&Episode", [ "select_all", "searches", "-",
+                 ("&Episode", [ "select_all", "searches", "-", "edit_episode",
                                    ( "&Mark Status As", [ "s_todownload", "s_download",
                                                           "s_downloaded", "s_ready", "s_seen"] )
                               ] ),
@@ -226,4 +226,3 @@ def menuid_to_data(mnuid, menuLookup = None):
     for data in menuLookup.itervalues():
         if data.id == mnuid:
             return data.data
-        
