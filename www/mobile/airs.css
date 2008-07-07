@@ -2,11 +2,22 @@
 /* body of airs pages */
 body 
 {
-    color: #ffffff;
-    background-color: #00005c; 
+    color: #000000;
+    background-color: #ffffff; 
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
+#title
+{
+   font-size: 110%;
+   font-style: bold,underline;
+}
+
+a img 
+{
+    border: 0;
+}
+/*
 tr.oddrow 
 {
     background-color: #00007a;
@@ -23,7 +34,7 @@ td.header
 
 table.episodes
 {
-    /* width: 100%; */
+    width: 100%;
 }
 
 td.number
@@ -33,19 +44,18 @@ td.number
 
 #overall
 {
-    /* width: 80%; */
+    width: 80%;
 }
 
 #headertext
 {
     font-style: italic;
-    font-size: 100%;
+    font-size: 150%;
 }
 
-/* the title of the contents */
 #title
 {
-    font-size: 150%;
+    font-size: 300%;
     color: #eae975;
 }
 
@@ -63,23 +73,23 @@ a, a:visited
 
 a.series
 {
-    font-size: 100%;
+    font-size: 150%;
 }
 
 #seriescount
 {
-    font-size: 100%;
+    font-size: 150%;
 }
 
 a.subcaption 
 {
-    font-size: 100%;
+    font-size: 130%;
     font-style: italic;
 }
 
 a.playfile
 {
-    font-size: 100%;
+    font-size: 130%;
     font-style: normal;
     color: #c4c4c4;
 }
@@ -87,7 +97,7 @@ a.playfile
 
 a.search
 {
-    font-size: 75%;
+    font-size: 110%;
     font-style: italic;
     border-margin: 4px;
     border-style: none;
@@ -114,14 +124,14 @@ td.search
 {
     color: #d6d66e;
     font-style: bold;
-    font-size: 110%;
+    font-size: 180%;
 }
 
 #orphaned
 {
     color: #d6d66e;
     font-style: normal;
-    font-size: 100%;
+    font-size: 180%;
 }
 
 
@@ -129,7 +139,7 @@ td.search
 {
     color: #646464;
     font-style: normal;
-    font-size: 100%;
+    font-size: 180%;
 }
 
 #seriestitle
@@ -143,9 +153,6 @@ td.eprow
     padding-right: 10pt;
     border-collapse:collapse;
     border-width: 0px;
-/*    border-bottom-style: solid; 
-    border-bottom-color: #4b4bff; 
-    border-bottom-width: 1px; */    
 }
 
 tr.eprow2
@@ -153,20 +160,10 @@ tr.eprow2
     vertical-align: center;
 }
 
-
-/* TODO: Fix gap in table */
-
-
-/* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
-
-/* overall div that encapsulates all content */
-
-
 #seriescount
 {
     margin-left: 20pt;
 }
-
 
 a:hover 
 {
@@ -178,5 +175,5 @@ a img
 {
     border: 0;
 }
-
+*/
 

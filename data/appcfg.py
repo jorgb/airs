@@ -23,6 +23,12 @@ APP_NAME            = 'Airs'
 
 LAYOUT_SCREEN = 1
 LAYOUT_TV     = 2
+LAYOUT_MOBILE = 3
+
+conv_layout_str = { LAYOUT_TV:     "tv",
+                    LAYOUT_SCREEN: "screen",
+                    LAYOUT_MOBILE: "mobile" }
+
 
 # generic author information
 APP_AUTHOR          = 'Jorgen Bodde'
