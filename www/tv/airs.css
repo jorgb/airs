@@ -17,6 +17,23 @@ td.header
     border-bottom-style: dashed; 
     border-bottom-color: #ffffff; 
     border-bottom-width: 1px;
+    padding-right: 10pt;
+    margin-bottom: 4pt;
+}
+
+table.episodes
+{
+    width: 100%;
+}
+
+td.number
+{
+    text-align: right;
+}
+
+#overall
+{
+    width: 80%;
 }
 
 #headertext
@@ -25,27 +42,110 @@ td.header
     font-size: 150%;
 }
 
-a, a:visited, #seriescount
+/* the title of the contents */
+#title
+{
+    font-size: 300%;
+    color: #eae975;
+}
+
+#titlespacing
+{
+    margin-bottom: 20pt;
+}
+
+a, a:visited
 {
     text-decoration: none;
     color: #acacac;
     font-style: bold;
+}
+
+a.series
+{
     font-size: 150%;
 }
 
-#epcaption, #eptext
+#seriescount
+{
+    font-size: 150%;
+}
+
+a.subcaption 
+{
+    font-size: 130%;
+    font-style: italic;
+}
+
+a.playfile
+{
+    font-size: 130%;
+    font-style: normal;
+    color: #c4c4c4;
+}
+
+
+a.search
+{
+    font-size: 110%;
+    font-style: italic;
+    border-margin: 4px;
+    border-style: none;
+    background-color: #0b2c68; 
+    color: #ffffff;
+    border: 1px solid #748AAA;
+    padding: 0.25em;  
+    margin-right: 3pt;  
+}
+
+td.search
+{
+    text-align: right;
+}
+
+#searchblock
+{
+  margin-top: 5pt;
+  margin-left: 10pt;
+  margin-bottom: 10pt;
+}
+
+#epaired 
 {
     color: #d6d66e;
     font-style: bold;
     font-size: 180%;
-    border-bottom-style: solid; 
-    border-bottom-color: #4b4bff; 
-    border-bottom-width: 1px;
+}
+
+#orphaned
+{
+    color: #d6d66e;
+    font-style: normal;
+    font-size: 180%;
+}
+
+
+#epunaired
+{
+    color: #646464;
+    font-style: normal;
+    font-size: 180%;
+}
+
+#seriestitle
+{
+    margin-left: 20pt;
 }
 
 td.eprow
 {
     vertical-align: top;
+    padding-right: 10pt;
+    border-collapse:collapse;
+    border-width: 0px;
+/*    border-bottom-style: solid; 
+    border-bottom-color: #4b4bff; 
+    border-bottom-width: 1px; */    
 }
 
 tr.eprow2
@@ -60,30 +160,9 @@ tr.eprow2
 /* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
 
 /* overall div that encapsulates all content */
-#overall
-{
-    /* margin: auto 33% auto 33%; */
-    font-size: 200%;
-}
-
-/* the title of the contents */
-#title
-{
-    font-size: 200%;
-    color: #eae975;
-    margin-bottom: 20pt;
-}
-
-
-
 
 
 #seriescount
-{
-    margin-left: 20pt;
-}
-
-#seriestitle
 {
     margin-left: 20pt;
 }
