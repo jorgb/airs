@@ -78,11 +78,9 @@
                             <div id="seriescount">
                                <xsl:choose> 
                                  <xsl:when test="number(@seencount) > 0">
-                                   <xsl:number value=" (100*number(@seencount)) div number(@count)"/>%
+                                   <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
                                  </xsl:when>
-                                 <xsl:otherwise>
-                                   0
-                                 </xsl:otherwise>
+                                 <xsl:otherwise>0</xsl:otherwise>
                                </xsl:choose>%
                              </div> 
                           </td>

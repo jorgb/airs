@@ -17,10 +17,11 @@ def _getMediaCount(series_path):
     """ Returns number of files in directory which have a valid media extension """
     count = 0
     for root, dirs, files in os.walk(series_path):
-        for fn in files:
-            fnroot, fnext = os.path.splitext(fn)
-            if fnext.lower().lstrip(".") in _media_extensions:
-                count += 1
+        if os.path.split(root)[1] != appcfg.AIRS_ARCHIVED_PATH:
+            for fn in files:
+                fnroot, fnext = os.path.splitext(fn)
+                if fnext.lower().lstrip(".") in _media_extensions:
+                    count += 1
     return count
 
 def _createOptionsNode():
