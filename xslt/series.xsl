@@ -38,7 +38,7 @@
                <xsl:if test="$layout != 'mobile'">
                  <tr class="captionrow">
                    <td class="header"><div id="headertext">Series Name</div></td>
-                   <td class="header" colspan="2"><div id="headertext">Unseen</div></td>
+                   <td class="header" colspan="2"><div id="headertext">Seen</div></td>
                    <td class="header"><div id="headertext">Files</div></td>
                  </tr>
           
@@ -110,18 +110,39 @@
                 </td>
                 
                 <xsl:if test="$layout != 'mobile'">
-                  <td class="number">
-                    <div id="seriescount"><xsl:value-of select="@seencount"/></div>
-                  </td>
-                  <td class="number">
-                    <div id="seriescount">
+                  <td class="percentage" colspan="2">
+                    <!-- <div id="seriescount">
                        <xsl:choose> 
                          <xsl:when test="number(@seencount) > 0">
                            <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
                          </xsl:when>
                          <xsl:otherwise>0</xsl:otherwise>
                        </xsl:choose>%
-                     </div> 
+                    </div>
+                   -->
+                    
+                    <DIV STYLE="width: 100%; font-size: 120%; text-align:left; position:relative; border:0;">
+                        <DIV>
+                            <xsl:attribute name="STYLE">
+                                padding: 0.25em;  
+                                text-align: left;
+                                position:relative;
+                                <xsl:choose>
+                                    <xsl:when test="number(@count) = 0 or number(@seencount) = 0">
+                                      background-color:transparent;
+                                      width:0;
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                      background-color: blue;
+                                      width:<xsl:number value= "(100*number(@seencount)) div number(@count)" />%;                                      
+                                   </xsl:otherwise>
+                                </xsl:choose>
+                                height:15pt;
+                                left:0px;
+                            </xsl:attribute>
+                            <xsl:value-of select="@seencount"/>
+                        </DIV>        
+                    </DIV>
                   </td>
                   <td class="number">
                     <div id="seriescount"><xsl:value-of select="@mediacount"/></div>

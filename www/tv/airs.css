@@ -35,6 +35,11 @@ table.episodes
     /* width: 100%; */
 }
 
+td.percentage
+{
+    width: 60pt;
+}
+
 td.number
 {
     text-align: right;
