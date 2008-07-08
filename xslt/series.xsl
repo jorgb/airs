@@ -3,99 +3,134 @@
 
 <!-- ###################################################################### -->
 
-<xsl:template match="/">    
     <xsl:variable name="layout">
-      <xsl:value-of select="/airs/options/layout" />
+        <xsl:value-of select="/airs/options/layout" />
     </xsl:variable>
 
-    <html>
-        <head>
-            <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
-            <title>Airs Series Overview</title>
-        </head>
-        <body>
-            <div id="overall">
-              
-              <div id="title">Airs Series Overview</div>
+    <xsl:template match="/">    
+      <html>
+        <xsl:apply-templates select="/" mode="header" />
+        <xsl:apply-templates select="/" mode="overview" />
+      </html>
+    </xsl:template>
 
-              <div id="series_area">
-                <table>
-                    <!-- Main Table Header -->
-                    <xsl:if test="$layout != 'mobile'">
-                      <tr class="captionrow">
-                        <td class="header"><div id="headertext">Series Name</div></td>
-                        <td class="header" colspan="2"><div id="headertext">Not Watched</div></td>
-                        <td class="header"><div id="headertext">Files</div></td>
-                      </tr>
-                    </xsl:if>
-                    
-                    <!-- Repeating table rows per series item -->
-                    <xsl:for-each select="airs/series/item">
-                      <tr>
-                        <!-- Alternating table color cosmetics -->
-                        <xsl:if test="position() mod 2 =0 ">
-                          <xsl:attribute name="class">evenrow</xsl:attribute>
-                        </xsl:if>
-                        <xsl:if test="position() mod 2 =1 ">
-                          <xsl:attribute name="class">oddrow</xsl:attribute>
-                        </xsl:if>
-                          
-                        <td class="seriestitle">
-                          <a>
-                            <xsl:choose>
-                                <xsl:when test="number(@mediacount) > 0">
-                                    <xsl:attribute name="class">withmedia</xsl:attribute>
-                                </xsl:when>
-                                <xsl:when test="number(@mediacount) = 0 and number(@seencount) &lt; number(@count)">
-                                    <xsl:attribute name="class">nomedia</xsl:attribute>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="class">series</xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                                
-                            <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
-                            <xsl:value-of select="@name"/>
-                          </a>
-                          <xsl:if test="$layout = 'mobile'">
-                            <xsl:text>  [</xsl:text><xsl:value-of select="@seencount"/><xsl:text>]  </xsl:text>
-                            <xsl:text>  [</xsl:text>
-                            <xsl:choose> 
-                              <xsl:when test="number(@seencount) > 0">
-                                <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
-                              </xsl:when>
-                              <xsl:otherwise>0</xsl:otherwise>
-                            </xsl:choose>%<xsl:text>]  </xsl:text>
-                            <xsl:text>  [</xsl:text><xsl:value-of select="@mediacount"/><xsl:text>]</xsl:text>
-                          </xsl:if>
-                        </td>
+<!-- ####################################################################### --> 
+
+    <xsl:template match="/" mode="header">
+      <head>
+        <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
+        <title>Airs Series Overview</title>
+      </head>
+    </xsl:template>
+
+<!-- ####################################################################### --> 
+
+    <xsl:template match="/" mode="overview">
+      <body>        
+        <div id="overall">
+          
+          <div id="title">Airs Series Overview</div>
+          
+          <div id="series_area">
+            <table>
+
+               <!-- Main Table Header -->
+               <xsl:if test="$layout != 'mobile'">
+                 <tr class="captionrow">
+                   <td class="header"><div id="headertext">Series Name</div></td>
+                   <td class="header" colspan="2"><div id="headertext">Unseen</div></td>
+                   <td class="header"><div id="headertext">Files</div></td>
+                 </tr>
+          
+                 <xsl:apply-templates select="/" mode="serieslist">
+                   <xsl:with-param name="filter">show-busy</xsl:with-param>
+                 </xsl:apply-templates>
+
+                 <xsl:apply-templates select="/" mode="serieslist">
+                   <xsl:with-param name="filter">show-done</xsl:with-param>
+                 </xsl:apply-templates>    
+
+              </xsl:if>               
+            </table>
+          </div>
+
+
+        </div>
+      </body>               
+    </xsl:template>
+
+<!-- ####################################################################### --> 
+
+    <xsl:template match="/" mode="serieslist">
+        <xsl:param name="filter" />
+        
+        <!-- Repeating table rows per series item -->
+        <xsl:for-each select="airs/series/item">
+          <xsl:if test="($filter = 'show-busy' and (number(@mediacount) &gt; 0 or number(@seencount) &lt; number(@count))) or ($filter = 'show-done' and number(@mediacount) = 0 and (number(@seencount) = number(@count)))">
+              <tr>
+                <!-- Alternating table color cosmetics -->
+                <!-- 
+                  <xsl:if test="position() mod 2 =0 ">
+                    <xsl:attribute name="class">evenrow</xsl:attribute>
+                  </xsl:if>
+                  <xsl:if test="position() mod 2 =1 ">
+                    <xsl:attribute name="class">oddrow</xsl:attribute>
+                  </xsl:if>
+                -->
+                <xsl:attribute name="class">singlerow</xsl:attribute>
+                  
+                <td class="seriestitle">
+                  <a>
+                    <xsl:choose>
+                        <xsl:when test="number(@mediacount) > 0">
+                            <xsl:attribute name="class">withmedia</xsl:attribute>
+                        </xsl:when>
+                        <xsl:when test="number(@mediacount) = 0 and number(@seencount) &lt; number(@count)">
+                            <xsl:attribute name="class">nomedia</xsl:attribute>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="class">series</xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
                         
-                        <xsl:if test="$layout != 'mobile'">
-                          <td class="number">
-                            <div id="seriescount"><xsl:value-of select="@seencount"/></div>
-                          </td>
-                          <td class="number">
-                            <div id="seriescount">
-                               <xsl:choose> 
-                                 <xsl:when test="number(@seencount) > 0">
-                                   <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
-                                 </xsl:when>
-                                 <xsl:otherwise>0</xsl:otherwise>
-                               </xsl:choose>%
-                             </div> 
-                          </td>
-                          <td class="number">
-                            <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
-                          </td>
-                        </xsl:if>
-                      </tr>
-                    </xsl:for-each>
-                </table>
-              </div>
-            </div>
-        </body>
-    </html>
-</xsl:template>
+                    <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
+                    <xsl:value-of select="@name"/>
+                  </a>
+                  <xsl:if test="$layout = 'mobile'">
+                    <xsl:text>  [</xsl:text><xsl:value-of select="@seencount"/><xsl:text>]  </xsl:text>
+                    <xsl:text>  [</xsl:text>
+                    <xsl:choose> 
+                      <xsl:when test="number(@seencount) > 0">
+                        <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
+                      </xsl:when>
+                      <xsl:otherwise>0</xsl:otherwise>
+                    </xsl:choose>%<xsl:text>]  </xsl:text>
+                    <xsl:text>  [</xsl:text><xsl:value-of select="@mediacount"/><xsl:text>]</xsl:text>
+                  </xsl:if>
+                </td>
+                
+                <xsl:if test="$layout != 'mobile'">
+                  <td class="number">
+                    <div id="seriescount"><xsl:value-of select="@seencount"/></div>
+                  </td>
+                  <td class="number">
+                    <div id="seriescount">
+                       <xsl:choose> 
+                         <xsl:when test="number(@seencount) > 0">
+                           <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
+                         </xsl:when>
+                         <xsl:otherwise>0</xsl:otherwise>
+                       </xsl:choose>%
+                     </div> 
+                  </td>
+                  <td class="number">
+                    <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
+                  </td>
+                </xsl:if>
+              </tr>
+          </xsl:if>
+      </xsl:for-each>
+  </xsl:template>
 
 
 </xsl:stylesheet>

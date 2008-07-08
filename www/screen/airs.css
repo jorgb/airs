@@ -12,13 +12,13 @@ tr.oddrow
     background-color: #00007a;
 }
 
+
 td.header
 {
     border-bottom-style: dashed; 
     border-bottom-color: #ffffff; 
     border-bottom-width: 1px;
     padding-right: 10pt;
-    margin-bottom: 4pt;
 }
 
 table.episodes
@@ -28,7 +28,7 @@ table.episodes
 
 td.number
 {
-    text-align: right;
+    /* text-align: right; */
 }
 
 #overall
@@ -39,8 +39,9 @@ td.number
 #headertext
 {
     font-style: italic;
-    font-size: 100%;
+    font-size: 120%;
 }
+
 
 /* the title of the contents */
 #title

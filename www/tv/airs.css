@@ -7,6 +7,17 @@ body
     font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
+/*
+td.seriestitle, td.number
+{
+    border-bottom: 1px solid #0000ff;
+    padding: 0;  
+    margin-bottom: 3pt;
+    margin-left: 0;
+    margin-right: 0;  
+}
+*/
+
 tr.oddrow 
 {
     background-color: #00007a;
@@ -17,13 +28,11 @@ td.header
     border-bottom-style: dashed; 
     border-bottom-color: #ffffff; 
     border-bottom-width: 1px;
-    padding-right: 10pt;
-    margin-bottom: 4pt;
 }
 
 table.episodes
 {
-    width: 100%;
+    /* width: 100%; */
 }
 
 td.number
@@ -33,13 +42,13 @@ td.number
 
 #overall
 {
-    width: 80%;
+    /* width: 80%; */
 }
 
 #headertext
 {
     font-style: italic;
-    font-size: 150%;
+    font-size: 170%;
 }
 
 /* the title of the contents */
