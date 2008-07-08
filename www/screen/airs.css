@@ -12,34 +12,62 @@ tr.oddrow
     background-color: #00007a;
 }
 
+
 td.header
 {
     border-bottom-style: dashed; 
     border-bottom-color: #ffffff; 
     border-bottom-width: 1px;
     padding-right: 10pt;
-    margin-bottom: 4pt;
 }
 
 table.episodes
 {
-    /* width: 100%; */
+    width: 100%;
+}
+
+td.percentage
+{
+    width: 60pt;
 }
 
 td.number
 {
-    text-align: right;
+    /* text-align: right; */
 }
 
 #overall
 {
-    /* width: 80%; */
+    width: 80%;
 }
 
 #headertext
 {
     font-style: italic;
+    font-size: 120%;
+}
+
+#percdiff
+{
+    width: 100%;
     font-size: 100%;
+    text-align: left;
+    position:relative;
+    border-width: 0px;
+}
+
+#percinner
+{
+    padding: 0.25em;  
+    text-align: left;
+    position:relative;
+    height:10pt;
+    left:0px;  
+    border:1;
+    border-style: solid;
+    border-color: blue;
+    border-width: 1px; 
+    background-color: #00007d;
 }
 
 /* the title of the contents */
@@ -63,7 +91,7 @@ a, a:visited
 
 a.series, a.withmedia, a.nomedia
 {
-     font-size: 100%;
+     font-size: 110%;
 }
 
 a.withmedia 
@@ -131,7 +159,7 @@ td.search
 {
     color: #d6d66e;
     font-style: normal;
-    font-size: 100%;
+    font-size: 120%;
 }
 
 
@@ -139,7 +167,7 @@ td.search
 {
     color: #646464;
     font-style: normal;
-    font-size: 100%;
+    font-size: 120%;
 }
 
 #seriestitle

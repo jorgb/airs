@@ -17,10 +17,11 @@ def _getMediaCount(series_path):
     """ Returns number of files in directory which have a valid media extension """
     count = 0
     for root, dirs, files in os.walk(series_path):
-        for fn in files:
-            fnroot, fnext = os.path.splitext(fn)
-            if fnext.lower().lstrip(".") in _media_extensions:
-                count += 1
+        if os.path.split(root)[1] != appcfg.AIRS_ARCHIVED_PATH:
+            for fn in files:
+                fnroot, fnext = os.path.splitext(fn)
+                if fnext.lower().lstrip(".") in _media_extensions:
+                    count += 1
     return count
 
 def _createOptionsNode():
@@ -183,7 +184,7 @@ def get_series_xml():
 
         serie.setProp("seencount", seencount)
         serie.setProp("count", totalcount)
-
+        
         items.addChild(serie)
 
     return dom
@@ -221,6 +222,12 @@ def get_episode_list(series_id):
     items = libxml2.newNode("episodes")
     items.setProp("id", str(series_id))
     items.setProp("name", series.name)
+    
+    c = db.store.execute("select count(*) from episode where series_id = %i and status != %i" % \
+                         (series_id, series_list.EP_SEEN))
+    unseen = str(c.get_one()[0])
+    items.setProp("unseen", unseen)
+ 
     root.addChild(items)
 
     result = db.store.find(series_list.Episode, series_list.Episode.series_id == series_id)
@@ -273,8 +280,10 @@ def get_episode_list(series_id):
 
                         filesnode.addChild(filenode)
 
-                # remove from season dict
-                del sfiles[sstr]
+                # remove from season dict, but not when the episode is seen
+                # because that will most likely not display it in the orphaned files
+                if item.status != series_list.EP_SEEN:
+                    del sfiles[sstr]
 
         if not files_added:
             searchnode = libxml2.newNode("engines")
