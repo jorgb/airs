@@ -32,7 +32,7 @@ td.header
 
 table.episodes
 {
-    /* width: 100%; */
+    width: 100%;
 }
 
 td.percentage
@@ -47,7 +47,7 @@ td.number
 
 #overall
 {
-    /* width: 80%; */
+    width: 80%;
 }
 
 #headertext
