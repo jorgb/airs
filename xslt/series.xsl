@@ -121,28 +121,28 @@
                     </div>
                    -->
                     
-                    <DIV STYLE="width: 100%; font-size: 120%; text-align:left; position:relative; border:0;">
-                        <DIV>
-                            <xsl:attribute name="STYLE">
-                                padding: 0.25em;  
-                                text-align: left;
-                                position:relative;
+                    <div id="percdiff">
+                        <div id="percinner">
+                            <xsl:attribute name="style">
                                 <xsl:choose>
                                     <xsl:when test="number(@count) = 0 or number(@seencount) = 0">
-                                      background-color:transparent;
                                       width:0;
+                                      border-width:0px;
+                                      background-color: transparent;
                                     </xsl:when>
                                     <xsl:otherwise>
-                                      background-color: blue;
                                       width:<xsl:number value= "(100*number(@seencount)) div number(@count)" />%;                                      
                                    </xsl:otherwise>
-                                </xsl:choose>
-                                height:15pt;
-                                left:0px;
+                               </xsl:choose>
                             </xsl:attribute>
-                            <xsl:value-of select="@seencount"/>
-                        </DIV>        
-                    </DIV>
+                            <xsl:choose>
+                              <xsl:when test="number(@seencount) > 0">
+                                <xsl:number value="(100*number(@seencount)) div number(@count)"/>
+                              </xsl:when>
+                              <xsl:otherwise><xsl:text>  </xsl:text>0</xsl:otherwise>
+                            </xsl:choose>%
+                        </div>        
+                    </div>
                   </td>
                   <td class="number">
                     <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
