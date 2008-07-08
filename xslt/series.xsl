@@ -11,7 +11,6 @@
     <html>
         <head>
             <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
-
             <title>Airs Series Overview</title>
         </head>
         <body>
@@ -20,7 +19,6 @@
               <div id="title">Airs Series Overview</div>
 
               <div id="series_area">
-
                 <table>
                     <!-- Main Table Header -->
                     <xsl:if test="$layout != 'mobile'">
@@ -44,7 +42,18 @@
                           
                         <td class="seriestitle">
                           <a>
-                            <xsl:attribute name="class">series</xsl:attribute>
+                            <xsl:choose>
+                                <xsl:when test="number(@mediacount) > 0">
+                                    <xsl:attribute name="class">withmedia</xsl:attribute>
+                                </xsl:when>
+                                <xsl:when test="number(@mediacount) = 0 and number(@seencount) &lt; number(@count)">
+                                    <xsl:attribute name="class">nomedia</xsl:attribute>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="class">series</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                                
                             <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
                             <xsl:value-of select="@name"/>
                           </a>
@@ -69,11 +78,9 @@
                             <div id="seriescount">
                                <xsl:choose> 
                                  <xsl:when test="number(@seencount) > 0">
-                                   <xsl:number value=" (100*number(@seencount)) div number(@count)"/>%
+                                   <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
                                  </xsl:when>
-                                 <xsl:otherwise>
-                                   0
-                                 </xsl:otherwise>
+                                 <xsl:otherwise>0</xsl:otherwise>
                                </xsl:choose>%
                              </div> 
                           </td>
@@ -89,5 +96,6 @@
         </body>
     </html>
 </xsl:template>
+
 
 </xsl:stylesheet>

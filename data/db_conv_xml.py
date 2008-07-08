@@ -17,10 +17,11 @@ def _getMediaCount(series_path):
     """ Returns number of files in directory which have a valid media extension """
     count = 0
     for root, dirs, files in os.walk(series_path):
-        for fn in files:
-            fnroot, fnext = os.path.splitext(fn)
-            if fnext.lower().lstrip(".") in _media_extensions:
-                count += 1
+        if os.path.split(root)[1] != appcfg.AIRS_ARCHIVED_PATH:
+            for fn in files:
+                fnroot, fnext = os.path.splitext(fn)
+                if fnext.lower().lstrip(".") in _media_extensions:
+                    count += 1
     return count
 
 def _createOptionsNode():
@@ -117,6 +118,22 @@ def _sortOrphans(a, b):
 
     return 0
 
+def _sortEpisodes(a, b):
+    s1l = len(a.season)
+    s2l = len(b.season)
+    if s1l > 0 and  s2l > 0:
+        if a.season > b.season:
+            return 1
+        else:
+            return -1
+    elif s1l > 0:
+        return -1
+    elif s2l > 0:
+        return 1
+    if a.number > b.number:
+        return 1
+    else:
+        return -1
 
 def _sortEpisodeFiles(a, b):
     if a.size > b.size:
@@ -210,6 +227,8 @@ def get_episode_list(series_id):
     result = db.store.find(series_list.Episode, series_list.Episode.series_id == series_id)
     episodes = [episode for episode in result]
 
+    episodes.sort(_sortEpisodes)
+    
     if series.folder != '':
         sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
     else:

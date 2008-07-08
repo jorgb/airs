@@ -61,9 +61,19 @@ a, a:visited
     font-style: bold;
 }
 
-a.series
+a.series, a.withmedia, a.nomedia
 {
-    font-size: 100%;
+     font-size: 100%;
+}
+
+a.withmedia 
+{
+    color: #5af85a;
+}
+
+a.nomedia 
+{
+    color: #ec4d4d;
 }
 
 #seriescount
