@@ -1,16 +1,14 @@
 import wx
 import wx.lib.newevent
-from data import appcfg
+from data import appcfg, viewmgr
 from images import icon_main
-
-SHOW_MENU       = 0
-ACTIVATE_WINDOW = 1
+import menuhelper
 
 class AirsTrayIcon(wx.TaskBarIcon):
-    
+
     def __init__(self, parent):
         wx.TaskBarIcon.__init__(self)
-        
+
         self._parent = parent
 
         self.SetIcon(self.makeIcon(icon_main.getImage()), appcfg.APP_TITLE)
@@ -18,30 +16,49 @@ class AirsTrayIcon(wx.TaskBarIcon):
 
 
     def CreatePopupMenu(self):
-        """
-        This method is called by the base class when it needs to popup
-        the menu for the default event_RIGHT_DOWN event. The menu creation
-        is delegated to the main frame window for ease of handling
-        """
-        self._parent._callbackTrayIcon(SHOW_MENU)
+        """ Creates a popupmenu """
+        popmenu = [ "browser", "update_all", "-", "restore_wnd", "exit"]
 
+        traymenu = wx.Menu()
+        menu_data = menuhelper.populate(traymenu, popmenu)
+
+        id = menu_data["restore_wnd"].id
+        traymenu.Enable(id, not self._parent.IsShown())
+        self.Bind(wx.EVT_MENU, self._onRestoreWindow, id = id)
+
+        id = menu_data["update_all"].id
+        traymenu.Enable(id, not viewmgr.is_busy())
+        self.Bind(wx.EVT_MENU, self._onUpdateAll, id = id)
+
+        self.Bind(wx.EVT_MENU, self._onBrowserStart, id = menu_data["browser"].id)
+        self.Bind(wx.EVT_MENU, self._onExit, id = menu_data["exit"].id)
+
+        return traymenu
+
+    def _onRestoreWindow(self, event):
+        wx.CallAfter(self._parent._onGuiRestore, event)
+
+    def _onBrowserStart(self, event):
+        wx.CallAfter(self._parent._onStartBrowser, event)
+
+    def _onUpdateAll(self, event):
+        wx.CallAfter(self._parent._onUpdateAll, event)
+
+    def _onExit(self, event):
+        wx.CallAfter(self._parent._onGuiExit, event)
 
     def makeIcon(self, img):
-        """
-        The various platforms have different requirements for the
-        icon size...
-        """
+        """ The various platforms have different requirements for the
+            icon size... """
         #if "wxMSW" in wx.PlatformInfo:
         #    img = img.Scale(16, 16)
         #elif "wxGTK" in wx.PlatformInfo:
         #    img = img.Scale(22, 22)
         # wxMac can be any size upto 128x128, so leave the source img alone....
         return wx.IconFromBitmap(img.ConvertToBitmap())
-    
+
 
     def _onGuiTaskBarActivate(self, event):
-        """
-        Icon is doubleclicked, so we need to take action
-        """
-        self._parent._callbackTrayIcon(ACTIVATE_WINDOW)
-
+        """ Icon is doubleclicked, so we need to take action """
+        evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, -1)
+        self._parent._onGuiRestore(evt)

@@ -432,33 +432,6 @@ class AirsFrame(wx.Frame):
         appcfg.Write()
 
 
-    def _callbackTrayIcon(self, kind):
-        """
-        Create the taskbar popup menu, and handle the events
-        here, so we can redirect the most important events easier
-        """
-        if kind == AirsTrayIcon.SHOW_MENU:
-
-            popmenu = [ "browser" ]
-            if not viewmgr.is_busy():
-                popmenu.append("update_all")
-            popmenu += ["-", "restore_wnd", "exit"]
-
-            traymenu = wx.Menu()
-            menu_data = menuhelper.populate(traymenu, popmenu)
-
-            id = menu_data["restore_wnd"].id
-            traymenu.Enable(id, not self.IsShown())
-            self.Bind(wx.EVT_MENU, self._onGuiRestore, id = id)
-
-            self.PopupMenu(traymenu)
-            traymenu.Destroy()
-
-        elif kind == AirsTrayIcon.ACTIVATE_WINDOW:
-            evt = wx.CommandEvent(wx.wxEVT_COMMAND_MENU_SELECTED, -1)
-            self._onGuiRestore(evt)
-
-
     def _onGuiRestore(self, event):
         """
         Restore action for window
