@@ -36,7 +36,7 @@ def _createOptionsNode():
     options.addChild(layout)
 
     server = libxml2.newNode("server")
-    server.setProp("ip", appcfg.options[appcfg.CFG_WEB_IP])
+    server.setProp("ip", appcfg.options[appcfg.CFG_WEB_URL])
     server.setProp("port", str(appcfg.options[appcfg.CFG_WEB_PORT]))
     options.addChild(server)
 
