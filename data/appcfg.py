@@ -59,6 +59,13 @@ CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
 CFG_PLAYER_PATH         = 'webserver/playerpath'
 CFG_PLAYER_ARGS         = 'webserver/playerargs'
 CFG_SERIES_PATH         = 'webserver/seriespath'
+CFG_WEB_URL             = 'webserver/url'
+CFG_WEB_PORT            = 'webserver/port'
+CFG_AUTO_UPDATE         = 'scheduling/autoupdate'
+CFG_GRACE_PERIOD        = 'scheduling/graceperiod'
+CFG_TIMED_UPDATE        = 'scheduling/timedupdate'
+CFG_AUTO_UPDATE_TIMED   = 'scheduling/timedenable'
+
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -80,7 +87,13 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
             (CFG_PLAYER_PATH,           's', ''),
             (CFG_PLAYER_ARGS,           's', '%file%'),
-            (CFG_SERIES_PATH,           's', '')
+            (CFG_SERIES_PATH,           's', ''),
+            (CFG_WEB_URL,               's', '127.0.0.1'),
+            (CFG_WEB_PORT,              'i', 8000),
+            (CFG_AUTO_UPDATE,           'b', True),
+            (CFG_GRACE_PERIOD,          'i', 5),
+            (CFG_TIMED_UPDATE,          's', '12:00'),
+            (CFG_AUTO_UPDATE_TIMED,     'b', False)
         ]
 
 # max files in the file history
@@ -103,6 +116,8 @@ dbpath = ''
 
 highlightColor = wx.Colour(50, 177, 5)
 max_records    = 300
+
+last_timed_update = None
 
 #-------------------------------------------------------------------------------
 __cfg = None
