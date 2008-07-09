@@ -39,6 +39,9 @@ class OptionsDlg(wx.Dialog):
         self._autoUpdate = xrc.XRCCTRL(self, "ID_AUTO_UPDATE")
         self._gracePeriod = xrc.XRCCTRL(self, "ID_GRACE_PERIOD")
         
+        self._autoTimed = xrc.XRCCTRL(self, "ID_TIMED_UPDATE")
+        self._timedUpdate = xrc.XRCCTRL(self, "ID_TIME_PERIOD")
+        
         self._playerPath.SetValue(appcfg.options[appcfg.CFG_PLAYER_PATH])
         self._playerArgs.SetValue(appcfg.options[appcfg.CFG_PLAYER_ARGS])
         self._seriesPath.SetValue(appcfg.options[appcfg.CFG_SERIES_PATH])
@@ -46,6 +49,8 @@ class OptionsDlg(wx.Dialog):
         self._webURL.SetValue(appcfg.options[appcfg.CFG_WEB_URL])
         self._autoUpdate.SetValue(appcfg.options[appcfg.CFG_AUTO_UPDATE])
         self._gracePeriod.SetValue(str(appcfg.options[appcfg.CFG_GRACE_PERIOD]))
+        self._timedUpdate.SetValue(appcfg.options[appcfg.CFG_TIMED_UPDATE])
+        self._autoTimed.SetValue(appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED])
         
         self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
         self.Bind(wx.EVT_BUTTON, self._browseSeries, self._seriesBtn)
@@ -94,6 +99,8 @@ class OptionsDlg(wx.Dialog):
         appcfg.options[appcfg.CFG_WEB_URL] = self._webURL.GetValue()
         appcfg.options[appcfg.CFG_AUTO_UPDATE] = self._autoUpdate.GetValue()
         appcfg.options[appcfg.CFG_GRACE_PERIOD] = graceperiod        
+        appcfg.options[appcfg.CFG_TIMED_UPDATE] = self._timedUpdate.GetValue()
+        appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = self._autoTimed.GetValue()
         appcfg.Write()
 
         event.Skip()
