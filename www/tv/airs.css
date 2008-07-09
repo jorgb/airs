@@ -32,7 +32,7 @@ td.header
 
 table.episodes
 {
-    /* width: 100%; */
+    width: 100%;
 }
 
 td.percentage
@@ -47,13 +47,40 @@ td.number
 
 #overall
 {
-    /* width: 80%; */
+    width: 80%;
 }
 
 #headertext
 {
     font-style: italic;
     font-size: 170%;
+}
+
+#percdiff
+{
+    width: 100%;
+    font-size: 130%;
+    text-align: left;
+    position:relative;
+/*    border:1;
+    border-style: solid;
+    border-color: white;
+    border-width: 1px; */
+    border-width: 0px;
+}
+
+#percinner
+{
+    padding: 0.25em;  
+    text-align: left;
+    position:relative;
+    height:18pt;
+    left:0px;  
+    border:1;
+    border-style: solid;
+    border-color: blue;
+    border-width: 1px; 
+    background-color: #00007d;
 }
 
 /* the title of the contents */

@@ -41,16 +41,16 @@
                    <td class="header" colspan="2"><div id="headertext">Seen</div></td>
                    <td class="header"><div id="headertext">Files</div></td>
                  </tr>
-          
-                 <xsl:apply-templates select="/" mode="serieslist">
-                   <xsl:with-param name="filter">show-busy</xsl:with-param>
-                 </xsl:apply-templates>
+              </xsl:if>
 
-                 <xsl:apply-templates select="/" mode="serieslist">
-                   <xsl:with-param name="filter">show-done</xsl:with-param>
-                 </xsl:apply-templates>    
+              <xsl:apply-templates select="/" mode="serieslist">
+                <xsl:with-param name="filter">show-busy</xsl:with-param>
+              </xsl:apply-templates>
 
-              </xsl:if>               
+              <xsl:apply-templates select="/" mode="serieslist">
+                <xsl:with-param name="filter">show-done</xsl:with-param>
+              </xsl:apply-templates>
+                             
             </table>
           </div>
 
@@ -66,89 +66,92 @@
         
         <!-- Repeating table rows per series item -->
         <xsl:for-each select="airs/series/item">
-          <xsl:if test="($filter = 'show-busy' and (number(@mediacount) &gt; 0 or number(@seencount) &lt; number(@count))) or ($filter = 'show-done' and number(@mediacount) = 0 and (number(@seencount) = number(@count)))">
-              <tr>
-                <!-- Alternating table color cosmetics -->
-                <!-- 
-                  <xsl:if test="position() mod 2 =0 ">
-                    <xsl:attribute name="class">evenrow</xsl:attribute>
-                  </xsl:if>
-                  <xsl:if test="position() mod 2 =1 ">
-                    <xsl:attribute name="class">oddrow</xsl:attribute>
-                  </xsl:if>
-                -->
-                <xsl:attribute name="class">singlerow</xsl:attribute>
-                  
-                <td class="seriestitle">
-                  <a>
-                    <xsl:choose>
-                        <xsl:when test="number(@mediacount) > 0">
-                            <xsl:attribute name="class">withmedia</xsl:attribute>
-                        </xsl:when>
-                        <xsl:when test="number(@mediacount) = 0 and number(@seencount) &lt; number(@count)">
-                            <xsl:attribute name="class">nomedia</xsl:attribute>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:attribute name="class">series</xsl:attribute>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                        
-                    <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
-                    <xsl:value-of select="@name"/>
-                  </a>
-                  <xsl:if test="$layout = 'mobile'">
-                    <xsl:text>  [</xsl:text><xsl:value-of select="@seencount"/><xsl:text>]  </xsl:text>
-                    <xsl:text>  [</xsl:text>
-                    <xsl:choose> 
-                      <xsl:when test="number(@seencount) > 0">
-                        <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
-                      </xsl:when>
-                      <xsl:otherwise>0</xsl:otherwise>
-                    </xsl:choose>%<xsl:text>]  </xsl:text>
-                    <xsl:text>  [</xsl:text><xsl:value-of select="@mediacount"/><xsl:text>]</xsl:text>
-                  </xsl:if>
-                </td>
-                
-                <xsl:if test="$layout != 'mobile'">
-                  <td class="percentage" colspan="2">
-                    <!-- <div id="seriescount">
-                       <xsl:choose> 
-                         <xsl:when test="number(@seencount) > 0">
-                           <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
-                         </xsl:when>
-                         <xsl:otherwise>0</xsl:otherwise>
-                       </xsl:choose>%
-                    </div>
-                   -->
+          <xsl:if test="($filter = 'show-busy' and (number(@mediacount) &gt; 0 or number(@seencount) &lt; number(@count))) or ($filter = 'show-done' and number(@mediacount) = 0 and (number(@seencount) = number(@count)))">              
+              <!-- hide all cancelled series, that have no media files and no unseen episodes ALWAYS -->
+              <xsl:if test="(number(@mediacount) &gt; 0) or (number(@seencount) &lt; number(@count)) or (@cancelled = '0')">
+                  <tr>
+                    <!-- Alternating table color cosmetics -->
+                    <!-- 
+                      <xsl:if test="position() mod 2 =0 ">
+                        <xsl:attribute name="class">evenrow</xsl:attribute>
+                      </xsl:if>
+                      <xsl:if test="position() mod 2 =1 ">
+                        <xsl:attribute name="class">oddrow</xsl:attribute>
+                      </xsl:if>
+                    -->
+                    <xsl:attribute name="class">singlerow</xsl:attribute>
+                      
+                    <td class="seriestitle">
+                      <a>
+                        <xsl:choose>
+                            <xsl:when test="number(@mediacount) > 0">
+                                <xsl:attribute name="class">withmedia</xsl:attribute>
+                            </xsl:when>
+                            <xsl:when test="number(@mediacount) = 0 and number(@seencount) &lt; number(@count)">
+                                <xsl:attribute name="class">nomedia</xsl:attribute>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="class">series</xsl:attribute>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                            
+                        <xsl:attribute name="href">series?cmd_get_series=<xsl:value-of select="@id"/></xsl:attribute>
+                        <xsl:value-of select="@name"/>
+                      </a>
+                      <xsl:if test="$layout = 'mobile'">
+                        <xsl:text>  [</xsl:text><xsl:value-of select="@seencount"/><xsl:text>]  </xsl:text>
+                        <xsl:text>  [</xsl:text>
+                        <xsl:choose> 
+                          <xsl:when test="number(@seencount) > 0">
+                            <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
+                          </xsl:when>
+                          <xsl:otherwise>0</xsl:otherwise>
+                        </xsl:choose>%<xsl:text>]  </xsl:text>
+                        <xsl:text>  [</xsl:text><xsl:value-of select="@mediacount"/><xsl:text>]</xsl:text>
+                      </xsl:if>
+                    </td>
                     
-                    <DIV STYLE="width: 100%; font-size: 120%; text-align:left; position:relative; border:0;">
-                        <DIV>
-                            <xsl:attribute name="STYLE">
-                                padding: 0.25em;  
-                                text-align: left;
-                                position:relative;
+                    <xsl:if test="$layout != 'mobile'">
+                      <td class="percentage" colspan="2">
+                        <!-- <div id="seriescount">
+                           <xsl:choose> 
+                             <xsl:when test="number(@seencount) > 0">
+                               <xsl:number value=" (100*number(@seencount)) div number(@count)"/>
+                             </xsl:when>
+                             <xsl:otherwise>0</xsl:otherwise>
+                           </xsl:choose>%
+                        </div>
+                       -->
+                        
+                        <div id="percdiff">
+                            <div id="percinner">
+                                <xsl:attribute name="style">
+                                    <xsl:choose>
+                                        <xsl:when test="number(@count) = 0 or number(@seencount) = 0">
+                                          width:0;
+                                          border-width:0px;
+                                          background-color: transparent;
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                          width:<xsl:number value= "(100*number(@seencount)) div number(@count)" />%;                                      
+                                       </xsl:otherwise>
+                                   </xsl:choose>
+                                </xsl:attribute>
                                 <xsl:choose>
-                                    <xsl:when test="number(@count) = 0 or number(@seencount) = 0">
-                                      background-color:transparent;
-                                      width:0;
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                      background-color: blue;
-                                      width:<xsl:number value= "(100*number(@seencount)) div number(@count)" />%;                                      
-                                   </xsl:otherwise>
-                                </xsl:choose>
-                                height:15pt;
-                                left:0px;
-                            </xsl:attribute>
-                            <xsl:value-of select="@seencount"/>
-                        </DIV>        
-                    </DIV>
-                  </td>
-                  <td class="number">
-                    <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
-                  </td>
-                </xsl:if>
-              </tr>
+                                  <xsl:when test="number(@seencount) > 0">
+                                    <xsl:number value="(100*number(@seencount)) div number(@count)"/>
+                                  </xsl:when>
+                                  <xsl:otherwise><xsl:text>  </xsl:text>0</xsl:otherwise>
+                                </xsl:choose>%
+                            </div>        
+                        </div>
+                      </td>
+                      <td class="number">
+                        <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
+                      </td>
+                    </xsl:if>
+                  </tr>
+             </xsl:if>
           </xsl:if>
       </xsl:for-each>
   </xsl:template>
