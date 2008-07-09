@@ -61,6 +61,8 @@ CFG_PLAYER_ARGS         = 'webserver/playerargs'
 CFG_SERIES_PATH         = 'webserver/seriespath'
 CFG_WEB_URL             = 'webserver/url'
 CFG_WEB_PORT            = 'webserver/port'
+CFG_AUTO_UPDATE         = 'scheduling/autoupdate'
+CFG_GRACE_PERIOD        = 'scheduling/graceperiod'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -84,7 +86,9 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_PLAYER_ARGS,           's', '%file%'),
             (CFG_SERIES_PATH,           's', ''),
             (CFG_WEB_URL,               's', '127.0.0.1'),
-            (CFG_WEB_PORT,              'i', 8000)
+            (CFG_WEB_PORT,              'i', 8000),
+            (CFG_AUTO_UPDATE,           'b', True),
+            (CFG_GRACE_PERIOD,          'i', 5)
         ]
 
 # max files in the file history

@@ -15,6 +15,7 @@ from wx.lib.pubsub import Publisher
 from data import appcfg, viewmgr, signals
 from data import series_list, db, series_filter
 from webserver import synccmd, reactor
+import datetime
 
 import menuhelper
 
@@ -114,7 +115,11 @@ class AirsFrame(wx.Frame):
         self.tmr = wx.Timer(self)
         self.tmr.Start(500)
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
-
+                
+        # schedule an update
+        if appcfg.options[appcfg.CFG_AUTO_UPDATE]:
+            wx.CallLater((appcfg.options[appcfg.CFG_GRACE_PERIOD] * 60000) + 1, viewmgr.get_all_series)
+        
     # ========================== GUI CREATION CODE =============================
     def _createTrayIcon(self):
         """
