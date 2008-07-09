@@ -24,6 +24,7 @@ def _getMediaCount(series_path):
                     count += 1
     return count
 
+
 def _createOptionsNode():
     """ Creates a node with in there some options that the XSLT engine
     might want to alter the output """
@@ -33,6 +34,11 @@ def _createOptionsNode():
 
     layout = libxml2.newNode("layout")
     options.addChild(layout)
+
+    server = libxml2.newNode("server")
+    server.setProp("ip", appcfg.options[appcfg.CFG_WEB_IP])
+    server.setProp("port", str(appcfg.options[appcfg.CFG_WEB_PORT]))
+    options.addChild(server)
 
     layout.setContent(appcfg.conv_layout_str[appcfg.options[appcfg.CFG_LAYOUT_SCREEN]])
 
@@ -184,7 +190,7 @@ def get_series_xml():
 
         serie.setProp("seencount", seencount)
         serie.setProp("count", totalcount)
-        
+
         items.addChild(serie)
 
     return dom
@@ -222,19 +228,19 @@ def get_episode_list(series_id):
     items = libxml2.newNode("episodes")
     items.setProp("id", str(series_id))
     items.setProp("name", series.name)
-    
+
     c = db.store.execute("select count(*) from episode where series_id = %i and status != %i" % \
                          (series_id, series_list.EP_SEEN))
     unseen = str(c.get_one()[0])
     items.setProp("unseen", unseen)
- 
+
     root.addChild(items)
 
     result = db.store.find(series_list.Episode, series_list.Episode.series_id == series_id)
     episodes = [episode for episode in result]
 
     episodes.sort(_sortEpisodes)
-    
+
     if series.folder != '':
         sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
     else:
