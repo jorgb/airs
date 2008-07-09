@@ -59,6 +59,8 @@ CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
 CFG_PLAYER_PATH         = 'webserver/playerpath'
 CFG_PLAYER_ARGS         = 'webserver/playerargs'
 CFG_SERIES_PATH         = 'webserver/seriespath'
+CFG_WEB_URL             = 'webserver/url'
+CFG_WEB_PORT            = 'webserver/port'
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -80,7 +82,9 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
             (CFG_PLAYER_PATH,           's', ''),
             (CFG_PLAYER_ARGS,           's', '%file%'),
-            (CFG_SERIES_PATH,           's', '')
+            (CFG_SERIES_PATH,           's', ''),
+            (CFG_WEB_URL,               's', '127.0.0.1'),
+            (CFG_WEB_PORT,              'i', 8000)
         ]
 
 # max files in the file history
