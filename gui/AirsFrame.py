@@ -501,9 +501,10 @@ class AirsFrame(wx.Frame):
     def _onSyncStatuses(self, event):
         """ Go by all series, and see if there are files downloaded """
 
-        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if there are \n"
-                            "downloaded files for episodes still marked as 'To Download', 'Downloading'\n"
-                            "or 'Downloaded', and mark them as 'Ready' (this can take a little while).\n"
+        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if\n"
+                            "there are downloaded files for episodes still marked as \n"
+                            "'To Download', 'Downloading' or 'Downloaded', and mark them as\n"
+                            "'Ready' (this can take a little while).\n"
                             "Are you sure you want to do this?\n",
                             "Warning", wx.ICON_QUESTION | wx.YES_NO)
 
