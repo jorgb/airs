@@ -118,6 +118,7 @@ highlightColor = wx.Colour(50, 177, 5)
 max_records    = 300
 
 last_timed_update = None
+initially_updated = False
 
 #-------------------------------------------------------------------------------
 __cfg = None

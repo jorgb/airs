@@ -9,7 +9,7 @@ from images import icon_add, icon_delete, icon_edit
 from images import icon_preferences ,to_download, downloading, \
                    icon_downloaded, icon_ready, icon_processed, all_series, \
                    icon_update, icon_update_all, icon_restore_wnd, \
-                   icon_edit_episode
+                   icon_edit_episode, icon_sync_status, icon_sync_series
 
 NORMAL  = 1
 CHECK   = 2
@@ -138,23 +138,40 @@ def create(parent, bindEvents):
         "browser":       ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL),
         "update_all":    ("&Update All\tCtrl+Shift+U", "Update All", "Update all series", icon_update_all.getBitmap(), NORMAL),
         "update":        ("Update &Series\tCtrl+U", "Update Series", "Update this series", icon_update.getBitmap(), NORMAL),
-        "restore_wnd":   ("Restore Window", "Restore Window", "Restore this window", icon_restore_wnd.getBitmap(), NORMAL)
+        "restore_wnd":   ("Restore Window", "Restore Window", "Restore this window", icon_restore_wnd.getBitmap(), NORMAL),
+        "sync_status":   ("&Sync All Statuses", "Synchronize Status", "Scan all series, synchronize statuses", icon_sync_status.getBitmap(), NORMAL),
+        "sync_series":   ("S&elected Series", "Synchronize Selected Series", "Synchronize only selected series", icon_sync_series.getBitmap(), NORMAL)
       }
 
-    mainmenu = [ ("&File",    [ "preferences", "browser", "-", "exit" ] ),
-                 ("&Series",  [ "add_series", "edit_series", "del_series",
-                                "-", "update", "update_all",  "-", "clear_cache"] ),
+    mainmenu = [ ("&File",    [ "preferences",
+                                "browser", "-",
+                                "exit" ]
+                 ),
+                 (
+                    "&Series",  [ "add_series",
+                                  "edit_series",
+                                  "del_series",
+                                  "-",
+                                  "update",
+                                  "update_all",
+                                  "-",
+                                  ( "&Sync", [ "sync_status",
+                                               "sync_series" ] ),
+                                  "-",
+                                  "clear_cache" ]
+                 ),
                  ("&Episode", [ "select_all", "searches", "-", "edit_episode",
                                    ( "&Mark Status As", [ "s_todownload", "s_download",
                                                           "s_downloaded", "s_ready", "s_seen"] )
                               ] ),
                  ("&Window",  [ "restore", "toggle_sel", "toggle_prog", "toggle_stat", "-", "to_tray" ] ),
                  ("&Help",    [ "help", "visit_site", "-", "about" ] )
-               ]
+
+                 ]
 
     toolmenu = [ "add_series", "edit_series", "del_series", "-", "searches", "-",
                  "s_todownload", "s_download", "s_downloaded", "s_ready", "s_seen", "-",
-                 "update", "update_all", "browser"
+                 "update", "update_all", "browser", "-", "sync_status", "sync_series"
              ]
 
 

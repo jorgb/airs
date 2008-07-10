@@ -78,7 +78,9 @@ class AirsFrame(wx.Frame):
             ("s_seen",       self._onMarkEpisodes),
             ("update_all",   self._onUpdateAll),
             ("update",       self._onUpdateSeries),
-            ("browser",      self._onStartBrowser)
+            ("browser",      self._onStartBrowser),
+            ("sync_status",  self._onSyncStatuses),
+            ("sync_series",  self._onSyncSelected)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -115,17 +117,17 @@ class AirsFrame(wx.Frame):
         self.tmr = wx.Timer(self)
         self.tmr.Start(500)
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
-        
+
         self.updtmr = wx.Timer(self)
         self.updtmr.Start(60000)
         self.Bind(wx.EVT_TIMER, self._onScheduleTimer, self.updtmr)
-        
+
         appcfg.last_timed_update = datetime.datetime.now()
-        
+
         # schedule an update
         if appcfg.options[appcfg.CFG_AUTO_UPDATE]:
             wx.CallLater((appcfg.options[appcfg.CFG_GRACE_PERIOD] * 60000) + 1, viewmgr.get_all_series)
-        
+
     # ========================== GUI CREATION CODE =============================
     def _createTrayIcon(self):
         """
@@ -346,9 +348,11 @@ class AirsFrame(wx.Frame):
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
             menuhelper.check(self, menu_id, pane.IsShown())
 
+        sid = viewmgr.appstate["series_id"]
+
         menuhelper.enable(self, ["edit_series",
                                  "del_series",
-                                 "clear_cache"], viewmgr.appstate["series_id"] != -1)
+                                 "clear_cache"], sid != -1)
 
         menuhelper.enable(self, ["s_todownload",
                                  "s_download",
@@ -362,6 +366,8 @@ class AirsFrame(wx.Frame):
         view_enabled = viewmgr._series_sel._view_type != -1
         menuhelper.enable(self, "update_all", not viewmgr.is_busy())
         menuhelper.enable(self, "update", view_enabled and viewmgr.series_active())
+
+        menuhelper.enable(self, "sync_series", sid != -1)
 
 
     def _saveWindowLayout(self):
@@ -409,26 +415,30 @@ class AirsFrame(wx.Frame):
 
     def _onScheduleTimer(self, event):
         """ Schedule timer """
-        
+
         if appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED]:
             # check if we passed a day
-            d = datetime.datetime.now() - appcfg.last_timed_update 
-            if d.days > 0:
-                try:
-                    # if badly formatted, disable auto timer
-                    check_on = datetime.datetime.strptime(appcfg.options[appcfg.CFG_TIMED_UPDATE], "%H:%M")
-                except ValueError:
-                    appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = False
-                
+            d = datetime.datetime.now() - appcfg.last_timed_update
+            if d.days > 0 or not appcfg.initially_updated:
+                tl = appcfg.options[appcfg.CFG_TIMED_UPDATE].split(':')
+                if len(tl) > 1:
+                    try:
+                        check_hour = int(tl[0])
+                        check_min = int(tl[1])
+                    except ValueError:
+                        appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = False
+                        return
+
                 # compare two equal dates, but only the time
                 # we do this to also bridge a check more then one day
                 d1 = datetime.datetime.now()
-                d2 = datetime.datetime(d1.year, d1.month, d1.day, hour = check_on.hour, minute = check_on.minute)
+                d2 = datetime.datetime(d1.year, d1.month, d1.day, hour = check_hour, minute = check_min)
                 if d1 > d2:
+                    appcfg.initially_updated = True
                     appcfg.last_timed_update = datetime.datetime.now()
                     viewmgr.get_all_series()
-                    
-                
+
+
     def _onTimer(self, event):
         """
         Periodic check function to update various GUI elements.
@@ -487,6 +497,34 @@ class AirsFrame(wx.Frame):
         wx.PostEvent(self, evt)
 
     # ============================ VARIOUS METHODS =============================
+
+    def _onSyncStatuses(self, event):
+        """ Go by all series, and see if there are files downloaded """
+
+        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if there are \n"
+                            "downloaded files for episodes still marked as 'To Download', 'Downloading'\n"
+                            "or 'Downloaded', and mark them as 'Ready' (this can take a little while).\n"
+                            "Are you sure you want to do this?\n",
+                            "Warning", wx.ICON_QUESTION | wx.YES_NO)
+
+        if res == wx.YES:
+            updatecount, epcount = viewmgr.update_statuses()
+            if updatecount > 0:
+                wx.MessageBox("%i of %i episodes are succesfully updated!" % (updatecount, epcount),
+                              "Done", wx.ICON_INFORMATION)
+            else:
+                wx.MessageBox("%i episodes were examined, none were updated" % epcount,
+                              "Done", wx.ICON_INFORMATION)
+
+
+    def _onSyncSelected(self, event):
+        """ Go by only one series, and see if there are files downloaded """
+
+        sid = viewmgr.appstate["series_id"]
+        if sid >= 0:
+            series = db.store.find(series_list.Series, series_list.Series.id == sid).one()
+            updatecount, epcount = viewmgr.update_statuses(series)
+
 
     def _onWebRequest(self, event):
         """ Handle request of the web browser plugin """
