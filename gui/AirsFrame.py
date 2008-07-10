@@ -79,7 +79,8 @@ class AirsFrame(wx.Frame):
             ("update_all",   self._onUpdateAll),
             ("update",       self._onUpdateSeries),
             ("browser",      self._onStartBrowser),
-            ("sync_status",  self._onSyncStatuses)
+            ("sync_status",  self._onSyncStatuses),
+            ("sync_series",  self._onSyncSelected)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -347,9 +348,11 @@ class AirsFrame(wx.Frame):
             pane = self._aui.GetPane(self._toggleWindowLookup[menu_id])
             menuhelper.check(self, menu_id, pane.IsShown())
 
+        sid = viewmgr.appstate["series_id"]
+
         menuhelper.enable(self, ["edit_series",
                                  "del_series",
-                                 "clear_cache"], viewmgr.appstate["series_id"] != -1)
+                                 "clear_cache"], sid != -1)
 
         menuhelper.enable(self, ["s_todownload",
                                  "s_download",
@@ -363,6 +366,8 @@ class AirsFrame(wx.Frame):
         view_enabled = viewmgr._series_sel._view_type != -1
         menuhelper.enable(self, "update_all", not viewmgr.is_busy())
         menuhelper.enable(self, "update", view_enabled and viewmgr.series_active())
+
+        menuhelper.enable(self, "sync_series", sid != -1)
 
 
     def _saveWindowLayout(self):
@@ -510,6 +515,16 @@ class AirsFrame(wx.Frame):
             else:
                 wx.MessageBox("%i episodes were examined, none were updated" % epcount,
                               "Done", wx.ICON_INFORMATION)
+
+
+    def _onSyncSelected(self, event):
+        """ Go by only one series, and see if there are files downloaded """
+
+        sid = viewmgr.appstate["series_id"]
+        if sid >= 0:
+            series = db.store.find(series_list.Series, series_list.Series.id == sid).one()
+            updatecount, epcount = viewmgr.update_statuses(series)
+
 
     def _onWebRequest(self, event):
         """ Handle request of the web browser plugin """

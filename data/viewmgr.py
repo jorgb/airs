@@ -89,7 +89,7 @@ def app_close():
     return res.allowed()
 
 
-def update_statuses():
+def update_statuses(sel = None):
     # every serie with a folder assigned will be scanned, all
     # episodes that match a file, and have the status downloaded,
     # downloading, to download
@@ -100,22 +100,32 @@ def update_statuses():
 
     updatecount = 0
     epcount = 0
-    serieslist = db.store.find(series_list.Series)
+
+    if sel is None:
+        serieslist = db.store.find(series_list.Series)
+    else:
+        serieslist = [ sel ]
+
     for series in serieslist:
         if series.folder != '':
             sfiles = db_conv_xml._collectEpisodeFiles(series_list.get_series_path(series))
 
-            episodes = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id,
-                                                          series_list.Episode.status in candidates)
+            episodes = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
             for episode in episodes:
-                if episode.season in sfiles:
+                if (episode.status in candidates) and (episode.season in sfiles):
                     episode.status = series_list.EP_READY
                     episode.changed = 0
                     db.store.commit()
+
+                    if sel is not None:
+                        episode_updated(episode)
+
                     updatecount += 1
                 epcount += 1
 
-    set_view(series_filter.VIEW_SERIES)
+    if sel is None:
+        set_view(series_filter.VIEW_SERIES)
+
     return (updatecount, epcount)
 
 def select_all_episodes():
