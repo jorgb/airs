@@ -103,14 +103,16 @@ def update_statuses(sel = None):
 
     if sel is None:
         serieslist = db.store.find(series_list.Series)
+        serieslist = [series for series in serieslist]     # decouple resultset
     else:
         serieslist = [ sel ]
-
+        
     for series in serieslist:
         if series.folder != '':
             sfiles = db_conv_xml._collectEpisodeFiles(series_list.get_series_path(series))
 
             episodes = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
+            episodes = [episode for episode in episodes]    
             for episode in episodes:
                 if (episode.status in candidates) and (episode.season in sfiles):
                     episode.status = series_list.EP_READY
