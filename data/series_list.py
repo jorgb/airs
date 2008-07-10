@@ -61,8 +61,12 @@ def string_to_prio(s):
         s1, s2 = item.split(':')
         prios[s1] = int(s2)
     return prios
-        
+     
 
+def date_to_str(d):
+    return "%04i%02i%02i" % (d.year, d.month, d.day)
+
+    
 #
 # Module that contains functionality
 # to store a number of series and functionality
