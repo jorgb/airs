@@ -182,11 +182,18 @@ def get_series_xml():
 
         # report total number of episodes and the
         # episodes already seen
-        c = db.store.execute("select count(*) from episode where series_id = %i" % item.id)
+        today = datetime.datetime.now()
+        datestr = series_list.date_to_str(today)
+        c = db.store.execute("select count(*) from episode where series_id = %i and aired != '' and aired < '%s'" % \
+                             (item.id, datestr) )
         totalcount = str(c.get_one()[0])
 
-        c = db.store.execute("select count(*) from episode where series_id = %i and status = 4" % item.id)
+        c = db.store.execute("select count(*) from episode where series_id = %i and status = %i" % \
+                             (item.id, series_list.EP_SEEN))
         seencount = str(c.get_one()[0])
+
+        #c = db.store.execute("select count(*) from episode where series_id = %i and status = 4" % item.id)
+        #seencount = str(c.get_one()[0])
 
         serie.setProp("seencount", seencount)
         serie.setProp("count", totalcount)
@@ -229,6 +236,11 @@ def get_episode_list(series_id):
     items.setProp("id", str(series_id))
     items.setProp("name", series.name)
 
+    #c = db.store.execute("select count(*) from episode where series_id = %i and status != %i and aired < '%s'" % \
+    #                     (series_id, series_list.EP_SEEN, datestr))
+    #unseen = str(c.get_one()[0])
+    #items.setProp("unseen", unseen)
+    
     c = db.store.execute("select count(*) from episode where series_id = %i and status != %i" % \
                          (series_id, series_list.EP_SEEN))
     unseen = str(c.get_one()[0])

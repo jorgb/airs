@@ -20,6 +20,7 @@ import signals
 import appcfg
 import db
 import datetime
+import db_conv_xml
 
 # Signals constants are used in the view manager (and the rest of the
 # application to send around changes in the application.
@@ -87,6 +88,47 @@ def app_close():
         Publisher.sendMessage(signals.APP_CLOSE)
     return res.allowed()
 
+
+def update_statuses(sel = None):
+    # every serie with a folder assigned will be scanned, all
+    # episodes that match a file, and have the status downloaded,
+    # downloading, to download
+
+    candidates = [ series_list.EP_TO_DOWNLOAD,
+                   series_list.EP_DOWNLOADING,
+                   series_list.EP_DOWNLOADED]
+
+    updatecount = 0
+    epcount = 0
+
+    if sel is None:
+        serieslist = db.store.find(series_list.Series)
+        serieslist = [series for series in serieslist]     # decouple resultset
+    else:
+        serieslist = [ sel ]
+        
+    for series in serieslist:
+        if series.folder != '':
+            sfiles = db_conv_xml._collectEpisodeFiles(series_list.get_series_path(series))
+
+            episodes = db.store.find(series_list.Episode, series_list.Episode.series_id == series.id)
+            episodes = [episode for episode in episodes]    
+            for episode in episodes:
+                if (episode.status in candidates) and (episode.season in sfiles):
+                    episode.status = series_list.EP_READY
+                    episode.changed = 0
+                    db.store.commit()
+
+                    if sel is not None:
+                        episode_updated(episode)
+
+                    updatecount += 1
+                epcount += 1
+
+    if sel is None:
+        set_view(series_filter.VIEW_SERIES)
+
+    return (updatecount, epcount)
 
 def select_all_episodes():
     Publisher().sendMessage(signals.SELECT_ALL_EPISODES)
