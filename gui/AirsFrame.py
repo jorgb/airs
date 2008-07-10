@@ -115,17 +115,17 @@ class AirsFrame(wx.Frame):
         self.tmr = wx.Timer(self)
         self.tmr.Start(500)
         self.Bind(wx.EVT_TIMER, self._onTimer, self.tmr)
-        
+
         self.updtmr = wx.Timer(self)
         self.updtmr.Start(60000)
         self.Bind(wx.EVT_TIMER, self._onScheduleTimer, self.updtmr)
-        
+
         appcfg.last_timed_update = datetime.datetime.now()
-        
+
         # schedule an update
         if appcfg.options[appcfg.CFG_AUTO_UPDATE]:
             wx.CallLater((appcfg.options[appcfg.CFG_GRACE_PERIOD] * 60000) + 1, viewmgr.get_all_series)
-        
+
     # ========================== GUI CREATION CODE =============================
     def _createTrayIcon(self):
         """
@@ -409,26 +409,30 @@ class AirsFrame(wx.Frame):
 
     def _onScheduleTimer(self, event):
         """ Schedule timer """
-        
+
         if appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED]:
             # check if we passed a day
-            d = datetime.datetime.now() - appcfg.last_timed_update 
-            if d.days > 0:
-                try:
-                    # if badly formatted, disable auto timer
-                    check_on = datetime.datetime.strptime(appcfg.options[appcfg.CFG_TIMED_UPDATE], "%H:%M")
-                except ValueError:
-                    appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = False
-                
+            d = datetime.datetime.now() - appcfg.last_timed_update
+            if d.days > 0 or not appcfg.initially_updated:
+                tl = appcfg.options[appcfg.CFG_TIMED_UPDATE].split(':')
+                if len(tl) > 1:
+                    try:
+                        check_hour = int(tl[0])
+                        check_min = int(tl[1])
+                    except ValueError:
+                        appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = False
+                        return
+
                 # compare two equal dates, but only the time
                 # we do this to also bridge a check more then one day
                 d1 = datetime.datetime.now()
-                d2 = datetime.datetime(d1.year, d1.month, d1.day, hour = check_on.hour, minute = check_on.minute)
+                d2 = datetime.datetime(d1.year, d1.month, d1.day, hour = check_hour, minute = check_min)
                 if d1 > d2:
+                    appcfg.initially_updated = True
                     appcfg.last_timed_update = datetime.datetime.now()
                     viewmgr.get_all_series()
-                    
-                
+
+
     def _onTimer(self, event):
         """
         Periodic check function to update various GUI elements.
