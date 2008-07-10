@@ -78,7 +78,8 @@ class AirsFrame(wx.Frame):
             ("s_seen",       self._onMarkEpisodes),
             ("update_all",   self._onUpdateAll),
             ("update",       self._onUpdateSeries),
-            ("browser",      self._onStartBrowser)
+            ("browser",      self._onStartBrowser),
+            ("sync_status",  self._onSyncStatuses)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -491,6 +492,24 @@ class AirsFrame(wx.Frame):
         wx.PostEvent(self, evt)
 
     # ============================ VARIOUS METHODS =============================
+
+    def _onSyncStatuses(self, event):
+        """ Go by all series, and see if there are files downloaded """
+
+        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if there are \n"
+                            "downloaded files for episodes still marked as 'To Download', 'Downloading'\n"
+                            "or 'Downloaded', and mark them as 'Ready' (this can take a little while).\n"
+                            "Are you sure you want to do this?\n",
+                            "Warning", wx.ICON_QUESTION | wx.YES_NO)
+
+        if res == wx.YES:
+            updatecount, epcount = viewmgr.update_statuses()
+            if updatecount > 0:
+                wx.MessageBox("%i of %i episodes are succesfully updated!" % (updatecount, epcount),
+                              "Done", wx.ICON_INFORMATION)
+            else:
+                wx.MessageBox("%i episodes were examined, none were updated" % epcount,
+                              "Done", wx.ICON_INFORMATION)
 
     def _onWebRequest(self, event):
         """ Handle request of the web browser plugin """
