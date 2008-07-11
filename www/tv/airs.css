@@ -5,6 +5,7 @@ body
     color: #ffffff;
     background-color: #00005c; 
     font-family: Verdana, Arial, Helvetica, sans-serif;
+    background-image: url("/www/background.png");
 }
 
 /*
@@ -17,6 +18,17 @@ td.seriestitle, td.number
     margin-right: 0;  
 }
 */
+
+a.subcaption, a.subcaption:visited
+{
+    font-size: 130%;
+    color: #ff2222;
+}
+
+#subcaption
+{
+    margin-bottom: 15pt;
+}
 
 tr.oddrow 
 {
@@ -203,6 +215,15 @@ td.eprow
 tr.eprow2
 {
     vertical-align: center;
+}
+
+#copyright
+{
+    margin-top: 20pt;
+    text-align: center;
+    color: #d3d5a4;
+    font-style: italic;
+    font-size: 120%;
 }
 
 
