@@ -12,7 +12,7 @@ APP_TITLE           = "Airs:: Automatic Series Monitor"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
-APP_VERSION         = "1.1"
+APP_VERSION         = "2.0"
 
 # the name of the default database
 DB_NAME             = 'series.db'
@@ -23,13 +23,19 @@ APP_NAME            = 'Airs'
 
 LAYOUT_SCREEN = 1
 LAYOUT_TV     = 2
+LAYOUT_MOBILE = 3
+
+conv_layout_str = { LAYOUT_TV:     "tv",
+                    LAYOUT_SCREEN: "screen",
+                    LAYOUT_MOBILE: "mobile" }
+
 
 # generic author information
 APP_AUTHOR          = 'Jorgen Bodde'
 APP_EMAIL           = 'jorgb@xs4all.nl'
 APP_VENDOR          = 'ImpossibleSoft'
 
-FILE_DELETE_EXT = ".seen"
+AIRS_ARCHIVED_PATH = "Seen-Airs"
 
 # configuration values
 CFG_LAYOUT_DEFAULT      = 'window/default_layout'       # default layout upon saving (saved one time only)
@@ -53,6 +59,13 @@ CFG_WEBSERVER_HIDE_SEEN = 'webserver/hideseen'
 CFG_PLAYER_PATH         = 'webserver/playerpath'
 CFG_PLAYER_ARGS         = 'webserver/playerargs'
 CFG_SERIES_PATH         = 'webserver/seriespath'
+CFG_WEB_URL             = 'webserver/url'
+CFG_WEB_PORT            = 'webserver/port'
+CFG_AUTO_UPDATE         = 'scheduling/autoupdate'
+CFG_GRACE_PERIOD        = 'scheduling/graceperiod'
+CFG_TIMED_UPDATE        = 'scheduling/timedupdate'
+CFG_AUTO_UPDATE_TIMED   = 'scheduling/timedenable'
+
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_LAST_H,         'i', 730  ),
@@ -70,11 +83,17 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_COL_DATE,       'i', 100  ),
             (CFG_LAYOUT_HIDDEN,         'b', False),
             (CFG_TRAY_MINIMIZE,         'b', False),
-            (CFG_LAYOUT_SCREEN,         'i', LAYOUT_SCREEN),
+            (CFG_LAYOUT_SCREEN,         'i', LAYOUT_TV),
             (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
             (CFG_PLAYER_PATH,           's', ''),
             (CFG_PLAYER_ARGS,           's', '%file%'),
-            (CFG_SERIES_PATH,           's', '')
+            (CFG_SERIES_PATH,           's', ''),
+            (CFG_WEB_URL,               's', '127.0.0.1'),
+            (CFG_WEB_PORT,              'i', 8000),
+            (CFG_AUTO_UPDATE,           'b', True),
+            (CFG_GRACE_PERIOD,          'i', 5),
+            (CFG_TIMED_UPDATE,          's', '12:00'),
+            (CFG_AUTO_UPDATE_TIMED,     'b', False)
         ]
 
 # max files in the file history
@@ -97,6 +116,9 @@ dbpath = ''
 
 highlightColor = wx.Colour(50, 177, 5)
 max_records    = 300
+
+last_timed_update = None
+initially_updated = False
 
 #-------------------------------------------------------------------------------
 __cfg = None

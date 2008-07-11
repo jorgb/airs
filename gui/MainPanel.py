@@ -36,10 +36,14 @@ class MainPanel(wx.Panel):
 
         self._episodeFilter = xrc.XRCCTRL(self, "ID_EPISODE_FILTER")
         
-        self._episodeFilter.Append("View episodes from last week", clientData = 1)
-        self._episodeFilter.Append("View episodes from last two weeks", clientData = 2)
-        self._episodeFilter.Append("View episodes from last month", clientData = 4)
-        self._episodeFilter.Append("View episodes from last two months", clientData = 8)
+        deltalist = [ "View episodes from last week",
+                      "View episodes from last two weeks",
+                      "View episodes from last month",
+                      "View episodes from last two months" ]
+        
+        for delta in deltalist:        
+            pos = self._episodeFilter.Append(delta)
+            self._episodeFilter.SetClientData(pos, series_list.idx_to_weekdelta(pos))
         
         idx = appcfg.options[appcfg.CFG_EPISODE_DELTA]
         self._episodeFilter.SetSelection(idx)

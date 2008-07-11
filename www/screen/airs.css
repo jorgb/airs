@@ -5,6 +5,17 @@ body
     color: #ffffff;
     background-color: #00005c; 
     font-family: Verdana, Arial, Helvetica, sans-serif;
+    background-image: url("/www/background.png");
+}
+
+a.subcaption, a.subcaption:visited
+{
+    color: #ff2222;
+}
+
+#subcaption
+{
+    margin-bottom: 10pt;
 }
 
 tr.oddrow 
@@ -12,13 +23,13 @@ tr.oddrow
     background-color: #00007a;
 }
 
+
 td.header
 {
     border-bottom-style: dashed; 
     border-bottom-color: #ffffff; 
     border-bottom-width: 1px;
     padding-right: 10pt;
-    margin-bottom: 4pt;
 }
 
 table.episodes
@@ -26,9 +37,14 @@ table.episodes
     width: 100%;
 }
 
+td.percentage
+{
+    width: 60pt;
+}
+
 td.number
 {
-    text-align: right;
+    /* text-align: right; */
 }
 
 #overall
@@ -39,13 +55,36 @@ td.number
 #headertext
 {
     font-style: italic;
-    font-size: 150%;
+    font-size: 120%;
+}
+
+#percdiff
+{
+    width: 100%;
+    font-size: 100%;
+    text-align: left;
+    position:relative;
+    border-width: 0px;
+}
+
+#percinner
+{
+    padding: 0.25em;  
+    text-align: left;
+    position:relative;
+    height:10pt;
+    left:0px;  
+    border:1;
+    border-style: solid;
+    border-color: blue;
+    border-width: 1px; 
+    background-color: #00007d;
 }
 
 /* the title of the contents */
 #title
 {
-    font-size: 300%;
+    font-size: 150%;
     color: #eae975;
 }
 
@@ -61,41 +100,77 @@ a, a:visited
     font-style: bold;
 }
 
-a.series
+a.series, a.withmedia, a.nomedia
 {
-    font-size: 150%;
+     font-size: 110%;
+}
+
+a.withmedia 
+{
+    color: #5af85a;
+}
+
+a.nomedia 
+{
+    color: #ec4d4d;
 }
 
 #seriescount
 {
-    font-size: 150%;
+    font-size: 100%;
 }
 
 a.subcaption 
 {
-    font-size: 130%;
+    font-size: 100%;
     font-style: italic;
 }
 
 a.playfile
 {
-    font-size: 130%;
+    font-size: 100%;
     font-style: normal;
     color: #c4c4c4;
+}
+
+
+a.search
+{
+    font-size: 75%;
+    font-style: italic;
+    border-margin: 4px;
+    border-style: none;
+    background-color: #0b2c68; 
+    color: #ffffff;
+    border: 1px solid #748AAA;
+    padding: 0.25em;  
+    margin-right: 3pt;  
+}
+
+td.search
+{
+    text-align: right;
+}
+
+#searchblock
+{
+  margin-top: 5pt;
+  margin-left: 10pt;
+  margin-bottom: 10pt;
 }
 
 #epaired 
 {
     color: #d6d66e;
     font-style: bold;
-    font-size: 180%;
+    font-size: 110%;
 }
 
 #orphaned
 {
     color: #d6d66e;
     font-style: normal;
-    font-size: 180%;
+    font-size: 120%;
 }
 
 
@@ -103,7 +178,7 @@ a.playfile
 {
     color: #646464;
     font-style: normal;
-    font-size: 180%;
+    font-size: 120%;
 }
 
 #seriestitle
@@ -125,6 +200,15 @@ td.eprow
 tr.eprow2
 {
     vertical-align: center;
+}
+
+#copyright
+{
+    margin-top: 20pt;
+    text-align: center;
+    color: #d3d5a4;
+    font-style: italic;
+    font-size: 100%;
 }
 
 

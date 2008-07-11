@@ -61,8 +61,23 @@ def string_to_prio(s):
         s1, s2 = item.split(':')
         prios[s1] = int(s2)
     return prios
-        
+     
 
+def date_to_str(d):
+    return "%04i%02i%02i" % (d.year, d.month, d.day)
+
+    
+def idx_to_weekdelta(idx):
+    """ Gets weekdelta based upon idx """
+    # ok it looks like a 2^x but it does not have to be
+    wd = {0: 1,
+          1: 2,
+          2: 4,
+          3: 8}
+    if idx in wd:
+        return wd[idx]
+    return 0
+    
 #
 # Module that contains functionality
 # to store a number of series and functionality

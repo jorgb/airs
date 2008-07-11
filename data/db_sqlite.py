@@ -5,7 +5,11 @@
 #==============================================================================
 
 import sys
-import sqlite3
+import platform
+if platform.python_version()[0:3] <= '2.4':
+    from pysqlite2 import dbapi2 as sqlite3
+else:
+    import sqlite3
 import os.path
 import datetime
 from data import series_list
