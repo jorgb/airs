@@ -12,7 +12,7 @@ APP_TITLE           = "Airs:: Automatic Series Monitor"
 
 # The version is used in the about box and title. Increment this with
 # every release, but do not add the 'v' to the string
-APP_VERSION         = "1.1"
+APP_VERSION         = "2.0"
 
 # the name of the default database
 DB_NAME             = 'series.db'
@@ -83,7 +83,7 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_LAYOUT_COL_DATE,       'i', 100  ),
             (CFG_LAYOUT_HIDDEN,         'b', False),
             (CFG_TRAY_MINIMIZE,         'b', False),
-            (CFG_LAYOUT_SCREEN,         'i', LAYOUT_SCREEN),
+            (CFG_LAYOUT_SCREEN,         'i', LAYOUT_TV),
             (CFG_WEBSERVER_HIDE_SEEN,   'b', True),
             (CFG_PLAYER_PATH,           's', ''),
             (CFG_PLAYER_ARGS,           's', '%file%'),
