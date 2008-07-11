@@ -58,6 +58,9 @@ class series_http_handler(resource.Resource):
             return_id = request.args["return"][0]
             cmd = send_command("archive_file", args={"id": int(return_id), "file": thefile})
 
+        elif "cmd_open_airs" in request.args:
+            cmd = send_command("show_airs", args={})
+                        
         if cmd is not None:
             if cmd.redirect:
                 # redirect goes before html display

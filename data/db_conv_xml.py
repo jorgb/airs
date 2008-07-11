@@ -166,6 +166,15 @@ def get_series_xml():
     items = libxml2.newNode("series")
     root.addChild(items)
 
+    todaystr = series_list.date_to_str(datetime.datetime.now())
+
+    wdelta = series_list.idx_to_weekdelta(appcfg.options[appcfg.CFG_EPISODE_DELTA])
+    bottomstr = series_list.date_to_str(datetime.date.today() - datetime.timedelta(weeks = wdelta))    
+
+    c = db.store.execute("select count(*) from episode where aired != '' and aired <= '%s'"
+                         "and aired > '%s' and new != 0" % (todaystr, bottomstr) )
+    items.setProp("airedcount", str(c.get_one()[0]))
+        
     result = db.store.find(series_list.Series).order_by(series_list.Series.name)
     series = [serie for serie in result]
 
@@ -182,10 +191,8 @@ def get_series_xml():
 
         # report total number of episodes and the
         # episodes already seen
-        today = datetime.datetime.now()
-        datestr = series_list.date_to_str(today)
         c = db.store.execute("select count(*) from episode where series_id = %i and aired != '' and aired < '%s'" % \
-                             (item.id, datestr) )
+                             (item.id, todaystr) )
         totalcount = str(c.get_one()[0])
 
         c = db.store.execute("select count(*) from episode where series_id = %i and status = %i" % \

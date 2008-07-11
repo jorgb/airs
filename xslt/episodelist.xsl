@@ -159,6 +159,8 @@
             
             <table>
             </table>
+            
+            <div id="copyright">Airs (c) Jorgen Bodde, ImpossibleSoft</div>
         </body>
     </html>
 </xsl:template>

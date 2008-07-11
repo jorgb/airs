@@ -135,12 +135,18 @@ def archiveFile(cmd, args):
     cmd.html = ""
 
 
+def showAirs(cmd, args):
+    cmd.redirect = _getBaseURL("series")
+    cmd.html = ""
+
+
 #------------------------------------------------------------------------------
 _cmd_dispatcher = { "get_index": seriesIndex,
                     "get_episodes": episodeList,
                     "mark_seen": markSeen,
                     "play_file": playFile,
-                    "archive_file": archiveFile }
+                    "archive_file": archiveFile,
+                    "show_airs": showAirs }
 
 def execute(cmd, id, args):
     cb = synccmd.SyncCommand(id)

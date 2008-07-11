@@ -31,6 +31,12 @@
           
           <div id="title">Airs Series Overview</div>
           
+          <xsl:if test="number(/airs/series/@airedcount) &gt; 0">
+            <div id="subcaption">
+                <a class="subcaption" href="series?cmd_open_airs=nowdarnit">There are <xsl:value-of select="/airs/series/@airedcount" /> new aired episodes.</a>
+            </div>
+          </xsl:if>
+          
           <div id="series_area">
             <table>
 
@@ -56,6 +62,8 @@
 
 
         </div>
+        
+        <div id="copyright">Airs (c) Jorgen Bodde, ImpossibleSoft</div>        
       </body>               
     </xsl:template>
 

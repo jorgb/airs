@@ -180,7 +180,7 @@ class AirsFrame(wx.Frame):
     # ======================== ITEM MANAGEMENT METHODS =========================
 
     def _onStartBrowser(self, event):
-        wx.LaunchDefaultBrowser(webdispatch._getBaseURL() + "series")
+        wx.LaunchDefaultBrowser(webdispatch._getBaseURL("series"))
 
     def _onUpdateAll(self, event):
         viewmgr.get_all_series()
@@ -475,7 +475,7 @@ class AirsFrame(wx.Frame):
         appcfg.Write()
 
 
-    def _onGuiRestore(self, event):
+    def _onGuiRestore(self, event = None):
         """
         Restore action for window
         """
@@ -501,9 +501,10 @@ class AirsFrame(wx.Frame):
     def _onSyncStatuses(self, event):
         """ Go by all series, and see if there are files downloaded """
 
-        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if there are \n"
-                            "downloaded files for episodes still marked as 'To Download', 'Downloading'\n"
-                            "or 'Downloaded', and mark them as 'Ready' (this can take a little while).\n"
+        res = wx.MessageBox("Airs will now scan all your series folders on disk and see if\n"
+                            "there are downloaded files for episodes still marked as \n"
+                            "'To Download', 'Downloading' or 'Downloaded', and mark them as\n"
+                            "'Ready' (this can take a little while).\n"
                             "Are you sure you want to do this?\n",
                             "Warning", wx.ICON_QUESTION | wx.YES_NO)
 
@@ -534,8 +535,17 @@ class AirsFrame(wx.Frame):
 
         viewmgr.app_log("Received command '%s' with id %i from web browser" % (cmd, id))
 
+        if cmd == "show_airs":
+            viewmgr.set_view(series_filter.VIEW_WHATS_ON)
+            wx.CallLater(500, self._doRestore)
+            
         webdispatch.execute(cmd, id, args)
 
+    def _doRestore(self):
+        self._onGuiRestore()
+        self.Restore()
+        self.Raise()
+                
     def _connectSignals(self):
         """
         Connects all the signals used in this application to members of this
