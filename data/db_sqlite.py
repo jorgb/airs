@@ -24,7 +24,8 @@ CREATE TABLE series (id INTEGER PRIMARY KEY, name VARCHAR, url VARCHAR,
 create table episode (id INTEGER PRIMARY KEY, title VARCHAR, number VARCHAR, 
                       season VARCHAR, aired VARCHAR, last_update VARCHAR, 
                       status INTEGER,  series_id INTEGER, changed INTEGER, 
-                      seen INTEGER, prio_entries VARCHAR, new INTEGER);
+                      seen INTEGER, prio_entries VARCHAR, new INTEGER, 
+                      locked INTEGER);
 CREATE TABLE version (id INTEGER PRIMARY KEY, version INTEGER, updated_on VARCHAR);
 INSERT INTO version (version, updated_on) VALUES (%(version)i, "%(date)s");
 create table searches (id integer primary key, name varchar, url varchar, options VARCHAR, defoptions VARCHAR, show INTEGER);
