@@ -83,7 +83,7 @@
                     <object class="notebookpage">
                         <label>Playing</label>
                         <object class="wxPanel" name="ID_PANEL4">
-                            <style>wxSUNKEN_BORDER|wxTAB_TRAVERSAL</style>
+                            <style>wxTAB_TRAVERSAL</style>
                             <object class="wxBoxSizer">
                                 <orient>wxVERTICAL</orient>
                                 <object class="sizeritem">
@@ -164,7 +164,7 @@
                     <object class="notebookpage">
                         <label>Scheduling</label>
                         <object class="wxPanel" name="ID_PANEL5">
-                            <style>wxSUNKEN_BORDER|wxTAB_TRAVERSAL</style>
+                            <style>wxTAB_TRAVERSAL</style>
                             <object class="wxBoxSizer">
                                 <orient>wxVERTICAL</orient>
                                 <object class="sizeritem">

@@ -220,9 +220,10 @@ class AirsFrame(wx.Frame):
             viewmgr.set_selection(series)
 
             # ask if this needs to be scheduled too
-            if wx.MessageBox("Do you wish to run an update for this series?",
-                             "Question", wx.ICON_QUESTION | wx.YES_NO) == wx.YES:
-                viewmgr.get_selected_series()
+            if series.url.strip() != '':            
+                if wx.MessageBox("Do you wish to run an update for this series?",
+                                 "Question", wx.ICON_QUESTION | wx.YES_NO) == wx.YES:
+                    viewmgr.get_selected_series()
 
         dlg.Destroy()
 
