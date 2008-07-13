@@ -362,6 +362,7 @@ def probe_series():
                 if not result:
                     episode.changed = 1
                     episode.status = series_list.EP_NEW
+                    episode.new = 1
                     episode.setLastUpdate()
 
                     db.store.add(episode)
