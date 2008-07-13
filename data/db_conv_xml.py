@@ -273,7 +273,7 @@ def get_episode_list(series_id):
         episode.setProp("number", str(item.number))
         episode.setProp("id", str(item.id))
         episode.setProp("search_id", str(item.id))
-        episode.setProp("title", item.title.encode('ascii', 'replace'))
+        episode.setProp("title", item.title)
         sstr = item.season.upper()
         episode.setProp("season", sstr)
         episode.setProp("aired", item.aired)
@@ -294,14 +294,19 @@ def get_episode_list(series_id):
                     if epobj.size > 0:
                         files_added = True
                         filenode = libxml2.newNode("file")
-                        filenode.setProp("filepath", epobj.filepath.encode('ascii', 'replace'))
-                        filenode.setProp("filename", epobj.filename.encode('ascii', 'replace'))
-                        if epobj.size > 1024:
-                            filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
-                            filenode.setProp("unit", "Gb")
-                        else:
-                            filenode.setProp("size", str("%.02f" % epobj.size))
-                            filenode.setProp("unit", "Mb")
+                        # pathetic solution to skipping files that seem to contain
+                        # illegal unicode characters                        
+                        try:
+                            filenode.setProp("filepath", epobj.filepath)
+                            filenode.setProp("filename", epobj.filename)
+                            if epobj.size > 1024:
+                                filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
+                                filenode.setProp("unit", "Gb")
+                            else:
+                                filenode.setProp("size", str("%.02f" % epobj.size))
+                                filenode.setProp("unit", "Mb")
+                        except UnicodeEncodeError:
+                            continue
 
                         filesnode.addChild(filenode)
 
@@ -316,7 +321,7 @@ def get_episode_list(series_id):
 
             for engine in engines:
                 se = libxml2.newNode("engine")
-                se.setProp("name", engine.name.encode('ascii', 'replace'))
+                se.setProp("name", engine.name)
                 se.setProp("url", engine.getSearchURL(item, series))
                 searchnode.addChild(se)
 
@@ -342,8 +347,14 @@ def get_episode_list(series_id):
         if orphan[0] != '_':
             filenode.setProp("season", orphan[0])
 
-        filenode.setProp("filepath", orphan[2])
-        filenode.setProp("filename", orphan[1])
+        # pathetic solution to skipping files that seem to contain
+        # illegal unicode characters
+        try:
+            filenode.setProp("filepath", orphan[2])
+            filenode.setProp("filename", orphan[1])
+        except UnicodeEncodeError:
+            continue
+        
         onodes.addChild(filenode)
 
     return dom

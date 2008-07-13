@@ -1,6 +1,24 @@
-airs (1.1-1) unstable; urgency=low
+airs (2.0-1) unstable; urgency=low
 
-  * Initial release 
+  * Airs release v2.0
+   * Added priority system so that aired dates from TV.com (more reliable) are preferred before epguides.com
+   * Episodes can be edited afterwards, correcting abnomalities in season, title or aired date
+   * Episode update lock will prevent auto update (episodes can be forced to be skipped from updating)
+   * Processed is now called "Seen"
+   * A webserver is now present in Airs which can:
+    * Show all series in a neat overview (customizable for TV / Screen / Mobile)
+    * Inform you of newly aired episodes
+    * Provides you with statistics about series
+    * An episode overview per series where you can
+     * Click the media file(s) to watch in your movie player sorted per episode to watch
+     * Archive the file(s) after watching
+     * Marking the episodes seen after watching
+     * Show which files could not be linked to an episode
+     * Provides you a websearch for missing episode files (similar to already present function)
+   * Tray icon is added for background servicing
+   * Added toolbar and better menu system with more shortcuts
+   * Added scheduler that periodically or at start up automatically check for new episodes
+   * Automatic sync statuses of episodes. If matching mediafiles are present, the status is set to 'ready' automatically   
 
  -- Jorgen Bodde <jorgb@xs4all.nl>  Sat, 10 May 2008 16:56:22 +0200
 

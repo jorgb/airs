@@ -18,6 +18,9 @@ cp airs.ico build
 cp -r gui build
 cp -r data build
 cp -r doc build
+cp -r www build
+cp -r xslt build
+cp -r webserver build
 cp setup/ubuntu/airs build
 cp setup/ubuntu/airs-icon.png build
 cp setup/ubuntu/airs.desktop build
@@ -31,8 +34,8 @@ rm -rf build
 mkdir build
 
 cd build
-mkdir airs-1.1
-cd airs-1.1
+mkdir airs-2.0
+cd airs-2.0
 
 mv ../../deb.tar.gz .
 tar -zxf deb.tar.gz

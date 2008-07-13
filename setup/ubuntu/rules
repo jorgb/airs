@@ -43,6 +43,9 @@ install: build
 	cp airs.ico $(CURDIR)/debian/airs/usr/share/apps/airs/airs.ico
 	cp -r gui $(CURDIR)/debian/airs/usr/share/apps/airs/gui
 	cp -r data $(CURDIR)/debian/airs/usr/share/apps/airs/data
+	cp -r www $(CURDIR)/debian/airs/usr/share/apps/airs/www
+	cp -r xslt $(CURDIR)/debian/airs/usr/share/apps/airs/xslt
+	cp -r webserver $(CURDIR)/debian/airs/usr/share/apps/airs/webserver
 	cp airs.desktop $(CURDIR)/debian/airs/usr/share/applications/airs.desktop
 	cp airs $(CURDIR)/debian/airs/usr/bin/airs
 	chmod +x $(CURDIR)/debian/airs/usr/bin/airs
