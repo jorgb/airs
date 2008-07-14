@@ -273,7 +273,7 @@ def get_episode_list(series_id):
         episode.setProp("number", str(item.number))
         episode.setProp("id", str(item.id))
         episode.setProp("search_id", str(item.id))
-        episode.setProp("title", item.title)
+        episode.setProp("title", item.title.encode('utf-8', 'replace'))
         sstr = item.season.upper()
         episode.setProp("season", sstr)
         episode.setProp("aired", item.aired)
@@ -297,8 +297,8 @@ def get_episode_list(series_id):
                         # pathetic solution to skipping files that seem to contain
                         # illegal unicode characters                        
                         try:
-                            filenode.setProp("filepath", epobj.filepath)
-                            filenode.setProp("filename", epobj.filename)
+                            filenode.setProp("filepath", epobj.filepath.encode('utf-8', 'replace'))
+                            filenode.setProp("filename", epobj.filename.encode('utf-8', 'replace'))
                             if epobj.size > 1024:
                                 filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
                                 filenode.setProp("unit", "Gb")
@@ -350,8 +350,8 @@ def get_episode_list(series_id):
         # pathetic solution to skipping files that seem to contain
         # illegal unicode characters
         try:
-            filenode.setProp("filepath", orphan[2])
-            filenode.setProp("filename", orphan[1])
+            filenode.setProp("filepath", orphan[2].encode('utf-8', 'replace'))
+            filenode.setProp("filename", orphan[1].encode('utf-8', 'replace'))
         except UnicodeEncodeError:
             continue
         
