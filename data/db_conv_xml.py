@@ -5,7 +5,24 @@ from data import db, appcfg, searches
 import re
 import os
 
-_media_extensions = ["avi", "mov", "wmv", "mkv", "xvid", "divx", "mpg", "mpeg"]
+_media_extensions = ["avi", "mov", "wmv", "mkv", "xvid", "divx", "mpg", "mpeg", "mp4", "m4v"]
+
+escmap = [ ("&",  "%26"),
+           (" ",  "%20"),
+           ("/",  "%2f"),
+           ("\\", "%5c") ]
+
+def _escapefile(s):
+    for from_esc, to_esc in escmap:
+        s = s.replace(from_esc, to_esc)
+    return s
+    
+
+def _unescapefile(s):
+    for from_esc, to_esc in escmap:
+        s = s.replace(to_esc, from_esc)
+    return s
+    
 
 class EpisodeFile(object):
     def __init__(self):
@@ -297,7 +314,8 @@ def get_episode_list(series_id):
                         # pathetic solution to skipping files that seem to contain
                         # illegal unicode characters                        
                         try:
-                            filenode.setProp("filepath", epobj.filepath.encode('utf-8', 'replace'))
+                            fp = _escapefile(epobj.filepath)
+                            filenode.setProp("filepath", fp.encode('utf-8', 'replace'))
                             filenode.setProp("filename", epobj.filename.encode('utf-8', 'replace'))
                             if epobj.size > 1024:
                                 filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
@@ -350,7 +368,7 @@ def get_episode_list(series_id):
         # pathetic solution to skipping files that seem to contain
         # illegal unicode characters
         try:
-            filenode.setProp("filepath", orphan[2].encode('utf-8', 'replace'))
+            filenode.setProp("filepath", _escapefile(orphan[2]).encode('utf-8', 'replace'))
             filenode.setProp("filename", orphan[1].encode('utf-8', 'replace'))
         except UnicodeEncodeError:
             continue
