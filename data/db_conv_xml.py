@@ -5,7 +5,7 @@ from data import db, appcfg, searches
 import re
 import os
 
-_media_extensions = ["avi", "mov", "wmv", "mkv", "xvid", "divx", "mpg", "mpeg", "mp4"]
+_media_extensions = ["avi", "mov", "wmv", "mkv", "xvid", "divx", "mpg", "mpeg", "mp4", "m4v"]
 
 escmap = [ ("&",  "%26"),
            (" ",  "%20"),

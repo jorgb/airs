@@ -159,6 +159,8 @@ def _parseTvComDate(s):
             
     if l[0].lower() in _months:
         month = _months[l[0].lower()]
+    else:
+        return ''
     
     try:
         daynr = int(l[1].strip(','))
