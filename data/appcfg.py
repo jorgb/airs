@@ -65,6 +65,7 @@ CFG_AUTO_UPDATE         = 'scheduling/autoupdate'
 CFG_GRACE_PERIOD        = 'scheduling/graceperiod'
 CFG_TIMED_UPDATE        = 'scheduling/timedupdate'
 CFG_AUTO_UPDATE_TIMED   = 'scheduling/timedenable'
+CFG_FUZZY_MATCH         = 'webserver/fuzzymatch'
 
 
 configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
@@ -93,7 +94,8 @@ configs = [ (CFG_LAYOUT_LAST_W,         'i', 940  ),
             (CFG_AUTO_UPDATE,           'b', True),
             (CFG_GRACE_PERIOD,          'i', 5),
             (CFG_TIMED_UPDATE,          's', '12:00'),
-            (CFG_AUTO_UPDATE_TIMED,     'b', False)
+            (CFG_AUTO_UPDATE_TIMED,     'b', False),
+            (CFG_FUZZY_MATCH,           'b', True)
         ]
 
 # max files in the file history

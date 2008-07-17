@@ -42,6 +42,8 @@ class OptionsDlg(wx.Dialog):
         self._autoTimed = xrc.XRCCTRL(self, "ID_TIMED_UPDATE")
         self._timedUpdate = xrc.XRCCTRL(self, "ID_TIME_PERIOD")
         
+        self._fuzzyMatch = xrc.XRCCTRL(self, "ID_FUZZY_MATCH")
+        
         self._playerPath.SetValue(appcfg.options[appcfg.CFG_PLAYER_PATH])
         self._playerArgs.SetValue(appcfg.options[appcfg.CFG_PLAYER_ARGS])
         self._seriesPath.SetValue(appcfg.options[appcfg.CFG_SERIES_PATH])
@@ -51,6 +53,7 @@ class OptionsDlg(wx.Dialog):
         self._gracePeriod.SetValue(str(appcfg.options[appcfg.CFG_GRACE_PERIOD]))
         self._timedUpdate.SetValue(appcfg.options[appcfg.CFG_TIMED_UPDATE])
         self._autoTimed.SetValue(appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED])
+        self._fuzzyMatch.SetValue(appcfg.options[appcfg.CFG_FUZZY_MATCH])
         
         self.Bind(wx.EVT_BUTTON, self.__OnOK,  xrc.XRCCTRL(self, "wxID_OK"))
         self.Bind(wx.EVT_BUTTON, self._browseSeries, self._seriesBtn)
@@ -101,6 +104,7 @@ class OptionsDlg(wx.Dialog):
         appcfg.options[appcfg.CFG_GRACE_PERIOD] = graceperiod        
         appcfg.options[appcfg.CFG_TIMED_UPDATE] = self._timedUpdate.GetValue()
         appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED] = self._autoTimed.GetValue()
+        appcfg.options[appcfg.CFG_FUZZY_MATCH] = self._fuzzyMatch.GetValue()
         appcfg.Write()
 
         event.Skip()
