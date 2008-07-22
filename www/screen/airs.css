@@ -1,240 +1,58 @@
-
-/* body of airs pages */
-body 
-{
-    color: #ffffff;
-    background-color: #00005c; 
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    background-image: url("/www/background.png");
-}
-
 a.subcaption, a.subcaption:visited
 {
-    color: #ff2222;
-}
-
-#subcaption
-{
-    margin-bottom: 10pt;
-}
-
-tr.oddrow 
-{
-    background-color: #00007a;
-}
-
-
-td.header
-{
-    border-bottom-style: dashed; 
-    border-bottom-color: #ffffff; 
-    border-bottom-width: 1px;
-    padding-right: 10pt;
-}
-
-table.episodes
-{
-    width: 100%;
-}
-
-td.percentage
-{
-    width: 60pt;
-}
-
-td.number
-{
-    /* text-align: right; */
-}
-
-#overall
-{
-    width: 80%;
-}
-
-#headertext
-{
-    font-style: italic;
-    font-size: 120%;
-}
-
-#percdiff
-{
-    width: 100%;
-    font-size: 100%;
-    text-align: left;
-    position:relative;
-    border-width: 0px;
-}
-
-#percinner
-{
-    padding: 0.25em;  
-    text-align: left;
-    position:relative;
-    height:10pt;
-    left:0px;  
-    border:1;
-    border-style: solid;
-    border-color: blue;
-    border-width: 1px; 
-    background-color: #00007d;
-}
-
-/* the title of the contents */
-#title
-{
-    font-size: 150%;
-    color: #eae975;
-}
-
-#titlespacing
-{
-    margin-bottom: 20pt;
-}
-
-a, a:visited
-{
-    text-decoration: none;
-    color: #acacac;
-    font-style: bold;
+    font-size: 115%;
 }
 
 a.series, a.withmedia, a.nomedia
 {
-     font-size: 110%;
+    font-size: 125%;
 }
 
-a.withmedia 
+
+div.headertext
 {
-    color: #5af85a;
+    font-size: 135%;
 }
 
-a.nomedia 
+#title
 {
-    color: #ec4d4d;
+    font-size: 180%;
 }
 
-#seriescount
+div.seriescount
 {
-    font-size: 100%;
+    font-size: 115%;
 }
 
 a.subcaption 
 {
     font-size: 100%;
-    font-style: italic;
 }
 
 a.playfile
 {
-    font-size: 100%;
-    font-style: normal;
-    color: #c4c4c4;
-}
-
-
-a.search
-{
-    font-size: 75%;
-    font-style: italic;
-    border-margin: 4px;
-    border-style: none;
-    background-color: #0b2c68; 
-    color: #ffffff;
-    border: 1px solid #748AAA;
-    padding: 0.25em;  
-    margin-right: 3pt;  
-}
-
-td.search
-{
-    text-align: right;
-}
-
-#searchblock
-{
-  margin-top: 5pt;
-  margin-left: 10pt;
-  margin-bottom: 10pt;
+    font-size: 120%;
 }
 
 #epaired 
 {
-    color: #d6d66e;
-    font-style: bold;
-    font-size: 110%;
+    font-size: 130%;
 }
 
 #orphaned
 {
-    color: #d6d66e;
-    font-style: normal;
-    font-size: 120%;
+    font-size: 130%;
 }
-
 
 #epunaired
 {
-    color: #646464;
-    font-style: normal;
-    font-size: 120%;
-}
-
-#seriestitle
-{
-    margin-left: 20pt;
-}
-
-td.eprow
-{
-    vertical-align: top;
-    padding-right: 10pt;
-    border-collapse:collapse;
-    border-width: 0px;
-/*    border-bottom-style: solid; 
-    border-bottom-color: #4b4bff; 
-    border-bottom-width: 1px; */    
-}
-
-tr.eprow2
-{
-    vertical-align: center;
-}
-
-#copyright
-{
-    margin-top: 20pt;
-    text-align: center;
-    color: #d3d5a4;
-    font-style: italic;
-    font-size: 100%;
+    font-size: 130%;
 }
 
 
-/* TODO: Fix gap in table */
-
-
-/* ---- CSS TO CONSIDER TO CHANGE FOLLOWS HERE! --- */
-
-/* overall div that encapsulates all content */
-
-
-#seriescount
+#titlespacing
 {
-    margin-left: 20pt;
-}
-
-
-a:hover 
-{
-    text-decoration: underline;
-    color: #fff700;
-}
-
-a img 
-{
-    border: 0;
+    margin-bottom: 10pt;
 }
 
 

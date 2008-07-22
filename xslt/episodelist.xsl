@@ -11,6 +11,9 @@
     <html>
         <head>
             <title><xsl:value-of select="airs/episodes/@name" /></title>
+            <xsl:if test="$layout != 'mobile'">        
+              <link rel="stylesheet" type="text/css" href="www/airs-global.css" />        
+            </xsl:if>        
             <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
         </head>
         <body>

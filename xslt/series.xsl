@@ -23,7 +23,9 @@
 
     <xsl:template match="/" mode="header">
       <head>
-        <link rel="stylesheet" type="text/css" href="www/airs-global.css" />
+        <xsl:if test="$layout != 'mobile'">        
+          <link rel="stylesheet" type="text/css" href="www/airs-global.css" />        
+        </xsl:if>        
         <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
         <title>Airs Series Overview</title>
         
