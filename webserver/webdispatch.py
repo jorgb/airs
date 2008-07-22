@@ -80,12 +80,15 @@ def episodeList(cmd, args):
     result = style.applyStylesheet(xml, None)
     cmd.html = style.saveResultToString(result)
 
+    
 def markSeen(cmd, args):
 
     episode = db.store.find(series_list.Episode, series_list.Episode.id == args["id"]).one()
     if episode is not None:
         episode.status = series_list.EP_SEEN
         db.store.commit()
+        
+        viewmgr.episode_updated(episode)
 
         # auto archive all the files that the collection function finds to be
         # placed under the current episode season number small convenience for
