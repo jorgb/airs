@@ -1,0 +1,13 @@
+Special thanks go to Mark James, to make the Silk Icon Set free for use!
+http://www.famfamfam.com/lab/icons/silk/
+
+The web server icons come from:
+http://www.iconspedia.com/
+
+Thanks to Tjerk Kusters for the coloured alternating background, snippets 
+of the webserver and DIV enhancements in the XSLT
+
+Thanks to Erwin Bodde for numerous suggestions and the endless debates (which 
+are fun) on what could be better. It's much appreciated!
+
+

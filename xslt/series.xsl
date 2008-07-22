@@ -3,12 +3,17 @@
 
 <!-- ###################################################################### -->
 
+   <xsl:output method="html" />
+   <xsl:output doctype-system="http://www.w3.org/TR/html4/strict.dtd" />
+   <xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
+   <xsl:output indent="yes" />
+   
     <xsl:variable name="layout">
         <xsl:value-of select="/airs/options/layout" />
     </xsl:variable>
 
     <xsl:template match="/">    
-      <html>
+       <html>
         <xsl:apply-templates select="/" mode="header" />
         <xsl:apply-templates select="/" mode="overview" />
       </html>
@@ -18,15 +23,38 @@
 
     <xsl:template match="/" mode="header">
       <head>
+        <xsl:if test="$layout != 'mobile'">        
+          <link rel="stylesheet" type="text/css" href="www/airs-global.css" />        
+        </xsl:if>        
         <link rel="stylesheet" type="text/css" href="www/{$layout}/airs.css" />
         <title>Airs Series Overview</title>
+        
+        <script type="text/javascript">
+           <![CDATA[
+               function kleuren() {
+                  var seriesTable     = document.getElementById("series_table");
+                  var seriesTableRows = seriesTable.getElementsByTagName("tr");
+                  var k=0;
+                  for( var i=1; i < seriesTableRows.length; i++ ) {
+                     if( k == 0 ) {
+                        seriesTableRows[ i ].className = "oddrow";
+                        k = 1;
+                     }
+                     else if( k == 1 ) {
+                        seriesTableRows[ i ].className = "evenrow";
+                        k = 0;
+                     }
+                  }
+               }
+         ]]>
+      </script>
       </head>
     </xsl:template>
 
 <!-- ####################################################################### --> 
 
     <xsl:template match="/" mode="overview">
-      <body>        
+      <body onload="kleuren()">        
         <div id="overall">
           
           <div id="title">Airs Series Overview</div>
@@ -38,14 +66,14 @@
           </xsl:if>
           
           <div id="series_area">
-            <table>
+            <table id="series_table">
 
                <!-- Main Table Header -->
                <xsl:if test="$layout != 'mobile'">
                  <tr class="captionrow">
-                   <td class="header"><div id="headertext">Series Name</div></td>
-                   <td class="header" colspan="2"><div id="headertext">Seen</div></td>
-                   <td class="header"><div id="headertext">Files</div></td>
+                   <td class="header"><div class="headertext">Series Name</div></td>
+                   <td class="header" colspan="2"><div class="headertext">Seen</div></td>
+                   <td class="header"><div class="headertext">Files</div></td>
                  </tr>
               </xsl:if>
 
@@ -131,8 +159,8 @@
                         </div>
                        -->
                         
-                        <div id="percdiff">
-                            <div id="percinner">
+                        <div class="percdiff">
+                            <div class="percinner">
                                 <xsl:attribute name="style">
                                     <xsl:choose>
                                         <xsl:when test="number(@count) = 0 or number(@seencount) = 0">
@@ -155,7 +183,7 @@
                         </div>
                       </td>
                       <td class="number">
-                        <div id="seriescount"><xsl:value-of select="@mediacount"/></div>
+                        <div class="seriescount"><xsl:value-of select="@mediacount"/></div>
                       </td>
                     </xsl:if>
                   </tr>

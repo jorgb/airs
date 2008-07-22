@@ -158,6 +158,14 @@
                                         </object>
                                     </object>
                                 </object>
+                                <object class="sizeritem">
+                                    <flag>wxALIGN_LEFT|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxCheckBox" name="ID_FUZZY_MATCH">
+                                        <label>Use fuzzy matching for filenames (EXPIRIMENTAL)</label>
+                                        <checked>0</checked>
+                                    </object>
+                                </object>
                             </object>
                         </object>
                     </object>

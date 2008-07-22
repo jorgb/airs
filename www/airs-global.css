@@ -1,0 +1,165 @@
+
+/* 
+   This CSS deals with colors and common graphics 
+   of all different views only.
+   
+   Styles here can be overridden in the current view css
+   
+*/
+body 
+{
+    color: #ffffff;
+    background-color: #00005c; 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    background-image: url("/www/background.png");
+}
+
+a.subcaption, a.subcaption:visited
+{
+    color: #ff2222;
+}
+
+td.header
+{
+    border-bottom-style: dashed; 
+    border-bottom-color: #ffffff; 
+    border-bottom-width: 1px;
+}
+
+tr.oddrow 
+{
+    background-color: #000075;
+}
+
+tr.evenrow 
+{
+    background-color: #000055;
+}
+
+div.headertext
+{
+    font-style: italic;
+}
+
+div.percinner
+{
+    text-align: left;
+    position:relative;
+    left:0px;  
+    border:1;
+    border-style: solid;
+    border-color: blue;
+    border-width: 1px; 
+    background-color: #00007d;
+}
+
+div.percdiff
+{
+    text-align: left;
+    position:relative;
+    border-width: 0px;
+}
+
+
+#title
+{
+    color: #eae975;
+}
+
+a, a:visited
+{
+    text-decoration: none;
+    color: #acacac;
+    font-style: bold;
+}
+
+a.withmedia 
+{
+    color: #5af85a;
+}
+
+a.nomedia 
+{
+    color: #ec4d4d;
+}
+
+a.subcaption 
+{
+    font-style: italic;
+}
+
+a.playfile
+{
+    font-style: normal;
+    color: #c4c4c4;
+}
+
+
+a.search
+{
+    font-style: italic;
+    border-style: none;
+    background-color: #0b2c68; 
+    color: #ffffff;
+    border: 1px solid #748AAA;
+}
+
+td.search
+{
+    text-align: right;
+}
+
+#searchblock
+{
+    margin-top: 5pt;
+    margin-left: 10pt;
+    margin-bottom: 10pt;
+}
+
+#epaired 
+{
+    color: #d6d66e;
+    font-style: bold;
+}
+
+#orphaned
+{
+    color: #d6d66e;
+    font-style: normal;
+}
+
+
+#epunaired
+{
+    color: #646464;
+    font-style: normal;
+}
+
+td.eprow
+{
+    border-collapse:collapse;
+    border-width: 0px;
+}
+
+tr.eprow2
+{
+    vertical-align: center;
+}
+
+#copyright
+{
+    text-align: center;
+    color: #d3d5a4;
+    font-style: italic;
+}
+
+a:hover 
+{
+    text-decoration: underline;
+    color: #fff700;
+}
+
+a img 
+{
+    border: 0;
+}

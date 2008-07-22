@@ -16,19 +16,26 @@ def _escapefile(s):
     for from_esc, to_esc in escmap:
         s = s.replace(from_esc, to_esc)
     return s
-    
+
 
 def _unescapefile(s):
     for from_esc, to_esc in escmap:
         s = s.replace(to_esc, from_esc)
     return s
-    
+
+class EpisodeFileFuzzyMatch(object):
+    def __init__(self, epfile):
+        self.epfile = epfile
+        self.candidate_id = -1      # episode that matches the most (LEAVE -1!)
+        self.diff_score = 0.0       # closer to 1 means better match
 
 class EpisodeFile(object):
     def __init__(self):
         self.filename = ''
         self.filepath = ''
         self.size = 0
+        self.fuzzy = False          # if true, file is matched by fuzzy matching
+        self.season = ""
 
 def _getMediaCount(series_path):
     """ Returns number of files in directory which have a valid media extension """
@@ -60,6 +67,69 @@ def _createOptionsNode():
     layout.setContent(appcfg.conv_layout_str[appcfg.options[appcfg.CFG_LAYOUT_SCREEN]])
 
     return options
+
+
+# last resort title matcher
+DIFF_THRESHOLD = 1 / 3.0                        # match at least 33%
+m0 = re.compile("[a-z][a-z0-9]*", re.IGNORECASE)
+bad_words = set( [ "bia", "pdtv", "ws", "dsrip", "proper", "hdtv", "hd", "tv", 
+                   "x264", "aac", "ps3", "dsr" ] )
+
+def _collectEpisodesByID(series, episode_list):
+    """ Function that collects per episode ID all files that match this
+    episode. This function uses _collectEpisodeFiles to auto match the
+    season strings, and further processes all unknown episodes to do
+    fuzzy matching on title and file name parts """
+
+    ep_to_file = dict()
+    sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
+
+    bad_series_words = set([s.lower() for s in series.name.split()])
+    
+    ablookup = list()
+    if "_" in sfiles:
+        # pre process and make lookup
+        mediaext_set = set(_media_extensions)
+        for abitem in sfiles["_"]:
+            orgfile_set = set([ s.lower() for s in m0.findall(abitem.filename) ])
+            orgfile_set = orgfile_set - mediaext_set - bad_words - bad_series_words
+            ablookup.append( (EpisodeFileFuzzyMatch(abitem), orgfile_set) )
+
+    for episode in episode_list:
+        seasonstr = episode.season.upper()
+        if len(seasonstr) > 2:
+            if seasonstr in sfiles:
+                ep_to_file[episode.id] = [efile for efile in sfiles[seasonstr]]
+
+        if appcfg.options[appcfg.CFG_FUZZY_MATCH]:
+            # now check episode title with any sets
+            title_set = set([ s.lower() for s in m0.findall(episode.title) ])
+            if len(title_set) > 0:
+                for fuzzy_info, file_set in ablookup:
+                    if len(file_set) > 0:
+                        score = 1 - len(title_set - file_set) / float(len(title_set))
+                        if score >= DIFF_THRESHOLD:
+                            if (fuzzy_info.candidate_id == -1) or score > fuzzy_info.diff_score:
+                                fuzzy_info.candidate_id = episode.id
+                                fuzzy_info.diff_score = score
+
+    # now let's feed the episode info from the ablookup into the lookup list of
+    # episodes. This will also group all permanently abandoned files in the
+    # category -1.
+    abandoned = list()
+    for fuzzy_info, dummy in ablookup:
+        epid = fuzzy_info.candidate_id
+        epfile = fuzzy_info.epfile
+        if epid != -1:
+            if epid in ep_to_file:
+                ep_to_file[epid].append(epfile)
+            else:
+                ep_to_file[epid] = [ epfile ]
+        else:
+            abandoned.append(epfile)
+    ep_to_file[-1] = abandoned
+                    
+    return ep_to_file
 
 
 m1 = re.compile("(.*?)S(?P<season>[0-9]+)[ ]*E(?P<episode>[0-9]+)(.*?)", flags = re.IGNORECASE)
@@ -107,6 +177,7 @@ def _collectEpisodeFiles(series_path):
                             season = "S%02iE%02i" % (int(seas_str), int(ep_str))
 
                             if season in epfiles:
+                                item.season = season
                                 epfiles[season].append(item)
                             else:
                                 l = list()
@@ -128,17 +199,15 @@ def _collectEpisodeFiles(series_path):
 
 def _sortOrphans(a, b):
     """ Sorts the orphan list so that seasoned items are sorted first """
-    if a[0] == b[0]:
-        if a[1] < b[1]:
+    if a.season < b.season:
+        return -1
+    elif a.season > b.season:
+        return 1
+    else:
+        if a.filename < b.filename:
             return -1
         else:
             return 1
-
-    if a[1] < b[1]:
-        return -1
-    elif a[1] > b[1]:
-        return 1
-
     return 0
 
 def _sortEpisodes(a, b):
@@ -186,12 +255,12 @@ def get_series_xml():
     todaystr = series_list.date_to_str(datetime.datetime.now())
 
     wdelta = series_list.idx_to_weekdelta(appcfg.options[appcfg.CFG_EPISODE_DELTA])
-    bottomstr = series_list.date_to_str(datetime.date.today() - datetime.timedelta(weeks = wdelta))    
+    bottomstr = series_list.date_to_str(datetime.date.today() - datetime.timedelta(weeks = wdelta))
 
     c = db.store.execute("select count(*) from episode where aired != '' and aired <= '%s'"
                          "and aired > '%s' and new != 0" % (todaystr, bottomstr) )
     items.setProp("airedcount", str(c.get_one()[0]))
-        
+
     result = db.store.find(series_list.Series).order_by(series_list.Series.name)
     series = [serie for serie in result]
 
@@ -264,7 +333,7 @@ def get_episode_list(series_id):
     #                     (series_id, series_list.EP_SEEN, datestr))
     #unseen = str(c.get_one()[0])
     #items.setProp("unseen", unseen)
-    
+
     c = db.store.execute("select count(*) from episode where series_id = %i and status != %i" % \
                          (series_id, series_list.EP_SEEN))
     unseen = str(c.get_one()[0])
@@ -278,7 +347,7 @@ def get_episode_list(series_id):
     episodes.sort(_sortEpisodes)
 
     if series.folder != '':
-        sfiles = _collectEpisodeFiles(series_list.get_series_path(series))
+        sfiles = _collectEpisodesByID(series, episodes)
     else:
         sfiles = dict()
 
@@ -301,37 +370,36 @@ def get_episode_list(series_id):
         episode.addChild(filesnode)
 
         files_added = False
-        if len(sstr) > 3:
-            if sstr in sfiles:
-                epfiles = sfiles[sstr]
-                epfiles.sort(_sortEpisodeFiles)
+        if item.id in sfiles:
+            epfiles = sfiles[item.id]
+            epfiles.sort(_sortEpisodeFiles)
 
-                for epobj in epfiles:
+            for epobj in epfiles:
 
-                    if epobj.size > 0:
-                        files_added = True
-                        filenode = libxml2.newNode("file")
-                        # pathetic solution to skipping files that seem to contain
-                        # illegal unicode characters                        
-                        try:
-                            fp = _escapefile(epobj.filepath)
-                            filenode.setProp("filepath", fp.encode('utf-8', 'replace'))
-                            filenode.setProp("filename", epobj.filename.encode('utf-8', 'replace'))
-                            if epobj.size > 1024:
-                                filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
-                                filenode.setProp("unit", "Gb")
-                            else:
-                                filenode.setProp("size", str("%.02f" % epobj.size))
-                                filenode.setProp("unit", "Mb")
-                        except UnicodeEncodeError:
-                            continue
+                if epobj.size > 0:
+                    files_added = True
+                    filenode = libxml2.newNode("file")
+                    # pathetic solution to skipping files that seem to contain
+                    # illegal unicode characters
+                    try:
+                        fp = _escapefile(epobj.filepath)
+                        filenode.setProp("filepath", fp.encode('utf-8', 'replace'))
+                        filenode.setProp("filename", epobj.filename.encode('utf-8', 'replace'))
+                        if epobj.size > 1024:
+                            filenode.setProp("size", str("%.02f" % (epobj.size / 1024)))
+                            filenode.setProp("unit", "Gb")
+                        else:
+                            filenode.setProp("size", str("%.02f" % epobj.size))
+                            filenode.setProp("unit", "Mb")
+                    except UnicodeEncodeError:
+                        continue
 
-                        filesnode.addChild(filenode)
+                    filesnode.addChild(filenode)
 
-                # remove from season dict, but not when the episode is seen
-                # because that will most likely not display it in the orphaned files
-                if item.status != series_list.EP_SEEN:
-                    del sfiles[sstr]
+            # remove from season dict, but not when the episode is seen
+            # because that will most likely not display it in the orphaned files
+            if item.status != series_list.EP_SEEN:
+                del sfiles[item.id]
 
         if not files_added:
             searchnode = libxml2.newNode("engines")
@@ -353,7 +421,7 @@ def get_episode_list(series_id):
     for skey in sfiles.iterkeys():
         sfile = sfiles[skey]
         for orphan in sfile:
-            orphans.append( (skey, orphan.filename, orphan.filepath) )
+            orphans.append( orphan )
 
     orphans.sort(cmp = _sortOrphans)
 
@@ -362,17 +430,16 @@ def get_episode_list(series_id):
 
     for orphan in orphans:
         filenode = libxml2.newNode("file")
-        if orphan[0] != '_':
-            filenode.setProp("season", orphan[0])
 
         # pathetic solution to skipping files that seem to contain
         # illegal unicode characters
+        filenode.setProp("season", orphan.season)
         try:
-            filenode.setProp("filepath", _escapefile(orphan[2]).encode('utf-8', 'replace'))
-            filenode.setProp("filename", orphan[1].encode('utf-8', 'replace'))
+            filenode.setProp("filepath", _escapefile(orphan.filepath).encode('utf-8', 'replace'))
+            filenode.setProp("filename", orphan.filename.encode('utf-8', 'replace'))
         except UnicodeEncodeError:
             continue
-        
+
         onodes.addChild(filenode)
 
     return dom
