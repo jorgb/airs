@@ -419,10 +419,9 @@ class AirsFrame(wx.Frame):
         self.SetSize((width, height))
         self.SetPosition((xpos, ypos))
 
-
+         
     def _onScheduleTimer(self, event):
         """ Schedule timer """
-
         if appcfg.options[appcfg.CFG_AUTO_UPDATE_TIMED]:
             # check if we passed a day
             d = datetime.datetime.now() - appcfg.last_timed_update
@@ -444,7 +443,6 @@ class AirsFrame(wx.Frame):
                     appcfg.initially_updated = True
                     appcfg.last_timed_update = datetime.datetime.now()
                     viewmgr.get_all_series()
-
 
     def _onTimer(self, event):
         """

@@ -252,6 +252,7 @@ def get_all_series(manual = False):
     Publisher().sendMessage(signals.APP_LOG, "Sending all series to Series Receive thread...")
 
     # send all series from db to the receive queue
+    appcfg.last_timed_update = datetime.datetime.now()
     result = db.store.find(series_list.Series)
     all_series = [ series for series in result.order_by(series_list.Series.name) ]
     ignored = 0
