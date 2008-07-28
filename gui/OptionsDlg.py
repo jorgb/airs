@@ -66,7 +66,14 @@ class OptionsDlg(wx.Dialog):
         else:
             wildcard = "*"
 
-        dlg = wx.FileDialog(self, "Select the player executable", os.path.dirname(self._playerPath.GetValue()),
+        defpath = self._playerPath.GetValue().strip()
+        if defpath == '':
+            if platform.system() == 'Linux':
+                defpath = "/usr/bin/"
+            else:
+                defpath = "C:\\Program Files\\"
+            
+        dlg = wx.FileDialog(self, "Select the player executable", os.path.dirname(defpath),
                             "", wildcard, wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             self._playerPath.SetValue(dlg.GetPath())
