@@ -44,6 +44,12 @@ class EpisodeEditDlg(wx.Dialog):
             self._st_lookup[st[0]] = idx
         
         self.Bind(wx.EVT_BUTTON, self._onOK,  xrc.XRCCTRL(self, "wxID_OK"))
+        self.Bind(wx.EVT_TEXT, self._onEdited, self._title)
+        self.Bind(wx.EVT_TEXT, self._onEdited, self._season)
+        self.Bind(wx.EVT_DATE_CHANGED, self._onEdited, self._aired)
+        
+    def _onEdited(self, event):
+        self._lock_update.SetValue(True)
 
         
     def ObjectToGui(self, episode):
