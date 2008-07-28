@@ -101,7 +101,7 @@ class WebServerThread(Thread):
             reactor.listenTCP(port, server.Site(root), interface=url)
             succes = True
         except Exception, e:
-            report("ERROR: Could not start listening!\nWebserver is stopped.")
+            report("ERROR: Could not start listening on given port! Check IP address and PORT!\nWebserver is stopped.")
 
         if succes:
             self.running = True

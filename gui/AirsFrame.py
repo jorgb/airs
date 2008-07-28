@@ -112,6 +112,12 @@ class AirsFrame(wx.Frame):
         # init viewmgr (always do this last so that
         # signals to be emitted can access controls)
         viewmgr.app_init()
+        
+        if viewmgr.server.running == False:
+            wx.MessageBox("The webserver could not be started!\n"
+                          "Most likely the port or IP address it should bind to is unavailable.\n"
+                          "Please fill in a valid port and IP address in the preferences\n"
+                          "and restart Airs again", "Error", wx.ICON_STOP)
 
         # periodic GUI update timer
         self.tmr = wx.Timer(self)
