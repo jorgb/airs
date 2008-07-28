@@ -311,16 +311,6 @@ def get_episode_list(series_id):
     options = _createOptionsNode()
     root.addChild(options)
 
-    #searchnode = libxml2.newNode("engines")
-    #root.addChild(searchnode)
-
-    #engines = db.store.find(searches.Searches)
-    #for engine in engines:
-    #    se = libxml2.newNode("engine")
-    #    se.setProp("name", engine.name.encode('ascii', 'replace'))
-    #    se.setProp("sid", str(engine.id))
-    #    searchnode.addChild(se)
-
     series = db.store.find(series_list.Series, series_list.Series.id == series_id).one()
     if series is None:
         return dom
@@ -328,11 +318,6 @@ def get_episode_list(series_id):
     items = libxml2.newNode("episodes")
     items.setProp("id", str(series_id))
     items.setProp("name", series.name)
-
-    #c = db.store.execute("select count(*) from episode where series_id = %i and status != %i and aired < '%s'" % \
-    #                     (series_id, series_list.EP_SEEN, datestr))
-    #unseen = str(c.get_one()[0])
-    #items.setProp("unseen", unseen)
 
     c = db.store.execute("select count(*) from episode where series_id = %i and status != %i" % \
                          (series_id, series_list.EP_SEEN))
@@ -443,3 +428,12 @@ def get_episode_list(series_id):
         onodes.addChild(filenode)
 
     return dom
+
+
+def get_aired_episode_list(series_id):
+    """
+    This function returns an XML structure that contains all the episodes that
+    are recently aired.
+    """
+
+    return None

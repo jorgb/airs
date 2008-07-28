@@ -34,6 +34,7 @@ insert into searches (name, url, options, defoptions, show) values ("Newzleech",
 insert into searches (name, url, options, defoptions, show) values ("Yabsearch", "http://www.yabsearch.nl/search/@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into searches (name, url, options, defoptions, show) values ("NzbIndex", "http://www.nzbindex.nl/?go=search&new=1&searchitem=@series@+@season_nr@+@episode_nr@", "", "", 0);
 insert into options (name, value) values ("default_search", "1");
+create table episodefile (id integer primary key, fullpath varchar, size integer, reldir varchar, episode_id integer, series_id integer, filetype integer); 
 """
 
 #-------------------------------------------------------------------------------
@@ -86,6 +87,14 @@ update episode set new = 1;
 update episode set locked=0;
 update series set folder="";
 update version set version=5, updated_on="%(date)s" where id=1;
+"""
+
+#-------------------------------------------------------------------------------
+# upgrade script for v5 to v6
+
+upgr_v5_v6 = """\
+create table episodefile (id integer primary key, fullpath varchar, size integer, reldir varchar, episode_id integer, series_id integer, filetype integer); 
+/* update version set version=6, updated_on="%(date)s" where id=1; */
 """
 
 # NOTE: episode.seen is obsolete, and should be removed upon a new creation
@@ -158,28 +167,6 @@ def upgr_pre_v3(conn):
         
     conn.commit()    
     c.close()
-    
-#-------------------------------------------------------------------------------
-#def upgr_pre_v5(conn):
-#    """
-#    The status EP_SEEN means it is seen, these are now seperate for
-#    the future guide.
-#    """
-#    
-#    c = conn.cursor()
-#            
-#    # cleanup in the episode table, recreate with better fields
-#    c.execute("select id, status from episode")
-#    records = [ rec for rec in c ]
-#    
-#    for r in records:
-#        if not r[1] == series_list.EP_SEEN:
-#            c.execute("update episode set seen = 1 where id = ?", (r[0]))
-#        else:
-#            c.execute("update episode set seen = 0 where id = ?", (r[0]))
-#            
-#    conn.commit()    
-#    c.close()
     
 #-------------------------------------------------------------------------------
 def create(dbfile):
