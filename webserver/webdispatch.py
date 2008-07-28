@@ -112,7 +112,7 @@ def playFile(cmd, args):
 
     argstr = list()
     for arg in appcfg.options[appcfg.CFG_PLAYER_ARGS].split():
-        argstr.append(arg.replace("%file%", args["file"]))
+        argstr.append(arg.replace("%file%", args["file"].encode('utf-8', 'replace')))
     argstr.insert(0, appcfg.options[appcfg.CFG_PLAYER_PATH])
 
     try:
