@@ -93,7 +93,7 @@ update version set version=5, updated_on="%(date)s" where id=1;
 # upgrade script for v5 to v6
 
 upgr_v5_v6 = """\
-create table episodefile (id integer primary key, fullpath varchar, size integer, reldir varchar, episode_id integer, series_id integer, filetype integer); 
+create table episodefile (id integer primary key, fullpath varchar, size integer, reldir varchar, episode_id integer, series_id integer, filetype integer);
 /* update version set version=6, updated_on="%(date)s" where id=1; */
 """
 

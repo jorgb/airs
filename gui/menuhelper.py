@@ -10,6 +10,7 @@ from images import icon_preferences ,to_download, downloading, \
                    icon_downloaded, icon_ready, icon_processed, all_series, \
                    icon_update, icon_update_all, icon_restore_wnd, \
                    icon_edit_episode, icon_sync_status, icon_sync_series
+from images import sync_selected_files, sync_all_files
 
 NORMAL  = 1
 CHECK   = 2
@@ -113,34 +114,36 @@ def create(parent, bindEvents):
     """
     global menuItems
     menuItems = {
-        "exit":          ("E&xit", "Exit", "Exit the application", None, NORMAL),
-        "add_series":    ("&Add Series...\tCtrl+N", "Add", "Add a new series", icon_add.getBitmap(), NORMAL),
-        "edit_series":   ("&Edit Series...\tCtrl+E", "Edit", "Edit Series properties", icon_edit.getBitmap(), NORMAL),
-        "del_series":    ("&Delete Series\tCtrl+D", "Delete", "Delete Series", icon_delete.getBitmap(), NORMAL),
-        "preferences":   ("&Preferences ...", "Preferences", "Open the application preferences", icon_preferences.getBitmap(), NORMAL ),
-        "clear_cache":   ("&Clear Cache", "Clear Cache", "Clear cache of one or all series", None, NORMAL),
-        "select_all":    ("&Select All\tCtrl+A", "Select All", "Select all episodes", None,  NORMAL),
-        "edit_episode":  ("&Edit Episode...", "Edit Episode", "Edit selected episode", icon_edit_episode.getBitmap(), NORMAL),
-        "searches":      ("Search &Engines ...", "Edit Search Engines", "Edit Search Engine properties", icon_searches.getBitmap(),  NORMAL),
-        "restore":       ("&Restore Default Layout", "Restore Default Layout", "Restore default window layout", icon_default_layout.getBitmap(), NORMAL),
-        "toggle_sel":    ("Toggle View Selector", "Toggle View Selector", "Toggle View Selector", None,  CHECK),
-        "toggle_prog":   ("Toggle Progress Log", "Toggle Progress Log", "Hide or show Progress Log window", None, CHECK),
-        "toggle_stat":   ("Toggle Statistics Window", "Toggle Statistics Window", "Hide or show Progress Statistics window", None, CHECK),
-        "to_tray":       ("Minimize to tray", "Minimize to tray", "Upon minimize, hide in system tray", None, CHECK),
-        "help":          ("&Help ... ", "Help", "Show the application help", icon_help.getBitmap(), NORMAL),
-        "visit_site":    ("&Visit Site ... ", "Visit Site", "Visit Project Site", icon_visit_site.getBitmap(), NORMAL),
-        "about":         ("&About ...", "About", "Show the about dialog", None,  NORMAL),
-        "s_todownload":  ("&To Download", "Mark as To Download", "Mark as To Download", to_download.getBitmap(), NORMAL),
-        "s_download":    ("&Downloading", "Mark as Downloading", "Mark as Downloading", downloading.getBitmap(), NORMAL),
-        "s_downloaded":  ("Down&loaded", "Mark as Downloaded", "Mark as Downloaded", icon_downloaded.getBitmap(), NORMAL),
-        "s_ready":       ("&Ready", "Mark as Ready", "Mark as Ready", icon_ready.getBitmap(), NORMAL),
-        "s_seen":        ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL),
-        "browser":       ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL),
-        "update_all":    ("&Update All\tCtrl+Shift+U", "Update All", "Update all series", icon_update_all.getBitmap(), NORMAL),
-        "update":        ("Update &Series\tCtrl+U", "Update Series", "Update this series", icon_update.getBitmap(), NORMAL),
-        "restore_wnd":   ("Restore Window", "Restore Window", "Restore this window", icon_restore_wnd.getBitmap(), NORMAL),
-        "sync_status":   ("&Sync All Statuses", "Synchronize Status", "Scan all series, synchronize statuses", icon_sync_status.getBitmap(), NORMAL),
-        "sync_series":   ("S&elected Series", "Synchronize Selected Series", "Synchronize only selected series", icon_sync_series.getBitmap(), NORMAL)
+        "exit":             ("E&xit", "Exit", "Exit the application", None, NORMAL),
+        "add_series":       ("&Add Series...\tCtrl+N", "Add", "Add a new series", icon_add.getBitmap(), NORMAL),
+        "edit_series":      ("&Edit Series...\tCtrl+E", "Edit", "Edit Series properties", icon_edit.getBitmap(), NORMAL),
+        "del_series":       ("&Delete Series\tCtrl+D", "Delete", "Delete Series", icon_delete.getBitmap(), NORMAL),
+        "preferences":      ("&Preferences ...", "Preferences", "Open the application preferences", icon_preferences.getBitmap(), NORMAL ),
+        "clear_cache":      ("&Clear Cache", "Clear Cache", "Clear cache of one or all series", None, NORMAL),
+        "select_all":       ("&Select All\tCtrl+A", "Select All", "Select all episodes", None,  NORMAL),
+        "edit_episode":     ("&Edit Episode...", "Edit Episode", "Edit selected episode", icon_edit_episode.getBitmap(), NORMAL),
+        "searches":         ("Search &Engines ...", "Edit Search Engines", "Edit Search Engine properties", icon_searches.getBitmap(),  NORMAL),
+        "restore":          ("&Restore Default Layout", "Restore Default Layout", "Restore default window layout", icon_default_layout.getBitmap(), NORMAL),
+        "toggle_sel":       ("Toggle View Selector", "Toggle View Selector", "Toggle View Selector", None,  CHECK),
+        "toggle_prog":      ("Toggle Progress Log", "Toggle Progress Log", "Hide or show Progress Log window", None, CHECK),
+        "toggle_stat":      ("Toggle Statistics Window", "Toggle Statistics Window", "Hide or show Progress Statistics window", None, CHECK),
+        "to_tray":          ("Minimize to tray", "Minimize to tray", "Upon minimize, hide in system tray", None, CHECK),
+        "help":             ("&Help ... ", "Help", "Show the application help", icon_help.getBitmap(), NORMAL),
+        "visit_site":       ("&Visit Site ... ", "Visit Site", "Visit Project Site", icon_visit_site.getBitmap(), NORMAL),
+        "about":            ("&About ...", "About", "Show the about dialog", None,  NORMAL),
+        "s_todownload":     ("&To Download", "Mark as To Download", "Mark as To Download", to_download.getBitmap(), NORMAL),
+        "s_download":       ("&Downloading", "Mark as Downloading", "Mark as Downloading", downloading.getBitmap(), NORMAL),
+        "s_downloaded":     ("Down&loaded", "Mark as Downloaded", "Mark as Downloaded", icon_downloaded.getBitmap(), NORMAL),
+        "s_ready":          ("&Ready", "Mark as Ready", "Mark as Ready", icon_ready.getBitmap(), NORMAL),
+        "s_seen":           ("&Seen", "Mark as Seen", "Mark as Seen", icon_processed.getBitmap(), NORMAL),
+        "browser":          ("Start &Browser", "Start Browser", "Start browser to show the episodes", icon_browser.getBitmap(), NORMAL),
+        "update_all":       ("&Update All\tCtrl+Shift+U", "Update All", "Update all series", icon_update_all.getBitmap(), NORMAL),
+        "update":           ("Update &Series\tCtrl+U", "Update Series", "Update this series", icon_update.getBitmap(), NORMAL),
+        "restore_wnd":      ("Restore Window", "Restore Window", "Restore this window", icon_restore_wnd.getBitmap(), NORMAL),
+        "sync_status":      ("&Sync All Statuses", "Synchronize Status", "Scan all series, synchronize statuses", icon_sync_status.getBitmap(), NORMAL),
+        "sync_series":      ("Sync Status of S&elected Series", "Synchronize Selected Series", "Synchronize only selected series", icon_sync_series.getBitmap(), NORMAL),
+        "dir_epfiles":      ("Scan files for &this Series", "Scan Files For This Series", "Scan media files for selected series", sync_selected_files.getBitmap(), NORMAL),
+        "dir_epfiles_all":  ("Scan Files for &all Series", "Sync Files For All Series", "Scan media files for all series", sync_all_files.getBitmap(), NORMAL)        
       }
 
     mainmenu = [ ("&File",    [ "preferences",
@@ -160,6 +163,7 @@ def create(parent, bindEvents):
                                   "-",
                                   "clear_cache" ]
                  ),
+                 ("&Media Files", ["dir_epfiles", "dir_epfiles_all" ] ),
                  ("&Episode", [ "select_all", "searches", "-", "edit_episode",
                                    ( "&Mark Status As", [ "s_todownload", "s_download",
                                                           "s_downloaded", "s_ready", "s_seen"] )

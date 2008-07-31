@@ -80,7 +80,9 @@ class AirsFrame(wx.Frame):
             ("update",       self._onUpdateSeries),
             ("browser",      self._onStartBrowser),
             ("sync_status",  self._onSyncStatuses),
-            ("sync_series",  self._onSyncSelected)
+            ("sync_series",  self._onSyncSelected),
+            ("dir_epfiles",  self._onCollectEpisodeFiles),
+            ("dir_epfiles_all", self._onCollectAllEpisodeFiles)
         ]
 
         menuhelper.create(self, bindEvents)
@@ -373,6 +375,7 @@ class AirsFrame(wx.Frame):
         view_enabled = viewmgr._series_sel._view_type != -1
         menuhelper.enable(self, "update_all", not viewmgr.is_busy())
         menuhelper.enable(self, "update", view_enabled and viewmgr.series_active())
+        menuhelper.enable(self, "dir_epfiles",  view_enabled and viewmgr.series_active())
 
         menuhelper.enable(self, "sync_series", sid != -1)
 
@@ -502,7 +505,32 @@ class AirsFrame(wx.Frame):
         wx.PostEvent(self, evt)
 
     # ============================ VARIOUS METHODS =============================
+    
+    def _doReportMediaFindings(self, results):
+        wx.MessageBox("Scanning is complete.\n"
+                      "  %i files are new\n  %i files are removed\n"
+                      "  %i files were examined\n  %i files are not linked to an episode" % 
+                      (results["new"], results["removed"], results["examined"], results["orphaned"]),
+                      "Done", wx.ICON_INFORMATION)
+        
+    
+    def _onCollectEpisodeFiles(self, event):
+        """ Collect specific episode files """
+        
+        sid = viewmgr.appstate["series_id"]
+        if sid >= 0:
+            series = db.store.find(series_list.Series, series_list.Series.id == sid).one()
+            results = viewmgr.collect_mediafiles(series)
+            self._doReportMediaFindings(results)
 
+
+    def _onCollectAllEpisodeFiles(self, event):
+        """ Collect all episode files """
+        
+        results = viewmgr.collect_all_mediafiles()
+        self._doReportMediaFindings(results)
+            
+    
     def _onSyncStatuses(self, event):
         """ Go by all series, and see if there are files downloaded """
 

@@ -89,6 +89,21 @@ def app_close():
     return res.allowed()
 
 
+def collect_mediafiles(series):
+    r_new = 0
+    r_removed = 0
+    r_examined = 0
+    r_orphaned = 0
+    
+    
+    return { "new":      r_new, "removed":       r_removed, 
+             "examined": r_examined, "orphaned": r_orphaned }
+    
+    
+def collect_all_mediafiles():
+    return collect_mediafiles(None)
+
+
 def update_statuses(sel = None):
     # every serie with a folder assigned will be scanned, all
     # episodes that match a file, and have the status downloaded,
