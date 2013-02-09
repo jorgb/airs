@@ -5,7 +5,8 @@
 #==============================================================================
 
 import urllib2
-from BeautifulSoup import BeautifulSoup
+#from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from Queue import Queue
 import re
 import series_list
