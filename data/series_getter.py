@@ -23,13 +23,22 @@ class EpGuidesSeriesDownloadCmd(object):
         self._series = series
         self.__log = logqueue
         self._url = url
-        # regular expression with all information inside
-        self._re1 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+        # regex: ep_id without final dot (.) and ep_date separator is slash (/)
+        self._re1 = re.compile(r"(?P<ep_id>\d+)[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+                                "(.*?)(?P<ep_date>\d{1,2}/[a-zA-Z]+" + \
+                                "/\d+)")
+        # regex: ep_id with final dot (.) and ep_date separator is space or tab
+        self._re2 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
                                 "(.*?)(?P<ep_date>\d{1,2}[ \t]+[a-zA-Z]+" + \
                                 "[ \t]+\d+)")
-        self._re2 = re.compile(r"(?P<ep_id>\d+)\.[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
-                                "(.*)")
-         
+        # regex: ep_id without final dot (.) and ep_date separator is slash (/) without day
+        self._re3 = re.compile(r"(?P<ep_id>\d+)[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+                                "(.*?)(?P<ep_date>[a-zA-Z]+" + \
+                                "/\d+)")
+        # regex: ep_id without final dot (.) and ep_date unspecified
+        self._re4 = re.compile(r"(?P<ep_id>\d+)[ \t]+(?P<ep_season>(\d+[ \t]*\-[ \t]*\d+){0,1})" + \
+                                "(.*)")	
+
         
     def retrieve(self):
         """ Retieves and decodes. Fills in the self._series which is returned
@@ -77,6 +86,24 @@ class EpGuidesSeriesDownloadCmd(object):
         # <a target="_blank" href="???">{series title}</a>
         # chop up all series and also preserve the text in front of it
         episode_list = []
+
+    	# remove span tag with id=recap
+    	spans = res.findAll("span", id="recap")
+    	[spn.extract() for spn in spans]
+
+    	# remove span tag with id=Trailers
+    	spans2 = res.findAll("span", id="Trailers")
+    	[spn2.extract() for spn2 in spans2]
+
+    	# remove parent tag of preview image
+    	images = res.findAll("img", src="http://www.tvrage.com/_layout_v3/misc/film.gif")
+        [mg.parent.extract() for img in images]
+
+    	# process a tag with id=latest
+    	images2 = res.findAll("a", id="latest")
+        # remove tag
+        [lat.extract() for lat in images2]
+
         ep_hrefs = res.findAll('a')
         
         self.__log.put("Found episode section. Parsing ...")
@@ -99,7 +126,11 @@ class EpGuidesSeriesDownloadCmd(object):
         for ep_text, ep_title in episode_list:
             m = self._re1.match(ep_text)
             if not m:
-                m = self._re2.match(ep_text)        
+                m = self._re2.match(ep_text)
+            if not m:
+                m = self._re3.match(ep_text)
+            if not m:
+                m = self._re4.match(ep_text)
             if m:
                 gd = m.groupdict()
                 episode = series_list.Episode()
@@ -119,13 +150,13 @@ class EpGuidesSeriesDownloadCmd(object):
                                 pass
                 if "ep_date" in gd:
                     if gd["ep_date"]:
-                        datelist = gd["ep_date"].split(' ')
+                        datelist = gd["ep_date"].split('/')
                         if len(datelist) > 2:
                             monthstr = datelist[1].lower().strip()
                             if monthstr in _months:
                                 try:
-                                    epday = int(datelist[0].strip(' '))
-                                    epyr = int(datelist[2].strip(' '))
+                                    epday = int(datelist[0].strip('/'))
+                                    epyr = int(datelist[2].strip('/'))
                                     if epyr < 1900:
                                         if epyr > 39:
                                             epyr += 1900
